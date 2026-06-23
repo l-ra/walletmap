@@ -21,3 +21,5 @@ WalletMap.eu si klade za cíl vytvořit centrální, otevřený a přehledný zd
 ## Licence
 
 CC BY-SA 4.0
+
+Agent připojen
