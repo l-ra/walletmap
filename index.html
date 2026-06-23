@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WalletMap.eu – Mapa evropské digitální identity</title>
+  <meta name="description" content="WalletMap.eu: připravujeme detailní technologickou a uživatelskou mapu evropské peněženky digitální identity (EU Digital Identity Wallet).">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0b0d1a;
+      color: #e8edf5;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Animated background ── */
+    .bg-grid {
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(55, 125, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(0, 200, 255, 0.06) 0%, transparent 50%);
+      z-index: -2;
+    }
+    .bg-grid::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(55, 125, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(55, 125, 255, 0.07) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 70%);
+    }
+
+    /* ── Floating orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      z-index: -1;
+      animation: orbFloat 12s ease-in-out infinite alternate;
+    }
+    .orb--1 { width: 500px; height: 500px; background: #2b6aff; top: -10%; left: -8%; }
+    .orb--2 { width: 400px; height: 400px; background: #00d4ff; bottom: -12%; right: -6%; animation-delay: -5s; }
+    .orb--3 { width: 300px; height: 300px; background: #7c3aed; top: 50%; left: 50%; translate: -50% -50%; animation-delay: -9s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, -40px) scale(1.1); }
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 0;
+    }
+    .logo {
+      font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo svg { width: 32px; height: 32px; }
+    .logo span { color: #5b8dff; }
+    nav a {
+      font-size: 0.9rem; font-weight: 500; color: #8892b0;
+      transition: color 0.2s; margin-left: 32px;
+    }
+    nav a:hover { color: #fff; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: calc(100vh - 80px);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 40px 0 80px;
+    }
+    .hero__inner { max-width: 820px; }
+    .hero__badge {
+      display: inline-block;
+      padding: 8px 18px; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+      background: rgba(55, 125, 255, 0.12); color: #8cb4ff; border: 1px solid rgba(55, 125, 255, 0.2);
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 7vw, 4.2rem);
+      font-weight: 800; line-height: 1.1; letter-spacing: -0.03em;
+      margin-bottom: 28px;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, #4f8cff, #00d4ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.15rem; color: #8892b0;
+      max-width: 640px; margin: 0 auto 40px;
+    }
+    .hero__actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 34px; border-radius: 50px; font-weight: 600; font-size: 1rem;
+      transition: all 0.25s; border: none; cursor: pointer;
+    }
+    .btn--primary {
+      background: linear-gradient(135deg, #2b6aff, #00b8ff);
+      color: #fff; box-shadow: 0 4px 24px rgba(43, 106, 255, 0.3);
+    }
+    .btn--primary:hover {
+      transform: translateY(-2px); box-shadow: 0 8px 36px rgba(43, 106, 255, 0.45);
+    }
+    .btn--outline {
+      background: transparent; color: #c8d0e0;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn--outline:hover {
+      border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05);
+    }
+
+    /* ── Scroll indicator ── */
+    .scroll-indicator {
+      position: absolute; bottom: 30px; left: 50%; translate: -50% 0;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: #4a5568; font-size: 0.75rem; letter-spacing: 0.05em;
+      animation: fadeInUp 0.8s ease-out 1s both;
+    }
+    .scroll-indicator .mouse {
+      width: 24px; height: 38px; border: 2px solid #4a5568; border-radius: 12px;
+      position: relative;
+    }
+    .scroll-indicator .mouse::after {
+      content: ''; position: absolute; top: 6px; left: 50%; translate: -50% 0;
+      width: 3px; height: 8px; border-radius: 3px; background: #4a5568;
+      animation: scrollWheel 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollWheel {
+      0%, 100% { opacity: 1; transform: translateY(0); }
+      50% { opacity: 0.3; transform: translateY(10px); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Sections common ── */
+    section { padding: 100px 0; }
+    .section-label {
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #4f8cff; margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+    .section-sub {
+      color: #8892b0; font-size: 1.05rem; max-width: 640px;
+    }
+
+    /* ── About ── */
+    #about { text-align: center; }
+    #about .section-sub { margin: 0 auto 60px; }
+
+    .cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px; text-align: left;
+    }
+    .card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px; padding: 32px 28px;
+      transition: transform 0.3s, border-color 0.3s;
+      backdrop-filter: blur(4px);
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(79, 140, 255, 0.3); }
+    .card__icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; font-size: 1.4rem;
+    }
+    .card__icon--blue  { background: rgba(43,106,255,0.15); color: #6b9aff; }
+    .card__icon--cyan  { background: rgba(0,200,255,0.13); color: #5de0ff; }
+    .card__icon--purple{ background: rgba(124,58,237,0.14); color: #b28aff; }
+    .card__icon--green { background: rgba(16,185,129,0.13); color: #5eead4; }
+    .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+    .card p { font-size: 0.9rem; color: #8892b0; }
+
+    /* ── Vision / Timeline ── */
+    #vision { text-align: center; background: rgba(255,255,255,0.01); }
+    #vision .section-sub { margin: 0 auto 50px; }
+    .timeline {
+      display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    }
+    .timeline__step {
+      flex: 1; min-width: 180px; max-width: 240px;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px; padding: 28px 20px; text-align: center;
+      position: relative;
+    }
+    .timeline__step:not(:last-child)::after {
+      content: '→';
+      position: absolute; right: -14px; top: 50%; translate: 0 -50%;
+      color: #2b6aff; font-size: 1.4rem;
+    }
+    .timeline__num {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; font-weight: 700; font-size: 0.9rem;
+      background: rgba(43,106,255,0.15); color: #6b9aff;
+    }
+    .timeline__step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .timeline__step p { font-size: 0.82rem; color: #6a7488; }
+
+    /* ── Newsletter ── */
+    #newsletter {
+      text-align: center;
+    }
+    .newsletter-box {
+      max-width: 540px; margin: 0 auto;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px; padding: 48px 36px;
+      backdrop-filter: blur(6px);
+    }
+    .newsletter-box h2 { font-size: 1.6rem; margin-bottom: 12px; }
+    .newsletter-box p { color: #8892b0; margin-bottom: 28px; font-size: 0.95rem; }
+    .newsletter-box .form-row {
+      display: flex; gap: 12px; max-width: 420px; margin: 0 auto;
+    }
+    .newsletter-box input {
+      flex: 1; padding: 14px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05); color: #fff; font-size: 0.95rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .newsletter-box input::placeholder { color: #5a6480; }
+    .newsletter-box input:focus { border-color: #2b6aff; }
+    .newsletter-box .btn { flex-shrink: 0; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 30px 0; text-align: center; font-size: 0.85rem; color: #5a6480;
+    }
+    footer a { color: #8cb4ff; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav a { margin-left: 20px; font-size: 0.8rem; }
+      .hero__actions { flex-direction: column; align-items: center; }
+      .newsletter-box .form-row { flex-direction: column; }
+      .timeline__step:not(:last-child)::after { content: '↓'; right: auto; bottom: -16px; top: auto; left: 50%; translate: -50% 0; }
+      section { padding: 60px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-grid"></div>
+  <div class="orb orb--1"></div>
+  <div class="orb orb--2"></div>
+  <div class="orb orb--3"></div>
+
+  <!-- Header -->
+  <div class="container">
+    <header>
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><rect x="2" y="6" width="28" height="20" rx="4" stroke="#4f8cff" stroke-width="2"/><rect x="8" y="11" width="6" height="5" rx="1.5" fill="#4f8cff"/><path d="M18 14l4 4m0 0l-4 4m4-4h-8" stroke="#5de0ff" stroke-width="2" stroke-linecap="round"/></svg>
+        Wallet<span>Map</span>
+      </div>
+      <nav>
+        <a href="#about">O projektu</a>
+        <a href="#vision">Vize</a>
+        <a href="#newsletter">Novinky</a>
+      </nav>
+    </header>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__inner container">
+      <div class="hero__badge">Připravujeme</div>
+      <h1>
+        Mapa evropské<br>
+        <span class="highlight">digitální identity</span>
+      </h1>
+      <p>
+        WalletMap.eu vytváří ucelenou technologickou a uživatelskou mapu
+        evropské peněženky digitální identity (EU Digital Identity Wallet).
+        Přehled standardů, implementací, certifikací a reálného nasazení napříč EU.
+      </p>
+      <div class="hero__actions">
+        <a href="#newsletter" class="btn btn--primary">
+          ⏳ Upozornit na spuštění
+        </a>
+        <a href="#about" class="btn btn--outline">
+          Zjistit více ↓
+        </a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="mouse"></div>
+      <span>SCROLL</span>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="container">
+      <div class="section-label">O projektu</div>
+      <h2 class="section-title">Co je WalletMap?</h2>
+      <p class="section-sub">
+        Chceme vytvořit centrální místo, kde najdete vše podstatné o evropské
+        digitální identitě — od technických specifikací až po reálné zkušenosti.
+      </p>
+      <div class="cards">
+        <div class="card">
+          <div class="card__icon card__icon--blue">🔷</div>
+          <h3>Technologická mapa</h3>
+          <p>Přehled protokolů, standardů (EBSI, OIDC4VP, SD-JWT, ISO 18013-5) a architektur referenčních implementací.</p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--cyan">🌐</div>
+          <h3>Katalog implementací</h3>
+          <p>Mapy wallet řešení napříč členskými státy EU včetně pilotních projektů a produkčního nasazení.</p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--purple">🔐</div>
+          <h3>Certifikace & soulad</h3>
+          <p>Přehled certifikačních schémat, eIDAS 2.0 požadavků a auditu bezpečnosti wallet řešení.</p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--green">👤</div>
+          <h3>Uživatelská zkušenost</h3>
+          <p>Best practices pro UX, onboarding, recovery a přístupnost digitální peněženky pro všechny občany EU.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vision / Timeline -->
+  <section id="vision">
+    <div class="container">
+      <div class="section-label">Naše vize</div>
+      <h2 class="section-title">Cesta k mapě</h2>
+      <p class="section-sub">
+        Projekt budujeme postupně. Každá fáze přidá novou vrstvu detailu a propojení.
+      </p>
+      <div class="timeline">
+        <div class="timeline__step">
+          <div class="timeline__num">1</div>
+          <h4>Research</h4>
+          <p>Analýza standardů, specifikací a existujících implementací napříč EU.</p>
+        </div>
+        <div class="timeline__step">
+          <div class="timeline__num">2</div>
+          <h4>Struktura mapy</h4>
+          <p>Návrh taxonomie, vztahů a vrstev technologické mapy.</p>
+        </div>
+        <div class="timeline__step">
+          <div class="timeline__num">3</div>
+          <h4>Data & vizualizace</h4>
+          <p>Interaktivní grafové zobrazení s filtrováním a detaily.</p>
+        </div>
+        <div class="timeline__step">
+          <div class="timeline__num">4</div>
+          <h4>Live mapa</h4>
+          <p>Veřejné spuštění s možností přispívat a sledovat změny.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section id="newsletter">
+    <div class="container">
+      <div class="newsletter-box">
+        <h2>Nechte si poslat zprávu</h2>
+        <p>
+          Jakmile bude mapa připravena k náhledu, pošleme vám krátké oznámení.
+          Žádný spam, jen jedno upozornění.
+        </p>
+        <form class="form-row" action="#" method="post">
+          <input type="email" placeholder="Váš e-mail" required>
+          <button type="submit" class="btn btn--primary">Odeslat</button>
+        </form>
+        <p style="margin-top:16px;font-size:0.8rem;color:#5a6480;">
+          Zůstaňte v obraze — <a href="#" style="color:#6b9aff;">sledujte nás</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      &copy; 2026 <a href="https://walletmap.eu">WalletMap.eu</a> &mdash; Mapa evropské digitální identity.
+      <br style="margin-top:4px;display:inline-block;">
+      Postaveno s podporou evropské komunity digitální identity.
+    </div>
+  </footer>
+
+  <!-- Simple form handler (prevents actual submit for demo) -->
+  <script>
+    document.querySelector('form')?.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const input = this.querySelector('input');
+      if (input && input.value) {
+        this.innerHTML = '<p style="color:#5eead4;font-weight:600;">✓ Děkujeme! Oznámení pošleme na <strong style="color:#fff;">' + input.value + '</strong>.</p>';
+      }
+    });
+    // Intersection Observer for reveal animations
+    const cards = document.querySelectorAll('.card, .timeline__step');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.15 });
+    cards.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
