@@ -11,25 +11,6 @@ WalletMap.eu si klade za cíl vytvořit centrální, otevřený a přehledný zd
 - **Certifikaci a soulad** — eIDAS 2.0, certifikační schémata, bezpečnostní audity
 - **Uživatelskou zkušenost** — best practices pro UX, onboarding a přístupnost
 
-## Vývoj
-
-Stránka je čistě statická (HTML + CSS + JS), žádný framework. Pro lokální zobrazení stačí otevřít `index.html` v prohlížeči.
-
-```bash
-# Otevření v defaultním prohlížeči
-open index.html
-# nebo
-xdg-open index.html
-```
-
-## Struktura projektu
-
-```
-.
-├── index.html    # Landing page
-└── README.md     # Tento soubor
-```
-
 ## Plán
 
 1. **Research** — analýza standardů a implementací
