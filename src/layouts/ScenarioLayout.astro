@@ -84,6 +84,39 @@ const grouped = Object.entries(categoryLabels)
         top: 24px;
         font-size: 0.85rem;
       }
+      .sidebar-panel {
+        margin: 0;
+        padding: 0;
+        border: none;
+      }
+      .sidebar-toggle {
+        display: none;
+        list-style: none;
+        cursor: pointer;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e8edf5;
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.4;
+        user-select: none;
+      }
+      .sidebar-toggle::-webkit-details-marker { display: none; }
+      .sidebar-toggle::marker { content: ''; }
+      .sidebar-toggle__icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        color: #8cb4ff;
+        transition: transform 0.2s ease;
+      }
+      .sidebar-panel[open] .sidebar-toggle__icon { transform: rotate(180deg); }
       .sidebar h2 {
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -213,8 +246,27 @@ const grouped = Object.entries(categoryLabels)
         color: #5a6480;
       }
       @media (max-width: 900px) {
-        .layout { grid-template-columns: 1fr; }
+        .layout { grid-template-columns: 1fr; gap: 24px; }
         .sidebar { position: static; }
+        .sidebar-toggle { display: flex; }
+        .sidebar-panel:not([open]) .sidebar-content { display: none; }
+        .sidebar-panel[open] .sidebar-content {
+          margin-top: 16px;
+          padding: 16px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+        nav a { margin-left: 0; font-size: 0.85rem; }
+      }
+      @media (min-width: 901px) {
+        .sidebar-panel .sidebar-content { display: block !important; }
       }
     </style>
   </head>
@@ -231,22 +283,38 @@ const grouped = Object.entries(categoryLabels)
 
       <div class="layout">
         <aside class="sidebar">
-          <h2>Střelecký klub</h2>
-          {
-            grouped.map((group) => (
-              <div class="sidebar-group">
-                <h2>{group.label}</h2>
-                {group.items.map((item) => (
-                  <a
-                    href={`${seriesBasePath}/${item.slug}`}
-                    class:list={{ active: item.slug === currentSlug }}
-                  >
-                    {item.data.title}
-                  </a>
-                ))}
-              </div>
-            ))
-          }
+          <details class="sidebar-panel">
+            <summary class="sidebar-toggle">
+              <span class="sidebar-toggle__label">Seznam scénářů</span>
+              <svg class="sidebar-toggle__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path
+                  d="M5 7.5L10 12.5L15 7.5"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </summary>
+            <div class="sidebar-content">
+              <h2>Střelecký klub</h2>
+              {
+                grouped.map((group) => (
+                  <div class="sidebar-group">
+                    <h2>{group.label}</h2>
+                    {group.items.map((item) => (
+                      <a
+                        href={`${seriesBasePath}/${item.slug}`}
+                        class:list={{ active: item.slug === currentSlug }}
+                      >
+                        {item.data.title}
+                      </a>
+                    ))}
+                  </div>
+                ))
+              }
+            </div>
+          </details>
         </aside>
 
         <div>
