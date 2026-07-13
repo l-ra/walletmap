@@ -46,11 +46,14 @@ RSYNC_EXTRA_OPTS="${RSYNC_EXTRA_OPTS:-}"
 echo "Publikuji $DIST_DIR/ -> $REMOTE"
 echo "  (--delete: soubory na serveru, které nejsou v dist/, budou odstraněny)"
 
-# -a  archivní režim (zachová práva, časy, …)
+# -r  rekurzivně
+# -l  zachová symlinky
 # -v  verbose
 # -z  komprese při přenosu
 # --delete  přesný obraz — smaže na cíli soubory, které v dist/ nejsou
-rsync -avz --delete \
+# Bez -a (archiv): na sdíleném hostingu často nelze nastavit časy/práva na cíli
+# (rsync: failed to set times … Operation not permitted).
+rsync -rlvz --delete \
   -e "$RSYNC_SSH" \
   $RSYNC_EXTRA_OPTS \
   "$DIST_DIR/" "$REMOTE"
