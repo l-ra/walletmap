@@ -32,18 +32,21 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
       }
       a { color: #8cb4ff; text-decoration: none; }
       a:hover { text-decoration: underline; }
+      body { overflow-x: hidden; }
       .container { max-width: 760px; margin: 0 auto; padding: 0 24px; }
       header {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 16px;
         padding: 20px 0 40px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         margin-bottom: 48px;
       }
-      .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+      .logo { font-weight: 800; font-size: 1.1rem; color: #fff; flex-shrink: 0; }
       .logo span { color: #5b8dff; }
-      nav a { color: #8892b0; font-size: 0.9rem; margin-left: 24px; }
+      nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+      nav a { color: #8892b0; font-size: 0.9rem; }
       nav a:hover { color: #fff; text-decoration: none; }
       .meta {
         color: #8892b0;
@@ -82,12 +85,36 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
         color: #c8d0e0;
       }
       main :global(li) { margin-bottom: 0.4em; }
+      main :global(a) { word-break: break-word; }
+      main :global(img) {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5em 0;
+      }
+      main :global(table) {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5em;
+        font-size: 0.9rem;
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      main :global(th), main :global(td) {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 12px;
+        text-align: left;
+      }
+      main :global(th) { background: rgba(255, 255, 255, 0.04); }
       main :global(code) {
         font-family: ui-monospace, monospace;
         font-size: 0.9em;
         background: rgba(255, 255, 255, 0.06);
         padding: 0.15em 0.4em;
         border-radius: 4px;
+        word-break: break-word;
       }
       main :global(pre) {
         background: rgba(255, 255, 255, 0.04);
@@ -95,14 +122,59 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
         border-radius: 12px;
         padding: 20px;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         margin-bottom: 1.5em;
       }
-      main :global(pre code) { background: none; padding: 0; }
+      main :global(pre code) { background: none; padding: 0; word-break: normal; }
       main :global(blockquote) {
         border-left: 3px solid #2b6aff;
         padding-left: 20px;
         color: #8892b0;
         margin-bottom: 1.25em;
+      }
+      main :global(details) {
+        margin: 1em 0 1.5em;
+        padding: 16px 20px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      main :global(summary) {
+        cursor: pointer;
+        font-weight: 600;
+        color: #8cb4ff;
+        margin-bottom: 8px;
+      }
+      main :global(details[open] summary) { margin-bottom: 12px; }
+      main :global(.article-list) {
+        list-style: none;
+        margin: 2em 0 0;
+        padding: 0;
+      }
+      main :global(.article-list li) {
+        margin-bottom: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      main :global(.article-list li:first-child) {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      main :global(.article-list a) {
+        display: block;
+        padding: 18px 4px;
+        color: #e8edf5;
+        font-weight: 600;
+        line-height: 1.4;
+      }
+      main :global(.article-list a:hover) {
+        color: #8cb4ff;
+        text-decoration: none;
+      }
+      main :global(.article-list time) {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: #8892b0;
       }
       footer {
         margin-top: 80px;
@@ -111,6 +183,38 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
         text-align: center;
         font-size: 0.85rem;
         color: #5a6480;
+      }
+      @media (max-width: 640px) {
+        .container { padding: 0 16px; }
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 16px 0 24px;
+          margin-bottom: 28px;
+        }
+        nav { gap: 4px 20px; }
+        nav a {
+          font-size: 0.85rem;
+          padding: 8px 0;
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
+        }
+        .meta { margin-bottom: 24px; font-size: 0.85rem; }
+        main :global(h1) { font-size: clamp(1.6rem, 6vw, 2rem); margin-bottom: 12px; }
+        main :global(h2) { font-size: 1.25rem; margin: 1.75em 0 0.6em; }
+        main :global(h3) { font-size: 1.05rem; margin: 1.25em 0 0.4em; }
+        main :global(p),
+        main :global(ul),
+        main :global(ol) { font-size: 1rem; }
+        main :global(ul), main :global(ol) { margin-left: 1.25em; }
+        main :global(blockquote) { padding-left: 16px; }
+        main :global(pre) { padding: 14px; font-size: 0.85rem; border-radius: 8px; }
+        main :global(table) { font-size: 0.85rem; }
+        main :global(th), main :global(td) { padding: 8px 10px; }
+        main :global(details) { padding: 14px 16px; }
+        main :global(.article-list a) { padding: 16px 0; }
+        footer { margin-top: 48px; padding: 24px 0; }
       }
     </style>
   </head>
