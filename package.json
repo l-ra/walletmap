@@ -1,0 +1,15 @@
+{
+  "name": "walletmap",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "npm run build && bash scripts/deploy.sh",
+    "deploy:rsync": "bash scripts/deploy.sh"
+  },
+  "devDependencies": {
+    "astro": "^5.7.10"
+  }
+}

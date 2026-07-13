@@ -1,0 +1,168 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  pubDate?: Date;
+  updatedDate?: Date;
+  tags?: string[];
+}
+
+const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} – WalletMap.eu</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #0b0d1a;
+        color: #e8edf5;
+        line-height: 1.7;
+      }
+      a { color: #8cb4ff; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .container { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0 40px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        margin-bottom: 48px;
+      }
+      .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+      .logo span { color: #5b8dff; }
+      nav a { color: #8892b0; font-size: 0.9rem; margin-left: 24px; }
+      nav a:hover { color: #fff; text-decoration: none; }
+      .meta {
+        color: #8892b0;
+        font-size: 0.9rem;
+        margin-bottom: 32px;
+      }
+      .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .tag {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 100px;
+        background: rgba(55, 125, 255, 0.12);
+        color: #8cb4ff;
+        border: 1px solid rgba(55, 125, 255, 0.2);
+      }
+      main :global(h1) {
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+      main :global(h2) {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 2em 0 0.75em;
+      }
+      main :global(h3) {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin: 1.5em 0 0.5em;
+      }
+      main :global(p) { margin-bottom: 1.25em; color: #c8d0e0; }
+      main :global(ul), main :global(ol) {
+        margin: 0 0 1.25em 1.5em;
+        color: #c8d0e0;
+      }
+      main :global(li) { margin-bottom: 0.4em; }
+      main :global(code) {
+        font-family: ui-monospace, monospace;
+        font-size: 0.9em;
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.15em 0.4em;
+        border-radius: 4px;
+      }
+      main :global(pre) {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 20px;
+        overflow-x: auto;
+        margin-bottom: 1.5em;
+      }
+      main :global(pre code) { background: none; padding: 0; }
+      main :global(blockquote) {
+        border-left: 3px solid #2b6aff;
+        padding-left: 20px;
+        color: #8892b0;
+        margin-bottom: 1.25em;
+      }
+      footer {
+        margin-top: 80px;
+        padding: 30px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        text-align: center;
+        font-size: 0.85rem;
+        color: #5a6480;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <a href="/" class="logo">Wallet<span>Map</span></a>
+        <nav>
+          <a href="/">Domů</a>
+          <a href="/clanky">Články</a>
+        </nav>
+      </header>
+
+      {(pubDate || tags.length > 0) && (
+        <div class="meta">
+          {pubDate && (
+            <time datetime={pubDate.toISOString()}>
+              {pubDate.toLocaleDateString('cs-CZ', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+          )}
+          {updatedDate && (
+            <span>
+              {' '}
+              · aktualizováno{' '}
+              {updatedDate.toLocaleDateString('cs-CZ', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+          )}
+          {tags.length > 0 && (
+            <div class="tags">
+              {tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <main>
+        <slot />
+      </main>
+
+      <footer>
+        &copy; 2026 <a href="https://walletmap.eu">WalletMap.eu</a>
+      </footer>
+    </div>
+  </body>
+</html>
