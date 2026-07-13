@@ -1,0 +1,456 @@
+---
+title: "Registrace RP a použití prezentací"
+description: "Registrace klubu jako Relying Party, certifikáty a jednotlivá intended use pro každý scénář ověření."
+series: strelecky-klub
+order: 13
+category: system
+roles: ["Klub (ověřovatel)"]
+deepenLinks:
+  - label: "Prohloubení — certifikáty a verifier metadata"
+    url: "/scenare/strelecky-klub/rp-certifikaty-a-verifier"
+  - label: "CIR (EU) 2025/848 — registrace RP"
+    url: "http://data.europa.eu/eli/reg_impl/2025/848/oj"
+  - label: "TS5 — Formáty a API registrace RP"
+    url: "https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts5-common-formats-and-api-for-rp-registration-information.md"
+  - label: "TS6 — Sada registračních údajů RP"
+    url: "https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts6-common-set-of-rp-information-to-be-registered.md"
+  - label: "ETSI TS 119 475 — RP Registration Certificate"
+    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11947501/01.00.01_60/ts_11947501v010001p.pdf"
+prev: issuer-prohloubeni-vydavani
+next: rp-certifikaty-a-verifier
+---
+
+Klub jako **Service Provider** (Relying Party) registruje u národního registrátora nejen svou identitu, ale i **každé zamýšlené použití prezentace** (intended use). Peněženka pak při OID4VP transakci ověří, že RP žádá pouze registrované atestace a claims.
+
+## Právní rámec
+
+Dle **čl. 5b odst. 11 eIDAS** a **CIR (EU) 2025/848** musí každá organizace, která vyžaduje údaje z peněženky, být registrována v národním registru. Registrace zahrnuje:
+
+- identitu subjektu (EUID)
+- popis služeb a účel zpracování (GDPR)
+- seznam **intended uses** — jednotlivých způsobů, jak RP hodlá prezentace využívat
+
+## Základní registrační struktura klubu
+
+Klub registruje **jeden** záznam `WalletRelyingParty` s entitlement `Service_Provider` a polem `intendedUse` obsahujícím 5 použití.
+
+<details>
+<summary>WalletRelyingParty — základní registrační záznam klubu</summary>
+
+```json
+{
+  "identifier": {
+    "type": "http://data.europa.eu/eudi/id/EUID",
+    "value": "CZ-…"
+  },
+  "legalName": "Střelecký klub Brno z.s.",
+  "tradeName": "WalletMap Demo Klub",
+  "entitlements": [
+    "https://uri.etsi.org/19475/Entitlement/Service_Provider"
+  ],
+  "isPSB": false,
+  "isIntermediary": false,
+  "registryURI": "https://registry.eudi.cz/api/v1",
+  "supportURI": ["https://walletmap-club.cz/podpora", "mailto:podpora@walletmap-club.cz"],
+  "srvDescription": [
+    { "lang": "cs", "content": "Správa členů, závodů a přístupu na střelnici" }
+  ],
+  "supervisoryAuthority": {
+    "name": "Úřad pro ochranu osobních údajů",
+    "country": "CZ",
+    "formURI": ["https://www.uoou.cz/"]
+  },
+  "intendedUse": [ "… viz jednotlivá použití níže …" ]
+}
+```
+
+</details>
+
+> Klub zároveň registruje entitlement `Non_Q_EAA_Provider` ve stejném nebo odděleném záznamu — viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele).
+
+## Certifikáty RP
+
+### Access certificate — jedna pro každou RP Instance
+
+Každý technický systém, který komunikuje s peněženkou, je **Relying Party Instance** a potřebuje vlastní access certifikát:
+
+| RP Instance | Hostname | Intended use |
+|-------------|----------|--------------|
+| `rp-app` | `app.walletmap-club.cz` | `iu-klub-app`, `iu-reg-zavodnik` |
+| `rp-lock-back` | `zamek-zazemi.walletmap-club.cz` | `iu-zamek-zazemi` |
+| `rp-lock-range` | `zamek-streliste.walletmap-club.cz` | `iu-zamek-streliste` |
+| `rp-referee` | `rozhodci.walletmap-club.cz` | `iu-rozhodci` |
+
+<details>
+<summary>Access certificate — atributy (zjednodušeně)</summary>
+
+```json
+{
+  "subject": "CN=rp-app.walletmap-club.cz",
+  "issuer": "CZ EUDI Access CA",
+  "serialNumber": "…",
+  "wrpIdentifier": "urn:eudi:CZ:walletmap-club",
+  "rpInstanceId": "rp-app",
+  "validFrom": "2026-01-01",
+  "validTo": "2028-01-01",
+  "trustAnchor": "LoTE://access-ca.cz"
+}
+```
+
+</details>
+
+Access certifikát se prezentuje peněžence při každém OID4VP requestu. Peněženka ověří podpis vůči LoTE.
+
+### Registration certificate — jedna na intended use
+
+Pokud registrátor vydává registration certificates (ETSI TS 119 475), platí:
+
+- **jeden registration certificate na každý intended use**
+- `intendedUseIdentifier` v registru = identifikátor certifikátu
+- certifikát obsahuje: účel, privacy policy, seznam credential/claims
+
+Peněženka při zobrazení consent dialogu ověřuje shodu presentation requestu s registration certificate.
+
+<details>
+<summary>Registration certificate — struktura (zjednodušeně)</summary>
+
+```json
+{
+  "format": "rp_registration_cert",
+  "wrpIdentifier": "urn:eudi:CZ:walletmap-club",
+  "intendedUseIdentifier": "iu-klub-app",
+  "purpose": [{ "lang": "cs", "content": "Přihlášení do klubové aplikace" }],
+  "privacyPolicy": [{ "type": "PrivacyStatement", "uri": "https://walletmap-club.cz/gdpr/app" }],
+  "credentials": [
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:walletmap:club:membership:1" },
+      "claims": [
+        { "path": ["member_id"] },
+        { "path": ["membership_level"] },
+        { "path": ["roles"] },
+        { "path": ["status"] },
+        { "path": ["valid_until"] }
+      ]
+    }
+  ],
+  "supervisoryAuthority": { "name": "ÚOOÚ", "country": "CZ", "formURI": ["https://www.uoou.cz/"] },
+  "registryURI": "https://registry.eudi.cz/api/v1"
+}
+```
+
+</details>
+
+## Pět zamýšlených použití prezentací
+
+Níže je registrace každého intended use dle TS5 (`IntendedUse` + `Credential` + `Claim`). Každé použití odpovídá konkrétnímu scénáři v modelu klubu.
+
+---
+
+### IU-1: Přihlášení do klubové aplikace
+
+**Scénář:** [Přihlášení do klubové aplikace](/scenare/strelecky-klub/prihlaseni-klubove-aplikace)  
+**RP Instance:** `rp-app`
+
+<details>
+<summary>intendedUse — iu-klub-app (registrační struktura)</summary>
+
+```json
+{
+  "intendedUseIdentifier": "iu-klub-app",
+  "createdAt": "2026-01-01",
+  "purpose": [
+    { "lang": "cs", "content": "Přihlášení člena do klubové webové aplikace pro správu členství a závodů" }
+  ],
+  "privacyPolicy": [
+    {
+      "type": "PrivacyStatement",
+      "uri": "https://walletmap-club.cz/gdpr/app"
+    }
+  ],
+  "credentials": [
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:walletmap:club:membership:1" },
+      "claims": [
+        { "path": ["member_id"] },
+        { "path": ["given_name"] },
+        { "path": ["family_name"] },
+        { "path": ["membership_level"] },
+        { "path": ["roles"] },
+        { "path": ["status"] },
+        { "path": ["valid_until"] }
+      ]
+    }
+  ]
+}
+```
+
+</details>
+
+<details>
+<summary>OID4VP presentation definition — odpovídající konfigurace RP</summary>
+
+```json
+{
+  "id": "iu-klub-app",
+  "purpose": "Přihlášení do klubové aplikace",
+  "input_descriptors": [
+    {
+      "id": "club_membership",
+      "format": { "dc+sd-jwt": { "vct": "urn:walletmap:club:membership:1" } },
+      "constraints": {
+        "fields": [
+          { "path": ["$.member_id"], "intent_to_retain": false },
+          { "path": ["$.status"], "filter": { "const": "aktivní" } },
+          { "path": ["$.valid_until"], "filter": { "type": "string" } }
+        ]
+      }
+    }
+  ]
+}
+```
+
+</details>
+
+---
+
+### IU-2: Registrace závodníka (státní doklady)
+
+**Scénář:** [Registrace závodníka](/scenare/strelecky-klub/registrace-zavodnika)  
+**RP Instance:** `rp-app`  
+**Poznámka:** Klub zde ověřuje **státní** atestace (PID, zbrojní oprávnění), ne vlastní.
+
+<details>
+<summary>intendedUse — iu-reg-zavodnik (registrační struktura)</summary>
+
+```json
+{
+  "intendedUseIdentifier": "iu-reg-zavodnik",
+  "createdAt": "2026-01-01",
+  "purpose": [
+    { "lang": "cs", "content": "Ověření totožnosti a zbrojního oprávnění při registraci závodníka" }
+  ],
+  "privacyPolicy": [
+    { "type": "PrivacyStatement", "uri": "https://walletmap-club.cz/gdpr/registrace-zavodnik" }
+  ],
+  "credentials": [
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:eudi:pid:1" },
+      "claims": [
+        { "path": ["given_name"] },
+        { "path": ["family_name"] },
+        { "path": ["birth_date"] }
+      ]
+    },
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:czechia:zbrojni-opravneni:1" },
+      "claims": [
+        { "path": ["license_number"] },
+        { "path": ["valid_until"] },
+        { "path": ["categories"] }
+      ]
+    },
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:czechia:prukaz-zbrane:1" },
+      "claims": [
+        { "path": ["weapon_type"] },
+        { "path": ["serial_number"] },
+        { "path": ["valid_until"] }
+      ]
+    }
+  ]
+}
+```
+
+</details>
+
+> Třetí credential (průkaz zbraně) je volitelný — klub ho registruje, ale vyžaduje jen pokud to vyžadují pravidla soutěže.
+
+---
+
+### IU-3: Přístup správce do zázemí
+
+**Scénář:** [Přístup správce do zázemí](/scenare/strelecky-klub/pristup-spravce-zazemi)  
+**RP Instance:** `rp-lock-back` (proximity — NFC/BLE u zámku)
+
+<details>
+<summary>intendedUse — iu-zamek-zazemi (registrační struktura)</summary>
+
+```json
+{
+  "intendedUseIdentifier": "iu-zamek-zazemi",
+  "createdAt": "2026-01-01",
+  "purpose": [
+    { "lang": "cs", "content": "Ověření oprávnění správce střelnice pro vstup do zázemí" }
+  ],
+  "privacyPolicy": [
+    { "type": "PrivacyStatement", "uri": "https://walletmap-club.cz/gdpr/pristup" }
+  ],
+  "credentials": [
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:walletmap:club:membership:1" },
+      "claims": [
+        { "path": ["member_id"] },
+        { "path": ["roles"] },
+        { "path": ["status"] },
+        { "path": ["valid_until"] }
+      ]
+    }
+  ]
+}
+```
+
+</details>
+
+<details>
+<summary>Podmínka na straně RP Instance — validace po ověření</summary>
+
+```json
+{
+  "post_verification_policy": {
+    "require_claim": { "path": ["roles"], "contains": "správce střelnice" },
+    "require_claim": { "path": ["status"], "equals": "aktivní" }
+  }
+}
+```
+
+</details>
+
+> Registrace definuje *jaké* claims lze žádat. Podmínka na hodnotu role (`správce střelnice`) se uplatňuje v logice zámku — není součástí registračního záznamu (TS5, poznámka k Claim).
+
+---
+
+### IU-4: Přístup na střeliště
+
+**Scénář:** [Přístup na střeliště](/scenare/strelecky-klub/pristup-streliste)  
+**RP Instance:** `rp-lock-range`  
+**Poznámka:** Dvě alternativní credential — členství NEBO startovní lístek.
+
+<details>
+<summary>intendedUse — iu-zamek-streliste (registrační struktura)</summary>
+
+```json
+{
+  "intendedUseIdentifier": "iu-zamek-streliste",
+  "createdAt": "2026-01-01",
+  "purpose": [
+    { "lang": "cs", "content": "Ověření oprávnění vstupu na střeliště — člen klubu nebo závodník se startovním lístkem" }
+  ],
+  "privacyPolicy": [
+    { "type": "PrivacyStatement", "uri": "https://walletmap-club.cz/gdpr/pristup" }
+  ],
+  "credentials": [
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:walletmap:club:membership:1" },
+      "claims": [
+        { "path": ["member_id"] },
+        { "path": ["status"] },
+        { "path": ["valid_until"] }
+      ]
+    },
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:walletmap:club:entry:1" },
+      "claims": [
+        { "path": ["entry_id"] },
+        { "path": ["competition_id"] },
+        { "path": ["status"] },
+        { "path": ["valid_from"] },
+        { "path": ["valid_until"] }
+      ]
+    }
+  ]
+}
+```
+
+</details>
+
+---
+
+### IU-5: Ověření rozhodčím na závodě
+
+**Scénář:** [Ověření rozhodčím](/scenare/strelecky-klub/rozhodci-overeni-zavodnika)  
+**RP Instance:** `rp-referee`
+
+<details>
+<summary>intendedUse — iu-rozhodci (registrační struktura)</summary>
+
+```json
+{
+  "intendedUseIdentifier": "iu-rozhodci",
+  "createdAt": "2026-01-01",
+  "purpose": [
+    { "lang": "cs", "content": "Ověření závodníka a platnosti startovního lístku před vstupem na střelnici v den soutěže" }
+  ],
+  "privacyPolicy": [
+    { "type": "PrivacyStatement", "uri": "https://walletmap-club.cz/gdpr/soutez" }
+  ],
+  "credentials": [
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:walletmap:club:competitor:1" },
+      "claims": [
+        { "path": ["competitor_id"] },
+        { "path": ["season"] },
+        { "path": ["license_status"] }
+      ]
+    },
+    {
+      "format": "dc+sd-jwt",
+      "meta": { "vct": "urn:walletmap:club:entry:1" },
+      "claims": [
+        { "path": ["entry_id"] },
+        { "path": ["competition_id"] },
+        { "path": ["competition_name"] },
+        { "path": ["discipline"] },
+        { "path": ["status"] },
+        { "path": ["valid_from"] },
+        { "path": ["valid_until"] }
+      ]
+    }
+  ]
+}
+```
+
+</details>
+
+## Ověření peněženkou při prezentaci
+
+Při každém OID4VP requestu peněženka (pokud uživatel aktivoval kontrolu):
+
+1. ověří **access certificate** RP Instance
+2. načte **registration certificate** nebo dotaz na registr (TS5 GET `/wrp`)
+3. porovná `input_descriptors` s registrovanými `credentials` a `claims`
+4. pokud RP žádá **neevidovaný** claim → zobrazí varování
+5. zobrazí `purpose` a `privacyPolicy` z intended use
+
+## Životní cyklus intended use
+
+| Událost | Akce |
+|---------|------|
+| Nová služba (např. online platby) | Registrace nového intended use |
+| Rozšíření claims | Aktualizace záznamu (PUT na registr) |
+| Ukončení služby | `revokedAt` na intended use |
+| Kompromitace instance | Revokace access certifikátu instance |
+
+## Přehledová tabulka
+
+| ID | RP Instance | Credential typy | Scénář |
+|----|-------------|-----------------|--------|
+| `iu-klub-app` | rp-app | ClubMembership | Přihlášení |
+| `iu-reg-zavodnik` | rp-app | PID, Zbrojní opr., (Průkaz zbraně) | Registrace závodníka |
+| `iu-zamek-zazemi` | rp-lock-back | ClubMembership (role) | Zázemí |
+| `iu-zamek-streliste` | rp-lock-range | ClubMembership / CompetitionEntry | Střeliště |
+| `iu-rozhodci` | rp-referee | CompetitorLicense + CompetitionEntry | Soutěž |
+
+## Další prohloubení
+
+- [RP certifikáty a verifier metadata](/scenare/strelecky-klub/rp-certifikaty-a-verifier) — mapování TS5 → ETSI 119 475, verifier metadata, presentation request
+- Offline verifikace u zámků (cached status list) — připravujeme
+- Registrace intermediary pro provozovatele zámků třetí strany — připravujeme

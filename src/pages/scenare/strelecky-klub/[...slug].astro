@@ -1,0 +1,37 @@
+---
+import { getCollection, render } from 'astro:content';
+import ScenarioLayout from '../../../layouts/ScenarioLayout.astro';
+import { SCENARIO_SERIES } from '../../../lib/scenarios';
+import { categoryLabels } from '../../../lib/scenarios';
+
+export async function getStaticPaths() {
+  const all = await getCollection(
+    'scenarios',
+    ({ data }) => !data.draft && data.series === SCENARIO_SERIES,
+  );
+  return all.map((scenario) => ({
+    params: { slug: scenario.slug },
+    props: { scenario, scenarios: all },
+  }));
+}
+
+const { scenario, scenarios } = Astro.props;
+const sorted = scenarios.sort((a, b) => a.data.order - b.data.order);
+const { Content } = await render(scenario);
+---
+
+<ScenarioLayout
+  title={scenario.data.title}
+  description={scenario.data.description}
+  currentSlug={scenario.slug}
+  scenarios={sorted}
+  category={scenario.data.category}
+  roles={scenario.data.roles}
+  deepenLinks={scenario.data.deepenLinks}
+  prev={scenario.data.prev}
+  next={scenario.data.next}
+>
+  <h1>{scenario.data.title}</h1>
+  <p><em>{scenario.data.description}</em></p>
+  <Content />
+</ScenarioLayout>

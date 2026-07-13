@@ -1,0 +1,307 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { categoryLabels, seriesBasePath } from '../lib/scenarios';
+
+interface Props {
+  title: string;
+  description?: string;
+  currentSlug: string;
+  scenarios: CollectionEntry<'scenarios'>[];
+  category?: string;
+  roles?: string[];
+  deepenLinks?: { label: string; url: string }[];
+  prev?: string;
+  next?: string;
+}
+
+const {
+  title,
+  description,
+  currentSlug,
+  scenarios,
+  category,
+  roles = [],
+  deepenLinks = [],
+  prev,
+  next,
+} = Astro.props;
+
+const grouped = Object.entries(categoryLabels)
+  .map(([key, label]) => ({
+    key,
+    label,
+    items: scenarios
+      .filter((s) => s.data.category === key)
+      .sort((a, b) => a.data.order - b.data.order),
+  }))
+  .filter((g) => g.items.length > 0);
+---
+
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} – WalletMap.eu</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #0b0d1a;
+        color: #e8edf5;
+        line-height: 1.7;
+      }
+      a { color: #8cb4ff; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .page { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        margin-bottom: 32px;
+      }
+      .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+      .logo span { color: #5b8dff; }
+      nav a { color: #8892b0; font-size: 0.9rem; margin-left: 24px; }
+      nav a:hover { color: #fff; text-decoration: none; }
+      .layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 48px;
+        align-items: start;
+        padding-bottom: 80px;
+      }
+      .sidebar {
+        position: sticky;
+        top: 24px;
+        font-size: 0.85rem;
+      }
+      .sidebar h2 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #5a6480;
+        margin: 0 0 12px;
+      }
+      .sidebar-group { margin-bottom: 24px; }
+      .sidebar a {
+        display: block;
+        padding: 6px 0;
+        color: #8892b0;
+        line-height: 1.4;
+      }
+      .sidebar a:hover { color: #fff; }
+      .sidebar a.active { color: #8cb4ff; font-weight: 600; }
+      .meta-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 28px;
+      }
+      .badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 100px;
+        background: rgba(55, 125, 255, 0.12);
+        color: #8cb4ff;
+        border: 1px solid rgba(55, 125, 255, 0.2);
+      }
+      .badge--role {
+        background: rgba(124, 58, 237, 0.12);
+        color: #b28aff;
+        border-color: rgba(124, 58, 237, 0.2);
+      }
+      .deepen {
+        margin-top: 48px;
+        padding: 24px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .deepen h2 { font-size: 1rem; margin-bottom: 12px; color: #8892b0; }
+      .deepen ul { list-style: none; margin: 0; padding: 0; }
+      .deepen li { margin-bottom: 8px; }
+      .nav-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 48px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 0.9rem;
+      }
+      main :global(h1) {
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+      main :global(h2) {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin: 2em 0 0.75em;
+      }
+      main :global(h3) {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 1.5em 0 0.5em;
+      }
+      main :global(p) { margin-bottom: 1.25em; color: #c8d0e0; }
+      main :global(ul), main :global(ol) {
+        margin: 0 0 1.25em 1.5em;
+        color: #c8d0e0;
+      }
+      main :global(li) { margin-bottom: 0.4em; }
+      main :global(table) {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5em;
+        font-size: 0.9rem;
+      }
+      main :global(th), main :global(td) {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 12px;
+        text-align: left;
+      }
+      main :global(th) { background: rgba(255, 255, 255, 0.04); }
+      main :global(code) {
+        font-family: ui-monospace, monospace;
+        font-size: 0.9em;
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.15em 0.4em;
+        border-radius: 4px;
+      }
+      main :global(blockquote) {
+        border-left: 3px solid #2b6aff;
+        padding-left: 20px;
+        color: #8892b0;
+        margin-bottom: 1.25em;
+      }
+      main :global(details) {
+        margin: 1em 0 1.5em;
+        padding: 16px 20px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      main :global(summary) {
+        cursor: pointer;
+        font-weight: 600;
+        color: #8cb4ff;
+        margin-bottom: 8px;
+      }
+      main :global(details[open] summary) { margin-bottom: 12px; }
+      main :global(details pre) {
+        margin-top: 12px;
+        margin-bottom: 0;
+        font-size: 0.8rem;
+      }
+      footer {
+        padding: 30px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        text-align: center;
+        font-size: 0.85rem;
+        color: #5a6480;
+      }
+      @media (max-width: 900px) {
+        .layout { grid-template-columns: 1fr; }
+        .sidebar { position: static; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <a href="/" class="logo">Wallet<span>Map</span></a>
+        <nav>
+          <a href="/">Domů</a>
+          <a href={seriesBasePath}>Modelový příklad</a>
+          <a href="/clanky">Články</a>
+        </nav>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <h2>Střelecký klub</h2>
+          {
+            grouped.map((group) => (
+              <div class="sidebar-group">
+                <h2>{group.label}</h2>
+                {group.items.map((item) => (
+                  <a
+                    href={`${seriesBasePath}/${item.slug}`}
+                    class:list={{ active: item.slug === currentSlug }}
+                  >
+                    {item.data.title}
+                  </a>
+                ))}
+              </div>
+            ))
+          }
+        </aside>
+
+        <div>
+          {(category || roles.length > 0) && (
+            <div class="meta-bar">
+              {category && <span class="badge">{categoryLabels[category]}</span>}
+              {roles.map((role) => (
+                <span class="badge badge--role">{role}</span>
+              ))}
+            </div>
+          )}
+
+          <main>
+            <slot />
+          </main>
+
+          {
+            deepenLinks.length > 0 && (
+              <div class="deepen">
+                <h2>Prohloubení tématu</h2>
+                <ul>
+                  {deepenLinks.map((link) => (
+                    <li>
+                      <a href={link.url} target="_blank" rel="noopener noreferrer">
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          {
+            (prev || next) && (
+              <nav class="nav-footer">
+                {prev ? (
+                  <a href={`${seriesBasePath}/${prev}`}>← Předchozí scénář</a>
+                ) : (
+                  <span />
+                )}
+                {next ? (
+                  <a href={`${seriesBasePath}/${next}`}>Další scénář →</a>
+                ) : (
+                  <span />
+                )}
+              </nav>
+            )
+          }
+        </div>
+      </div>
+
+      <footer>
+        &copy; 2026 <a href="https://walletmap.eu">WalletMap.eu</a>
+      </footer>
+    </div>
+  </body>
+</html>
