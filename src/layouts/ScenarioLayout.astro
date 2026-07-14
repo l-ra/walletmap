@@ -295,7 +295,7 @@ const grouped = Object.entries(categoryLabels)
 
       <div class="layout">
         <aside class="sidebar">
-          <details class="sidebar-panel">
+          <details class="sidebar-panel" open>
             <summary class="sidebar-toggle">
               <span class="sidebar-toggle__label">Seznam scénářů</span>
               <svg class="sidebar-toggle__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -328,6 +328,20 @@ const grouped = Object.entries(categoryLabels)
             </div>
           </details>
         </aside>
+        <script is:inline>
+          const panel = document.currentScript.previousElementSibling?.querySelector('.sidebar-panel');
+          const mq = window.matchMedia('(max-width: 900px)');
+          function syncSidebarOpen() {
+            if (!panel) return;
+            if (mq.matches) {
+              panel.removeAttribute('open');
+            } else {
+              panel.setAttribute('open', '');
+            }
+          }
+          syncSidebarOpen();
+          mq.addEventListener('change', syncSidebarOpen);
+        </script>
 
         <div>
           {(category || roles.length > 0) && (
