@@ -75,12 +75,14 @@ Podpis: **privátní klíč** vázaný na access certifikát vydavatele (držite
 
 ## Šifrování credential response
 
-Pokud issuer v metadatech uvádí `credential_response_encryption` s `encryption_required: true`, peněženka musí credential response na `credential` endpoint odeslat jako **JWE**.
+Pokud issuer v metadatech uvádí `credential_response_encryption` s `encryption_required: true`, peněženka musí v **Credential Requestu** přiložit objekt `credential_response_encryption` s vlastním veřejným klíčem (`jwk`). Issuer pak vrátí credential response jako **JWE** zašifrovaný tímto klíčem.
+
+**Kde issuer získá šifrovací klíč:** veřejný klíč pro šifrování odpovědi issuer **nepublikuje v metadatech** a **nečerpá z access certifikátu** — v každém vydání ho převezme z příchozího Credential Requestu, z pole `credential_response_encryption.jwk`. Peněženka tam vloží efemérní veřejný klíč; odpovídající privátní klíč si ponechá a jím odpověď dešifruje. Issuer v metadatech uvádí jen podporované algoritmy (`alg_values_supported`, `enc_values_supported`) a příznak `encryption_required`.
 
 <details>
 <summary>credential_response_encryption — příklad a tok</summary>
 
-**V metadatech issuer:**
+**V metadatech issuer** (deklarace podpory, bez klíče peněženky):
 
 ```json
 {
@@ -92,14 +94,33 @@ Pokud issuer v metadatech uvádí `credential_response_encryption` s `encryption
 }
 ```
 
+**V Credential Requestu peněženky** (zdroj klíče pro issuer):
+
+```json
+{
+  "credential_configuration_id": "club_membership_sd_jwt",
+  "proofs": { "jwt": ["…"] },
+  "credential_response_encryption": {
+    "jwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "…",
+      "y": "…"
+    },
+    "alg": "ECDH-ES+A256KW",
+    "enc": "A256GCM"
+  }
+}
+```
+
 | Krok | Kdo | Co |
 |------|-----|-----|
-| 1 | Issuer | Publikuje podporované `alg` / `enc` a případně `jwks` s encryption klíčem |
-| 2 | Peněženka | Vygeneruje efemérní klíč, odvodí sdílené tajemství s veřejným klíčem issuer instance |
-| 3 | Peněženka | Odešle credential response jako JWE (`alg`, `enc` dle metadat) |
-| 4 | Issuer | Dešifruje JWE **privátním klíčem** access certifikátu své instance |
+| 1 | Issuer | Publikuje podporované `alg` / `enc` a `encryption_required` v metadatech |
+| 2 | Peněženka | Vygeneruje efemérní klíčový pár; veřejný klíč vloží do `credential_response_encryption.jwk` v Credential Requestu |
+| 3 | Issuer | Zašifruje credential response jako JWE klíčem z `credential_response_encryption.jwk` v žádosti |
+| 4 | Peněženka | Dešifruje JWE **privátním klíčem** z kroku 2 |
 
-Účel: credential necestuje v plaintextu přes síť, i když je transport zabezpečen TLS.
+Účel: credential necestuje v plaintextu přes síť, i když je transport zabezpečen TLS. Pokud issuer v metadatech uvádí i `credential_request_encryption`, musí být podle OID4VCI šifrován i samotný Credential Request.
 
 </details>
 
