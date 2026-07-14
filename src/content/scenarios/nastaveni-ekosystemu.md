@@ -45,8 +45,8 @@ Klub zaregistruje **každé zamýšlené použití prezentace** (intended use) z
 
 Po registraci klub obdrží:
 
-- **Access certificate** — pro každou technickou instanci (issuer, RP instance zámků, …)
-- **Registration certificate** (volitelně dle politiky státu) — obsahuje registraci včetně intended uses
+- **Access certificate (WRPAC / issuer access cert)** — X.509 pro každou technickou instanci; RP profil dle **ETSI TS 119 411-8**
+- **Registration certificate (WRPRC)** — podepsaný JWT/CWT dle **ETSI TS 119 475** (volitelně dle politiky státu)
 - **Registry URI** — peněženka ověřuje registraci proti národnímu registru (TS5 API)
 
 ### 4. Nasazení služeb

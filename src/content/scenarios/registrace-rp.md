@@ -14,8 +14,10 @@ deepenLinks:
     url: "https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts5-common-formats-and-api-for-rp-registration-information.md"
   - label: "TS6 — Sada registračních údajů RP"
     url: "https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts6-common-set-of-rp-information-to-be-registered.md"
-  - label: "ETSI TS 119 475 — RP Registration Certificate"
-    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11947501/01.00.01_60/ts_11947501v010001p.pdf"
+  - label: "ETSI TS 119 475 — RP Registration Certificate (WRPRC)"
+    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf"
+  - label: "ETSI TS 119 411-8 — WRPAC Access Certificate Policy"
+    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf"
 prev: issuer-prohloubeni-vydavani
 next: rp-certifikaty-a-verifier
 ---
@@ -102,11 +104,19 @@ Každý technický systém, který komunikuje s peněženkou, je **Relying Party
 Access certifikát se prezentuje peněžence při každém OID4VP requestu. Peněženka ověří řetěz důvěry certifikátu vůči **LoTE** a shodu s `client_id`.
 
 <details>
-<summary>Prohloubení — access certifikát (X.509)</summary>
+<summary>Prohloubení — access certifikát / WRPAC (X.509)</summary>
 
-Access certifikát je standardní **X.509** certifikát ([RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280)) vydaný **Access Certificate Authority** (ACA). Slouží k **autentizaci RP instance** vůči peněžence — ne k zápisu registrace intended use (ten je v registration certificate nebo v registru).
+Access certifikát RP instance je v terminologii ETSI **WRPAC** (*Wallet-Relying Party Access Certificate*) — standardní **X.509** certifikát ([RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280)) vydaný **Access Certificate Authority** (ACA). Certifikační politiku a profil definuje **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)**:
 
-Stejný typ certifikátu používá i **issuer instance** při OID4VCI — viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele), sekce access certifikát.
+| Policy OID (příklad) | Účel |
+|----------------------|------|
+| `NCP-l-eudiwrp` | Nevázaný access cert pro právnickou osobu |
+| `QCP-l-eudiwrp` | Kvalifikovaný access cert pro právnickou osobu |
+| `NCP-n-eudiwrp` / `QCP-n-eudiwrp` | Obdobně pro fyzickou osobu |
+
+WRPAC slouží k **autentizaci RP instance** vůči peněžence — ne k zápisu intended use (ten je ve **WRPRC** nebo v registru). Vazbu WRPAC ↔ WRPRC a mapování atributů popisuje **[ETSI TS 119 475](https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf)** §4.3–5.1.
+
+Stejný princip X.509 access certifikátu (CSR, LoTE) používá i **issuer instance** — viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele); profil issuer access certifikátu v metadatech profiluje **ETSI TS 119 472-3** §4.2.2.
 
 **Vystavení — co musí udělat držitel instance**
 
@@ -118,9 +128,9 @@ Stejný typ certifikátu používá i **issuer instance** při OID4VCI — viz [
 
 **Ověření peněženkou**
 
-Peněženka ověří platnost certifikátu, nepoužití odvolaného stavu, řetěz vůči **trust anchor** ACA v **LoTE** a shodu SAN DNS s `client_id` (např. `x509_san_dns:app.walletmap-club.cz`).
+Peněženka ověří platnost WRPAC, profil dle TS 119 411-8, nepoužití odvolaného stavu, řetěz vůči **trust anchor** ACA v **LoTE** a shodu SAN DNS s `client_id` (např. `x509_san_dns:app.walletmap-club.cz`).
 
-**Příklad — access certifikát RP instance (modelový PEM)**
+**Příklad — WRPAC RP instance (modelový PEM)**
 
 ```
 -----BEGIN CERTIFICATE-----
@@ -146,41 +156,42 @@ aHt8lHIx/CjYFrZ2lI2RUozPZUfC
 | SAN | `DNS:app.walletmap-club.cz` |
 | Veřejný klíč | EC P-256 (ES256) |
 
-> V produkci je certifikát podepsaný reálnou ACA z LoTE. Ukázka ilustruje vazbu hostname ↔ `client_id`.
+> V produkci je WRPAC podepsaný ACA z LoTE dle **ETSI TS 119 411-8**. Ukázka ilustruje vazbu hostname ↔ `client_id`.
 
 </details>
 
 ### Registration certificate — jedna na intended use
 
-Pokud registrátor vydává registration certificates (ETSI TS 119 475), platí:
+Pokud registrátor vydává registration certificates (**ETSI TS 119 475**), platí:
 
-- **jeden registration certificate na každý intended use** — opět standardní **X.509** certifikát vydaný registrátorem (Provider of Registration Certificates), nikoli ACA
-- `intendedUseIdentifier` v registru = identifikátor certifikátu
-- certifikát obsahuje: účel, privacy policy, seznam credential/claims
+- **jeden WRPRC** (*Wallet-Relying Party Registration Certificate*) na každý intended use — **podepsaný JWT** (`typ: rc-wrp+jwt`) nebo **CWT** (`typ: rc-wrp+cwt`), **nikoli X.509**
+- vydává ho **Provider of Registration Certificates** (registrátor), nikoli ACA
+- `intendedUseIdentifier` v registru = identifikátor v payload WRPRC
+- payload obsahuje: účel, privacy policy, seznam credential/claims
 
-Peněženka při zobrazení consent dialogu ověří podpis registration certificate a shodu presentation requestu s jeho obsahem. Certifikát **nepodepisuje** OID4VP request — k tomu slouží access certifikát instance.
+Peněženka při consent dialogu ověří podpis WRPRC (AdES B-B, **ETSI TS 119 182-1**) a shodu presentation requestu s jeho obsahem. WRPRC **nepodepisuje** OID4VP request — k tomu slouží WRPAC instance.
 
 <details>
-<summary>Prohloubení — registration certificate RP (X.509)</summary>
+<summary>Prohloubení — registration certificate RP (WRPRC)</summary>
 
-Registration certificate (RPRC) je **X.509** certifikát dle **ETSI TS 119 475**. Registrační údaje intended use (`purpose`, `privacyPolicy`, `credentials`, `claims`) jsou v certifikátových rozšířeních.
+**WRPRC** dle **[ETSI TS 119 475](https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf)** §5.2 je **podepsaný JWT nebo CWT**, ne X.509 certifikát. Registrační údaje intended use (`purpose`, `privacy_policy`, `credentials`, `claims`) jsou v **payload** tokenu. Header obsahuje `typ: rc-wrp+jwt` (nebo `rc-wrp+cwt`) a `x5c` s řetězem vydavatele WRPRC.
 
 **Vystavení**
 
-Po registraci intended use u registrátora klub obdrží RPRC podepsaný klíčem registrátora (DER/PEM). Klub ho nasadí na příslušnou RP instanci a přikládá do OID4VP requestu **by value** (dle RPRC_19).
+Po registraci intended use u registrátora klub obdrží WRPRC jako JWS compact string podepsaný klíčem providera registration certificates. Klub ho nasadí na příslušnou RP instanci a přikládá do OID4VP requestu **by value** (dle RPRC_19 / TS 119 475).
 
 **Ověření peněženkou**
 
-1. Ověří podpis certifikátu vůči důvěryhodnému vydavateli registration certificates.
-2. Porovná `input_descriptors` s registrovanými `credentials` a `claims`.
-3. Zobrazí `purpose` a `privacyPolicy` z certifikátu v consent dialogu.
+1. Ověří podpis JWT/CWT (AdES B-B) a `x5c` vůči důvěryhodnému vydavateli WRPRC.
+2. Porovná `input_descriptors` s registrovanými `credentials` a `claims` v payload.
+3. Zobrazí `purpose` a `privacy_policy` z WRPRC v consent dialogu.
 
-Mapování TS5 → RPRC: [RP certifikáty a verifier metadata](/scenare/strelecky-klub/rp-certifikaty-a-verifier).
+Mapování TS5 → WRPRC: [RP certifikáty a verifier metadata](/scenare/strelecky-klub/rp-certifikaty-a-verifier).
 
 </details>
 
 <details>
-<summary>Registration certificate — struktura (zjednodušeně)</summary>
+<summary>Registration certificate — struktura payload WRPRC (zjednodušeně)</summary>
 
 ```json
 {

@@ -8,6 +8,8 @@ roles: ["Klub (vydavatel)"]
 deepenLinks:
   - label: "ETSI TS 119 472-3 — Issuer Metadata"
     url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11947203/01.01.01_60/ts_11947203v010101p.pdf"
+  - label: "ETSI TS 119 475 — Registration Certificates (WRPRC)"
+    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf"
   - label: "OID4VCI — Credential Issuer Metadata"
     url: "https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html"
   - label: "TS11 — Katalog atestací"
@@ -109,9 +111,13 @@ Certifikát vydává ACA, jejíž kořenový certifikát je zapsán v **List of 
 <details>
 <summary>Prohloubení — access certifikát (X.509)</summary>
 
-Access certifikát je standardní **X.509** certifikát ([RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280)) vydaný **Access Certificate Authority** (ACA). Slouží k **autentizaci technické instance** vůči peněžence — ne k zápisu registrace subjektu (ten je v registration certificate nebo v registru).
+Access certifikát je standardní **X.509** certifikát ([RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280)) vydaný **Access Certificate Authority** (ACA). Slouží k **autentizaci technické instance** vůči peněžence — ne k zápisu registrace subjektu (ten je ve **WRPRC** nebo v registru).
 
-Stejný typ certifikátu používá i **RP instance** při OID4VP — viz [Registrace RP](/scenare/strelecky-klub/registrace-rp) a [RP certifikáty](/scenare/strelecky-klub/rp-certifikaty-a-verifier).
+Pro **issuer / PID/EAA Provider** profiluje použití v metadatech **ETSI TS 119 472-3** §4.2.2: podpis `signed_metadata` musí být access certifikátem providera, v JWS hlavičce v parametru `x5c` jako DER.
+
+Pro **RP instanci** jde o **WRPAC** (*Wallet-Relying Party Access Certificate*) — profil a certifikační politiku definuje **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)** (policy OID např. `NCP-l-eudiwrp` / `QCP-l-eudiwrp` pro právnickou osobu). Vazba WRPAC ↔ WRPRC popisuje **ETSI TS 119 475** §4.5–5.1.
+
+Stejný princip (X.509, CSR, LoTE) platí pro issuer i RP — viz [Registrace RP](/scenare/strelecky-klub/registrace-rp).
 
 **Vystavení — co musí udělat držitel instance**
 
@@ -123,7 +129,7 @@ Stejný typ certifikátu používá i **RP instance** při OID4VP — viz [Regis
 
 **Ověření peněženkou**
 
-Peněženka ověří platnost certifikátu, nepoužití odvolaného stavu a že řetěz vede k **trust anchor** ACA uvedené v **LoTE**. U RP navíc kontroluje shodu s `client_id` v verifier metadata.
+Peněženka ověří platnost certifikátu, nepoužití odvolaného stavu a že řetěz vede k **trust anchor** ACA uvedené v **LoTE**. U RP (WRPAC) navíc kontroluje shodu s `client_id` a profil dle TS 119 411-8.
 
 **Příklad — access certifikát issuer instance (modelový PEM)**
 
@@ -159,28 +165,30 @@ iqSKTIeQZkzTifuzsmMHYesBc8P6NFLmT0lsVQ==
 
 ### 4. Registration certificate (volitelné)
 
-Pokud český registrátor vydává registration certificates (ETSI TS 119 475), klub obdrží **registration certificate** — opět standardní **X.509** certifikát, ale vydaný **Provider of Registration Certificates** (registrátorem), nikoli ACA. Obsahuje:
+Pokud český registrátor vydává registration certificates (**ETSI TS 119 475**), klub obdrží **WRPRC** (*Wallet-Relying Party Registration Certificate*) — **podepsaný JWT nebo CWT**, nikoli X.509 certifikát. Vydává ho **Provider of Registration Certificates** (registrátor). Payload obsahuje mimo jiné:
 
-- `entitlement`: Non_Q_EAA_Provider
-- `providesAttestations`: seznam typů
-- identifikátor vydavatele
-- `registryURI`
+- `entitlements`: např. `Non_Q_EAA_Provider`
+- `provides_attestations`: seznam typů průkazů
+- identifikátor subjektu (`sub`)
+- `registry_uri`
 
-Peněženka ověřuje podpis registration certificate vůči důvěryhodnému vydavateli a obsah registrace dle požadavků **ISSU_34a** a **ISSU_34b** (ARF Topic 12). Certifikát **nepodepisuje** transakce s peněženkou — k tomu slouží access certifikát.
+Peněženka ověřuje podpis WRPRC (AdES profil B-B dle **ETSI TS 119 182-1**) vůči důvěryhodnému vydavateli a obsah registrace dle **ISSU_34a** / **ISSU_34b** (ARF Topic 12). WRPRC **nepodepisuje** transakce s peněženkou — k tomu slouží access certifikát.
 
 <details>
-<summary>Prohloubení — registration certificate vydavatele (X.509)</summary>
+<summary>Prohloubení — registration certificate vydavatele (WRPRC)</summary>
 
-Registration certificate je **X.509** certifikát dle **ETSI TS 119 475**. Registrační údaje (`entitlement`, `providesAttestations`, identifikátor subjektu, `registryURI`) jsou zakódované v certifikátových rozšířeních, nikoli v běžných polích Subject.
+**Formát:** dle **ETSI TS 119 475** §5.2.1 je WRPRC **podepsaný JWT** (`typ: rc-wrp+jwt`) nebo **CWT** (`typ: rc-wrp+cwt`), nikoli X.509. Registrační údaje (`entitlements`, `provides_attestations`, identifikátor, `registry_uri`) jsou v **payload** tokenu.
+
+> ETSI používá zkratku **WRPRC** (Wallet-Relying Party Registration Certificate). Stejný formát se používá i pro subjekty s entitlements vydavatele atestací (`Non_Q_EAA_Provider` atd.) — viz příklad v Annex C TS 119 475.
 
 **Vystavení**
 
-Na rozdíl od access certifikátu klub obvykle **negeneruje CSR** — po schválení registrace registrátor vydá certifikát podepsaný svým klíčem a doručí ho klubu (DER nebo PEM). Klub ho publikuje v `issuer_info` metadat:
+Na rozdíl od access certifikátu klub **negeneruje CSR** — po schválení registrace registrátor vydá WRPRC podepsaný svým klíčem (pečeť/podpis TSP z trusted list) a doručí ho klubu jako JWS compact string. Klub ho publikuje v `issuer_info`:
 
 ```json
 {
   "format": "registration_cert",
-  "data": "<base64 DER registration certificate>"
+  "data": "<JWS compact WRPRC, typ rc-wrp+jwt>"
 }
 ```
 
@@ -188,29 +196,40 @@ Alternativně peněženka načte stejná data přes `registrar_dataset` a dotaz 
 
 **Ověření peněženkou**
 
-1. Ověří podpis certifikátu vůči důvěryhodnému vydavateli registration certificates.
-2. Zkontroluje `entitlement` = EAA Provider.
-3. Ověří, že požadovaný typ credential je v `providesAttestations`.
+1. Ověří podpis JWT/CWT (AdES B-B) a řetěz `x5c` vůči vydavateli registration certificates.
+2. Zkontroluje `entitlements` obsahuje EAA Provider.
+3. Ověří, že požadovaný typ credential je v `provides_attestations`.
 
-**Příklad — dekódovaná registrace v certifikátu (konceptuálně)**
+**Příklad — payload WRPRC pro EAA Provider (zjednodušeně, dle TS 119 475 Annex C)**
 
 ```json
 {
-  "format": "eaa_provider_registration_cert",
-  "issuerIdentifier": "urn:eudi:CZ:EUID:…",
-  "entitlements": [
-    "https://uri.etsi.org/19475/Entitlement/Non_Q_EAA_Provider"
-  ],
-  "providesAttestations": [
-    { "format": "dc+sd-jwt", "meta": { "vct": "urn:walletmap:club:membership:1" } },
-    { "format": "dc+sd-jwt", "meta": { "vct": "urn:walletmap:club:competitor:1" } },
-    { "format": "dc+sd-jwt", "meta": { "vct": "urn:walletmap:club:entry:1" } }
-  ],
-  "registryURI": "https://registry.eudi.cz/api/v1"
+  "typ": "rc-wrp+jwt",
+  "alg": "ES256",
+  "x5c": ["<řetěz certifikátů vydavatele WRPRC>"]
 }
 ```
 
-> Přesná struktura rozšíření se řídí ETSI TS 119 475 a národní politikou registrátora.
+Payload (dekódovaný):
+
+```json
+{
+  "sub": "urn:eudi:CZ:EUID:…",
+  "sub_ln": "Střelecký klub Brno z.s.",
+  "country": "CZ",
+  "registry_uri": "https://registry.eudi.cz/api/v1",
+  "entitlements": [
+    "https://uri.etsi.org/19475/Entitlement/Non_Q_EAA_Provider"
+  ],
+  "provides_attestations": [
+    { "format": "dc+sd-jwt", "meta": { "vct": "urn:walletmap:club:membership:1" } },
+    { "format": "dc+sd-jwt", "meta": { "vct": "urn:walletmap:club:competitor:1" } },
+    { "format": "dc+sd-jwt", "meta": { "vct": "urn:walletmap:club:entry:1" } }
+  ]
+}
+```
+
+> Přesná struktura payloadu se řídí **ETSI TS 119 475** §5.2.4 a Annex V CIR (EU) 2025/848.
 
 </details>
 
@@ -222,7 +241,7 @@ Alternativně peněženka načte stejná data přes `registrar_dataset` a dotaz 
   "issuer_info": [
     {
       "format": "registration_cert",
-      "data": "<base64 DER registration certificate>"
+      "data": "<JWS compact WRPRC>"
     },
     {
       "format": "registrar_dataset",
