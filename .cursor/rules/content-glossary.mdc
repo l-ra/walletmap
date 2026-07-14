@@ -1,0 +1,34 @@
+---
+description: Pravidla pro označování zkratek v Markdown obsahu (slovník, syntaxe [[ZKRATKA]])
+globs: src/content/**/*.md
+alwaysApply: false
+---
+
+# Zkratky v Markdown obsahu
+
+Při psaní nebo úpravě souborů v `src/content/` dodržuj systém zkratek WalletMap.
+
+## Povinné
+
+1. Načti platná ID ze souboru `src/data/glossary.json` (klíče nejvyšší úrovně).
+2. Každý termín ze slovníku v prose označ syntaxí `[[ID]]` — např. `[[PID]]`, `[[OID4VP]]`, `[[WRPRC]]`.
+3. Novou zkratku nejdřív přidej do `src/data/glossary.json`, pak použij v textu.
+4. Nepoužívej `**ZKRATKA**` ani ruční expanzi `ZKRATKA (dlouhý název)` pro termíny ve slovníku.
+5. Po změnách ověř `npm run build` — neznámá `[[ZKRATKA]]` způsobí chybu.
+
+## Syntaxe
+
+- `[[PID]]` — standardní zápis
+- `[[WRPRC|reg. certifikát]]` — volitelně vlastní zobrazení
+
+## Nevhodné pro [[…]]
+
+- inline kód a code bloky (`` `ES256` ``, `` `jwk` ``)
+- termíny, které nejsou v `glossary.json`
+- YAML frontmatter
+
+## Reference
+
+- Slovník: `src/data/glossary.json`
+- Agent instrukce: `AGENTS.md`
+- Podrobnosti: `docs/zkratky.md`
