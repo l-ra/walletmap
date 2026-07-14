@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import rehypeMermaid from 'rehype-mermaid';
+import remarkGlossary from './src/plugins/remark-glossary.ts';
 
 export default defineConfig({
   site: 'https://walletmap.eu',
@@ -12,6 +13,7 @@ export default defineConfig({
       type: 'shiki',
       excludeLangs: ['mermaid'],
     },
+    remarkPlugins: [remarkGlossary],
     rehypePlugins: [
       [
         rehypeMermaid,

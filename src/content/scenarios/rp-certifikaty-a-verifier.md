@@ -88,7 +88,7 @@ Každý `IntendedUse` z registru se promítne do **jednoho WRPRC** (*Wallet-Rely
 
 ## WRPAC a verifier metadata
 
-Každá RP Instance publikuje **verifier metadata** (OpenID4VP) a autentizuje se **WRPAC** — X.509 access certifikátem dle **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)** (viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele) a [Registrace RP](/scenare/strelecky-klub/registrace-rp), prohloubení access certifikátu). Držitel instance generuje klíčový pár, zasílá CSR vydavateli access certifikátů a privátním klíčem podepisuje presentation request.
+Každá RP Instance publikuje **verifier metadata** (OpenID4VP) a autentizuje se [[WRPAC]] — X.509 access certifikátem dle **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)** (viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele) a [Registrace RP](/scenare/strelecky-klub/registrace-rp), prohloubení access certifikátu). Držitel instance generuje klíčový pár, zasílá CSR vydavateli access certifikátů a privátním klíčem podepisuje presentation request.
 
 ### client_id vázaný na certifikát
 
@@ -138,7 +138,7 @@ U embedded zámků (proximity, `direct_post.jwt`) se šifrování odpovědi neko
 
 ## Šifrování authorization response
 
-U prezentací s `response_mode` vyžadujícím šifrování (typicky **`direct_post.jwt`** u zámků a jiných front-channel scénářů) peněženka musí authorization response (obsahující `vp_token`) odeslat jako **JWE**. RP proto v presentation requestu v `client_metadata` přiloží vlastní veřejný šifrovací klíč (`jwks`).
+U prezentací s `response_mode` vyžadujícím šifrování (typicky **`direct_post.jwt`** u zámků a jiných front-channel scénářů) peněženka musí authorization response (obsahující `vp_token`) odeslat jako [[JWE]]. RP proto v presentation requestu v `client_metadata` přiloží vlastní veřejný šifrovací klíč (`jwks`).
 
 **Kde RP získá šifrovací klíč:** veřejný klíč pro šifrování odpovědi RP **negeneruje peněženka** — RP ho vytvoří na své instanci (typicky **efemérní klíčový pár** pro daný request, případně dedikovaný šifrovací pár oddělený od podpisového klíče WRPAC) a veřejnou část publikuje v `client_metadata.jwks` presentation requestu. Odpovídající **privátní klíč** drží na zařízení (HSM, TPM, zabezpečené úložiště) a jím přijatou odpověď dešifruje. Peněženka si klíč od RP nepředává zpět — v `wallet_metadata` jen deklaruje podporované algoritmy (`authorization_encryption_alg_values_supported`, `authorization_encryption_enc_values_supported`).
 
@@ -243,8 +243,8 @@ Plus dle **RPRC_19**: celý WRPRC (JWS compact string) **by value** (ne odkaz).
 
 ## Ověření peněženkou — krok za krokem
 
-1. **WRPAC** (X.509, TS 119 411-8) — ověří podpis, platnost, profil, řetěz vůči LoTE; spáruje s `client_id`. Privátní klíč drží RP instance, certifikát vydala ACA po CSR.
-2. **WRPRC** (JWT/CWT, TS 119 475 §5.2, RPRC_17) — ověří podpis AdES B-B a `x5c` vůči Provider of registration certificates
+1. [[WRPAC]] — ověří podpis, platnost, profil, řetěz vůči LoTE; spáruje s `client_id`. Privátní klíč drží RP instance, certifikát vydala ACA po CSR.
+2. [[WRPRC]] — ověří podpis AdES B-B a `x5c` vůči Provider of registration certificates
 3. **Registr** (RPRC_18) — pokud RPRC chybí, dotaz `GET /wrp?intendeduseidentifier=iu-klub-app`
 4. **Claims** (RPRC_21) — porovná `input_descriptors` s registrovanými claims; varování při přebytku
 5. **Consent** (RPA_07) — zobrazí název RP, účel, privacy policy, seznam sdílených atributů
@@ -357,7 +357,7 @@ Peněženka ověří, že klub smí tyto atributy žádat — a zároveň že pr
 
 Při vydání CompetitorLicense klub:
 
-1. jako **RP** (`iu-reg-zavodnik`) v **kombinované prezentaci** ověří PID + zbrojní oprávnění
+1. jako [[RP]] v **kombinované prezentaci** ověří PID + zbrojní oprávnění
 2. jako **Issuer** nabídne CompetitorLicense
 
 Oba kroky používají stejný `wrpIdentifier`, ale různé role a certifikáty:

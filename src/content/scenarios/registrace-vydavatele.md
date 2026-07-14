@@ -111,11 +111,11 @@ Certifikát vydává ACA, jejíž kořenový certifikát je zapsán v **List of 
 <details>
 <summary>Prohloubení — access certifikát (X.509)</summary>
 
-Access certifikát je standardní **X.509** certifikát ([RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280)) vydaný **Access Certificate Authority** (ACA). Slouží k **autentizaci technické instance** vůči peněžence — ne k zápisu registrace subjektu (ten je ve **WRPRC** nebo v registru).
+Access certifikát je standardní **X.509** certifikát ([RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280)) vydaný **Access Certificate Authority** (ACA). Slouží k **autentizaci technické instance** vůči peněžence — ne k zápisu registrace subjektu (ten je ve [[WRPRC]] nebo v registru).
 
 Pro **issuer / PID/EAA Provider** profiluje použití v metadatech **ETSI TS 119 472-3** §4.2.2: podpis `signed_metadata` musí být access certifikátem providera, v JWS hlavičce v parametru `x5c` jako DER.
 
-Pro **RP instanci** jde o **WRPAC** (*Wallet-Relying Party Access Certificate*) — profil a certifikační politiku definuje **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)** (policy OID např. `NCP-l-eudiwrp` / `QCP-l-eudiwrp` pro právnickou osobu). Vazba WRPAC ↔ WRPRC popisuje **ETSI TS 119 475** §4.5–5.1.
+Pro **RP instanci** jde o [[WRPAC]] — profil a certifikační politiku definuje **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)** (policy OID např. `NCP-l-eudiwrp` / `QCP-l-eudiwrp` pro právnickou osobu). Vazba WRPAC ↔ WRPRC popisuje **ETSI TS 119 475** §4.5–5.1.
 
 Stejný princip (X.509, CSR, LoTE) platí pro issuer i RP — viz [Registrace RP](/scenare/strelecky-klub/registrace-rp).
 
@@ -129,7 +129,7 @@ Stejný princip (X.509, CSR, LoTE) platí pro issuer i RP — viz [Registrace RP
 
 **Ověření peněženkou**
 
-Peněženka ověří platnost certifikátu, nepoužití odvolaného stavu a že řetěz vede k **trust anchor** ACA uvedené v **LoTE**. U RP (WRPAC) navíc kontroluje shodu s `client_id` a profil dle TS 119 411-8.
+Peněženka ověří platnost certifikátu, nepoužití odvolaného stavu a že řetěz vede k **trust anchor** ACA uvedené v [[LoTE]]. U RP (WRPAC) navíc kontroluje shodu s `client_id` a profil dle TS 119 411-8.
 
 **Příklad — access certifikát issuer instance (modelový PEM)**
 
@@ -165,7 +165,7 @@ iqSKTIeQZkzTifuzsmMHYesBc8P6NFLmT0lsVQ==
 
 ### 4. Registration certificate (volitelné)
 
-Pokud český registrátor vydává registration certificates (**ETSI TS 119 475**), klub obdrží **WRPRC** (*Wallet-Relying Party Registration Certificate*) — **podepsaný JWT nebo CWT**, nikoli X.509 certifikát. Vydává ho **Provider of Registration Certificates** (registrátor). Payload obsahuje mimo jiné:
+Pokud český registrátor vydává registration certificates (**ETSI TS 119 475**), klub obdrží [[WRPRC]] — **podepsaný JWT nebo CWT**, nikoli X.509 certifikát. Vydává ho **Provider of Registration Certificates** (registrátor). Payload obsahuje mimo jiné:
 
 - `entitlements`: např. `Non_Q_EAA_Provider`
 - `provides_attestations`: seznam typů průkazů
@@ -179,7 +179,7 @@ Peněženka ověřuje podpis WRPRC (AdES profil B-B dle **ETSI TS 119 182-1**) v
 
 **Formát:** dle **ETSI TS 119 475** §5.2.1 je WRPRC **podepsaný JWT** (`typ: rc-wrp+jwt`) nebo **CWT** (`typ: rc-wrp+cwt`), nikoli X.509. Registrační údaje (`entitlements`, `provides_attestations`, identifikátor, `registry_uri`) jsou v **payload** tokenu.
 
-> ETSI používá zkratku **WRPRC** (Wallet-Relying Party Registration Certificate). Stejný formát se používá i pro subjekty s entitlements vydavatele atestací (`Non_Q_EAA_Provider` atd.) — viz příklad v Annex C TS 119 475.
+> ETSI používá zkratku [[WRPRC]]. Stejný formát se používá i pro subjekty s entitlements vydavatele atestací (`Non_Q_EAA_Provider` atd.) — viz příklad v Annex C TS 119 475.
 
 **Vystavení**
 
@@ -307,7 +307,7 @@ OID4VCI umožňuje issuerovi vyžadovat **šifrování odpovědi** na `credentia
 | `enc_values_supported` | Povolené algoritmy pro šifrování obsahu (JWE `enc`), např. `A256GCM` |
 | `encryption_required` | `true` = peněženka **musí** v Credential Requestu přiložit `credential_response_encryption` s vlastním `jwk` |
 
-**Tok:** peněženka vygeneruje efemérní klíčový pár a veřejný klíč vloží do `credential_response_encryption.jwk` v Credential Requestu. Issuer odpověď zašifruje tímto klíčem jako **JWE**; peněženka ji dešifruje odpovídajícím privátním klíčem.
+**Tok:** peněženka vygeneruje efemérní klíčový pár a veřejný klíč vloží do `credential_response_encryption.jwk` v Credential Requestu. Issuer odpověď zašifruje tímto klíčem jako [[JWE]]; peněženka ji dešifruje odpovídajícím privátním klíčem.
 
 **Kde issuer získá šifrovací klíč:** z pole `credential_response_encryption.jwk` v každém Credential Requestu — ne z access certifikátu ani z `jwks` v metadatech (ta uvádějí jen podporované algoritmy).
 
@@ -318,7 +318,7 @@ Pokud issuer šifrování nevyžaduje, pole v metadatech chybí nebo `encryption
 <details>
 <summary>Prohloubení — signed_metadata</summary>
 
-`signed_metadata` je **JWS** v compact serializaci (`header.payload.signature`) nad issuer metadaty. Issuer podepisuje **privátním klíčem** svého access certifikátu — peněženka tedy ověřuje jak podpis, tak platnost access certifikátu vůči **LoTE**.
+`signed_metadata` je [[JWS]] v compact serializaci (`header.payload.signature`) nad issuer metadaty. Issuer podepisuje **privátním klíčem** svého access certifikátu — peněženka tedy ověřuje jak podpis, tak platnost access certifikátu vůči [[LoTE]].
 
 **Protected header (zjednodušeně):**
 
@@ -337,7 +337,7 @@ Alternativně může header obsahovat `kid` odkazující na certifikát známý 
 **Ověření peněženkou:**
 
 1. Dekóduje JWS a ověří podpis veřejným klíčem z `x5c` / access certifikátu.
-2. Ověří platnost access certifikátu a řetěz vůči **LoTE**.
+2. Ověří platnost access certifikátu a řetěz vůči [[LoTE]].
 3. Použije obsah payloadu jako důvěryhodná metadata (nedůvěřuje nepodepsanému JSONu z HTTP odpovědi).
 
 > Podrobnější tok: [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani).
@@ -521,6 +521,6 @@ Vydavatel provozuje **status list** (Token Status List dle IETF) a volitelně **
 | CompetitorLicense | [Vydání průkazu závodníka](/scenare/strelecky-klub/vydani-prukazu-zavodnika) |
 | CompetitionEntry | [Registrace na soutěž](/scenare/strelecky-klub/registrace-na-soutez) |
 
-Při vydání `CompetitorLicense` klub zároveň vystupuje jako **RP** — v kombinované prezentaci ověřuje PID a zbrojní oprávnění. Viz [Registrace RP](/scenare/strelecky-klub/registrace-rp), intended use `iu-reg-zavodnik`.
+Při vydání `CompetitorLicense` klub zároveň vystupuje jako [[RP]] — v kombinované prezentaci ověřuje PID a zbrojní oprávnění. Viz [Registrace RP](/scenare/strelecky-klub/registrace-rp), intended use `iu-reg-zavodnik`.
 
 → **Další prohloubení:** [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani) — credential offer, WIA/KA atestace, proofy; [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list) — mechanismy revokace a kontrol.

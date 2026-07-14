@@ -16,6 +16,10 @@ nového souboru ve složce `src/content/articles/`.
 3. Napište obsah v Markdownu
 4. Spusťte `npm run build` nebo `npm run deploy`
 
+## Zkratky v textu
+
+Zkratky ze slovníku pište jako `[[PID]]`, `[[OID4VP]]` atd. (soubor `src/data/glossary.json` v repozitáři). Tučný text `**PID**` nebo ruční expanze v závorkách nepoužívejte — tooltip a modal na webu vycházejí ze slovníku. Podrobná pravidla pro autory: `docs/zkratky.md` a `AGENTS.md`. Přehled na webu: [Slovník zkratek](/slovnik-zkratek).
+
 ## Strukturovaná data
 
 Data z `src/data/*.json` můžete načíst v Astro šablonách a generovat tabulky,

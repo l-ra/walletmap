@@ -1,0 +1,123 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import {
+  buildGlossaryUsageIndex,
+  getGlossary,
+  getGlossaryIds,
+} from '../../lib/glossary';
+
+const glossary = getGlossary();
+const usageIndex = await buildGlossaryUsageIndex();
+const ids = getGlossaryIds();
+
+const allTags = [...new Set(ids.flatMap((id) => glossary[id].tags || []))].sort(
+  (a, b) => a.localeCompare(b, 'cs'),
+);
+---
+
+<ArticleLayout
+  title="Slovník zkratek"
+  description="Přehled zkratek používaných na WalletMap.eu s odkazy do kapitol, kde se vyskytují."
+>
+  <h1>Slovník zkratek</h1>
+  <p>
+    Zkratky v textech jsou anotované — na počítači najedete myší pro plný název,
+    na mobilu klepněte. Tlačítkem <em>Více informací</em> otevřete detailní popis.
+  </p>
+
+  {
+    allTags.length > 0 && (
+      <div class="glossary-index__filters" id="glossary-filters">
+        <button type="button" class="glossary-index__filter is-active" data-glossary-tag="all">
+          Vše
+        </button>
+        {allTags.map((tag) => (
+          <button type="button" class="glossary-index__filter" data-glossary-tag={tag}>
+            {tag}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
+  <ul class="glossary-index__list">
+    {
+      ids.map((id) => {
+        const entry = glossary[id];
+        const usage = usageIndex[id] || [];
+        const tags = entry.tags || [];
+
+        return (
+          <li
+            class="glossary-index__item"
+            data-glossary-tags={tags.join(' ')}
+          >
+            <div class="glossary-index__head">
+              <span class="glossary-index__abbr">{entry.abbr}</span>
+              <span class="glossary-index__full">{entry.fullName.cs}</span>
+            </div>
+            <p class="glossary-index__desc">{entry.shortDescription}</p>
+            {
+              tags.length > 0 && (
+                <div class="glossary-index__tags">
+                  {tags.map((tag) => (
+                    <span class="glossary-index__tag">{tag}</span>
+                  ))}
+                </div>
+              )
+            }
+            {
+              usage.length > 0 ? (
+                <p class="glossary-index__usage">
+                  Použito v:{' '}
+                  {usage.map((ref, index) => (
+                    <>
+                      {index > 0 && (index === usage.length - 1 ? ' a ' : ', ')}
+                      <a href={ref.url}>{ref.title}</a>
+                    </>
+                  ))}
+                </p>
+              ) : (
+                <p class="glossary-index__usage">Zatím nepoužito v publikovaném obsahu.</p>
+              )
+            }
+            <button
+              type="button"
+              class="glossary-index__detail-btn"
+              data-glossary-open-index={id}
+            >
+              Detail zkratky
+            </button>
+          </li>
+        );
+      })
+    }
+  </ul>
+</ArticleLayout>
+
+<script is:inline>
+  const filters = document.getElementById('glossary-filters');
+  if (filters) {
+    filters.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const button = target.closest('[data-glossary-tag]');
+      if (!(button instanceof HTMLElement)) return;
+
+      const tag = button.getAttribute('data-glossary-tag');
+      filters.querySelectorAll('.glossary-index__filter').forEach((el) => {
+        el.classList.toggle('is-active', el === button);
+      });
+
+      document.querySelectorAll('.glossary-index__item').forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+        if (tag === 'all') {
+          item.style.display = '';
+          return;
+        }
+        const tags = item.getAttribute('data-glossary-tags') || '';
+        item.style.display = tags.split(' ').includes(tag) ? '' : 'none';
+      });
+    });
+  }
+</script>

@@ -1,0 +1,22 @@
+---
+import glossary from '../data/glossary.json';
+import GlossaryStyles from './GlossaryStyles.astro';
+---
+
+<GlossaryStyles />
+
+<dialog id="glossary-modal" class="glossary-modal" aria-labelledby="glossary-modal-title">
+  <div class="glossary-modal__panel">
+    <button type="button" class="glossary-modal__close" data-glossary-close aria-label="Zavřít">
+      ×
+    </button>
+    <div id="glossary-modal-content"></div>
+  </div>
+</dialog>
+
+<script
+  id="glossary-data"
+  type="application/json"
+  set:html={JSON.stringify(glossary)}
+></script>
+<script src="/glossary.js" defer></script>

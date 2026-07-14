@@ -52,8 +52,8 @@ flowchart TB
 
 | Vrstva | Co se revokuje | Kdo spravuje | Mechanismus | Specifikace |
 |--------|----------------|--------------|-------------|-------------|
-| **WIA** | Wallet Instance (aplikace / zařízení) | Wallet Provider | `client_status.status.status_list` | TS3, OID4VCI Appendix E, [IETF Token Status List](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-status-list) |
-| **KA** | WSCD / keystore | Wallet Provider | `key_storage_status.status.status_list` | TS3, OID4VCI Appendix D |
+| [[WIA]] | Wallet Instance (aplikace / zařízení) | Wallet Provider | `client_status.status.status_list` | TS3, OID4VCI Appendix E, [IETF Token Status List](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-status-list) |
+| [[KA]] | WSCD / keystore | Wallet Provider | `key_storage_status.status.status_list` | TS3, OID4VCI Appendix D |
 | **Průkaz klubu** | Konkrétní vydaný atestát | Klub (Issuer) | `status.status_list` nebo `status.identifier_list` ve vydaném tokenu | ARF VCR_01, IETF Token Status List / Identifier List |
 | **Zpětná vazba vydávání** | Stav *přijetí* credentialu v peněžence | Peněženka → Issuer | OID4VCI `notification_endpoint` | OID4VCI §11 |
 
@@ -102,8 +102,8 @@ Informace o status listu se objevují na **třech místech** podle kontextu:
 | Kontext | Kde je `uri` + `idx` | Kdo URI publikuje |
 |---------|----------------------|-------------------|
 | **Vydaný průkaz klubu** | Claim `status.status_list` v SD-JWT VC | Klub (Issuer) — při vydání zapíše do tokenu |
-| **WIA** | `client_status.status.status_list` | Wallet Provider |
-| **KA** | `key_storage_status.status.status_list` | Wallet Provider |
+| [[WIA]] | `client_status.status.status_list` | Wallet Provider |
+| [[KA]] | `key_storage_status.status.status_list` | Wallet Provider |
 | **Agregace seznamů** | `status_list_aggregation_endpoint` v OAuth AS metadatech (RFC 8414) | Issuer / WP — volitelný katalog všech seznamů |
 
 **Vydaný průkaz** — issuer při vydání vloží do SD-JWT VC (dle [SD-JWT VC §3.2.2.2](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-sd-jwt-vc)):

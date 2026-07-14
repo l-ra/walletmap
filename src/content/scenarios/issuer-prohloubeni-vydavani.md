@@ -69,13 +69,13 @@ flowchart TD
 
 Výsledný `signed_metadata` = `base64url(header).base64url(payload).base64url(signature)`.
 
-Podpis: **privátní klíč** vázaný na access certifikát vydavatele (držitel issuer instance ho vytvořil při CSR a spravuje na serveru). Peněženka ověří JWS podpis veřejným klíčem z `x5c` a řetěz access certifikátu vůči **LoTE**.
+Podpis: **privátní klíč** vázaný na access certifikát vydavatele (držitel issuer instance ho vytvořil při CSR a spravuje na serveru). Peněženka ověří JWS podpis veřejným klíčem z `x5c` a řetěz access certifikátu vůči [[LoTE]].
 
 </details>
 
 ## Šifrování credential response
 
-Pokud issuer v metadatech uvádí `credential_response_encryption` s `encryption_required: true`, peněženka musí v **Credential Requestu** přiložit objekt `credential_response_encryption` s vlastním veřejným klíčem (`jwk`). Issuer pak vrátí credential response jako **JWE** zašifrovaný tímto klíčem.
+Pokud issuer v metadatech uvádí `credential_response_encryption` s `encryption_required: true`, peněženka musí v **Credential Requestu** přiložit objekt `credential_response_encryption` s vlastním veřejným klíčem (`jwk`). Issuer pak vrátí credential response jako [[JWE]] zašifrovaný tímto klíčem.
 
 **Kde issuer získá šifrovací klíč:** veřejný klíč pro šifrování odpovědi issuer **nepublikuje v metadatech** a **nečerpá z access certifikátu** — v každém vydání ho převezme z příchozího Credential Requestu, z pole `credential_response_encryption.jwk`. Peněženka tam vloží efemérní veřejný klíč; odpovídající privátní klíč si ponechá a jím odpověď dešifruje. Issuer v metadatech uvádí jen podporované algoritmy (`alg_values_supported`, `enc_values_supported`) a příznak `encryption_required`.
 
@@ -179,8 +179,8 @@ Dle **TS3** (EC TS03, aktuálně v1.5) a revidovaného **ARF Topic 9** se pojem 
 
 | Atestace | Co potvrzuje | Kam ji peněženka posílá | Kdy je povinná |
 |----------|--------------|-------------------------|----------------|
-| **WIA** (Wallet Instance Attestation) | integritu a autenticitu **Wallet Instance** (aplikace) | **Authorization Server** — v PAR a Token Request jako OAuth Client Attestation | při vydání PID i všech atestací (device-bound i non-device-bound) |
-| **KA** (Key Attestation) | bezpečnost **úložiště klíčů** (WSCD nebo keystore) a veřejných klíčů v něm | **Credential Issuer** — v poli `proofs` Credential Requestu (`jwt` nebo `attestation` proof type) | pouze u **device-bound** atestací vázaných na klíč (`cnf`) |
+| [[WIA]] | integritu a autenticitu **Wallet Instance** (aplikace) | **Authorization Server** — v PAR a Token Request jako OAuth Client Attestation | při vydání PID i všech atestací (device-bound i non-device-bound) |
+| [[KA]] | bezpečnost **úložiště klíčů** (WSCD nebo keystore) a veřejných klíčů v něm | **Credential Issuer** — v poli `proofs` Credential Requestu (`jwt` nebo `attestation` proof type) | pouze u **device-bound** atestací vázaných na klíč (`cnf`) |
 
 Klubové průkazy (`ClubMembership`, `CompetitorLicense`, `CompetitionEntry`) jsou v tomto modelu **device-bound** — issuer je váže na holder klíč v `cnf`. Peněženka proto při jejich vydání posílá **WIA i KA**.
 
@@ -350,7 +350,7 @@ Revokace WIA/KA **neznamená** revokaci samotného JWT atestátu jako artefaktu 
 
 ### Sledování revokace po vydání (revocation chaining)
 
-Pro **PID** PID Provider povinně kontroluje revokační stav WIA i KA **minimálně jednou za 24 hodin** po celou dobu platnosti PID a při revokaci kterékoli z nich revokuje PID.
+Pro [[PID]] PID Provider povinně kontroluje revokační stav WIA i KA **minimálně jednou za 24 hodin** po celou dobu platnosti PID a při revokaci kterékoli z nich revokuje PID.
 
 U **ne-PID atestací** (klubové průkazy) je sledování revokace WIA/KA **volitelné**, ale doporučené, pokud issuer chce reagovat na kompromitaci peněženky nebo úložiště klíčů. Pokud issuer tuto kontrolu provádí, technická platnost průkazu by měla končit nejpozději v okamžiku `client_status.exp` a `key_storage_status.exp` z atestací předložených při vydání.
 
@@ -402,7 +402,7 @@ Issuer metadata signalizují potřebu obou atestací:
 
 </details>
 
-Authorization Server klubu paralelně publikuje v metadatech požadavek na **WIA** (`wallet_attestation_required` dle OID4VCI Appendix E).
+Authorization Server klubu paralelně publikuje v metadatech požadavek na [[WIA]].
 
 ## Vydaný průkaz — příklad ClubMembership
 

@@ -21,7 +21,7 @@ Stát vydává do peněženky doklady, které klub **nevyužívá jako vydavatel
 
 | Doklad | Účel v klubu | Povinnost |
 |--------|--------------|:---------:|
-| **PID** (EU Digital Identity) | Ověření totožnosti závodníka | doporučeno |
+| [[PID]] | Ověření totožnosti závodníka | doporučeno |
 | **Zbrojní oprávnění** | Právní způsobilost k držení zbraně | povinné |
 | **Průkaz zbraně / povolení** | Konkrétní zbraň závodníka | volitelné |
 
@@ -73,7 +73,7 @@ Ověřovatel spoléhá na:
 
 - **trust list** národního ekosystému EUDIW
 - certifikáty vydavatele (stát = Qualified Trust Service Provider)
-- formát **SD-JWT VC** s selektivním sdílením
+- formát [[SD-JWT-VC]] s selektivním sdílením
 
 ## Oddělení rolí — shrnutí
 

@@ -27,7 +27,9 @@ npm run preview  # náhled sestaveného webu
 ```
 public/index.html          landing page (beze změny, kopíruje se do dist/)
 src/content/articles/      články v Markdownu
-src/data/                  strukturovaná data (JSON/YAML)
+src/content/scenarios/     scénáře modelového příkladu
+src/data/glossary.json       slovník zkratek (povinný pro [[ZKRATKA]] v textu)
+src/data/                  další strukturovaná data (JSON/YAML)
 src/layouts/               šablony stránek
 src/pages/                 generované routy (např. /clanky/)
 scripts/deploy.sh          publikace přes rsync
@@ -50,6 +52,20 @@ draft: false
 
 Obsah v Markdownu…
 ```
+
+### Scénáře a zkratky
+
+Technické texty používají **anotované zkratky** ze slovníku [`src/data/glossary.json`](src/data/glossary.json):
+
+```markdown
+Peněženka zahájí [[OID4VP]] transakci a ověří [[PID]].
+```
+
+- Syntaxe: `[[ZKRATKA]]` nebo `[[ZKRATKA|zobrazení]]`
+- Nová zkratka: nejdřív záznam ve slovníku, pak `[[…]]` v textu — jinak build selže
+- Podrobnosti: [`docs/zkratky.md`](docs/zkratky.md)
+- Pro AI agenty: [`AGENTS.md`](AGENTS.md)
+- Veřejný seznam: `/slovnik-zkratek`
 
 ## Publikace
 

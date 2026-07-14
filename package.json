@@ -6,11 +6,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "glossary:list": "node scripts/list-glossary.mjs",
     "deploy": "npm run build && bash scripts/deploy.sh",
     "deploy:rsync": "bash scripts/deploy.sh"
   },
   "devDependencies": {
-    "astro": "^5.7.10"
+    "astro": "^5.7.10",
+    "mdast-util-find-and-replace": "^3.0.2"
   },
   "dependencies": {
     "playwright": "^1.61.1",
