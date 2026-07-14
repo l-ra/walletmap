@@ -277,6 +277,7 @@ Issuer publikuje metadata na `https://issuer.walletmap-club.cz/.well-known/openi
 {
   "credential_issuer": "https://issuer.walletmap-club.cz",
   "authorization_servers": ["https://auth.walletmap-club.cz"],
+  "preferred_client_status_period": 2678400,
   "credential_endpoint": "https://issuer.walletmap-club.cz/credential",
   "nonce_endpoint": "https://issuer.walletmap-club.cz/nonce",
   "notification_endpoint": "https://issuer.walletmap-club.cz/notification",
@@ -357,7 +358,20 @@ Každý typ má vlastní položku v `credential_configurations_supported`:
     "cryptographic_binding_methods_supported": ["jwk"],
     "credential_signing_alg_values_supported": ["ES256"],
     "proof_types_supported": {
-      "jwt": { "proof_signing_alg_values_supported": ["ES256"] }
+      "jwt": {
+        "proof_signing_alg_values_supported": ["ES256"],
+        "key_attestation_required": {
+          "key_storage": ["iso_18045_high"],
+          "user_authentication": ["iso_18045_moderate"],
+          "preferred_key_storage_status_period": 2678400
+        }
+      },
+      "attestation": {
+        "key_attestation_required": {
+          "key_storage": ["iso_18045_high"],
+          "preferred_key_storage_status_period": 2678400
+        }
+      }
     },
     "display": [
       {
@@ -392,6 +406,22 @@ Každý typ má vlastní položku v `credential_configurations_supported`:
     "vct": "urn:walletmap:club:competitor:1",
     "cryptographic_binding_methods_supported": ["jwk"],
     "credential_signing_alg_values_supported": ["ES256"],
+    "proof_types_supported": {
+      "jwt": {
+        "proof_signing_alg_values_supported": ["ES256"],
+        "key_attestation_required": {
+          "key_storage": ["iso_18045_high"],
+          "user_authentication": ["iso_18045_moderate"],
+          "preferred_key_storage_status_period": 2678400
+        }
+      },
+      "attestation": {
+        "key_attestation_required": {
+          "key_storage": ["iso_18045_high"],
+          "preferred_key_storage_status_period": 2678400
+        }
+      }
+    },
     "display": [
       {
         "name": "Průkaz závodníka",
@@ -423,6 +453,22 @@ Každý typ má vlastní položku v `credential_configurations_supported`:
     "vct": "urn:walletmap:club:entry:1",
     "cryptographic_binding_methods_supported": ["jwk"],
     "credential_signing_alg_values_supported": ["ES256"],
+    "proof_types_supported": {
+      "jwt": {
+        "proof_signing_alg_values_supported": ["ES256"],
+        "key_attestation_required": {
+          "key_storage": ["iso_18045_high"],
+          "user_authentication": ["iso_18045_moderate"],
+          "preferred_key_storage_status_period": 2678400
+        }
+      },
+      "attestation": {
+        "key_attestation_required": {
+          "key_storage": ["iso_18045_high"],
+          "preferred_key_storage_status_period": 2678400
+        }
+      }
+    },
     "display": [
       {
         "name": "Startovní lístek",
@@ -475,4 +521,4 @@ Detail revokačních mechanismů — samostatný budoucí článek.
 
 Při vydání `CompetitorLicense` klub zároveň vystupuje jako **RP** — ověřuje PID a zbrojní oprávnění. Viz [Registrace RP](/scenare/strelecky-klub/registrace-rp), intended use `iu-reg-zavodnik`.
 
-→ **Další prohloubení:** [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani) — credential offer, proofy, status list.
+→ **Další prohloubení:** [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani) — credential offer, WIA/KA atestace, proofy, status list.

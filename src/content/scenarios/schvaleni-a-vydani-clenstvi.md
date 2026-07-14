@@ -46,8 +46,11 @@ Aplikace eviduje oba podpisy s časovým razítkem.
 ```
 Výbor schválí → Aplikace zavolá Issuer API →
   Credential Offer (OID4VCI) → Peněženka →
-    Token exchange → Vydání SD-JWT VC → Uložení v peněžence
+    WIA k Authorization Serveru → Token exchange →
+    Credential Request s KA + proof → Vydání SD-JWT VC → Uložení v peněžence
 ```
+
+Detail WIA/KA atestací a jejich role při revokaci peněženky: [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani#wua-wia-ka).
 
 Klíčové úkoly vydavatele:
 
