@@ -379,10 +379,12 @@ Pro klubové průkazy v EUDIW je **primární cesta Token Status List** (přípa
 |---------|--------|--------------|-------------|
 | Vyloučení člena | ClubMembership | okamžitá revokace | status list → INVALID |
 | Ukončení členství (žádost člena) | ClubMembership | revokace nebo `status` → ukončené + revokace | status list |
-| Nezaplacený příspěvek | ClubMembership | `status` → pozastaveno; volitelně revokace | claim + případně status list |
-| Ztráta zbrojního oprávnění | CompetitorLicense | revokace po re-verifikaci | status list |
+| Nezaplacený příspěvek | ClubMembership | `status` → pozastaveno; refresh odmítnut; volitelně revokace | claim + případně status list |
+| Automatická obnova členství | ClubMembership | background refresh → revokace starého + vydání nového (nový `idx`) | status list + refresh token |
+| Ztráta zbrojního oprávnění | CompetitorLicense | revokace po re-verifikaci + zrušení refresh tokenu | status list |
 | Odhlášení ze závodu | CompetitionEntry | revokace konkrétního `entry_id` | status list |
-| Prodloužení sezóny | CompetitorLicense | revokace starého + vydání nového (nový `idx`) | status list |
+| Automatická obnova sezóny | CompetitorLicense | background refresh → revokace starého + vydání nového (nový `idx`, nová KA) | status list + refresh token |
+| Ruční prodloužení sezóny | CompetitorLicense | revokace starého + vydání nového (nový `idx`) | status list |
 | Kompromitace peněženky | všechny navázané | volitelná revokace po detekci WIA/KA | revocation chaining |
 
 Scénáře: [Obnova a ukončení členství](/scenare/strelecky-klub/obnova-a-ukonceni-clenstvi), [Vydání průkazu závodníka](/scenare/strelecky-klub/vydani-prukazu-zavodnika), [Registrace na soutěž](/scenare/strelecky-klub/registrace-na-soutez).

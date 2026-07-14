@@ -28,6 +28,8 @@ Každý typ průkazu nese sadu **atributů** definovaných klubem v souladu s pr
 | `club_id` | `cz-strelecky-klub-brno` | Identifikátor vydavatele |
 | `photo` | (volitelně) | Dle politiky klubu |
 
+**Podmínka automatické obnovy** (evidována v členské databázi, ne v credentialu): `membership_fees_paid = true` pro aktuální rok. Issuer ověřuje tento příznak při každém refresh požadavku.
+
 **Při ověření** zámek střeliště typicky žádá pouze: `status`, `valid_until`, případně `roles`.
 
 ## Průkaz závodníka (`CompetitorLicense`)
@@ -41,6 +43,8 @@ Každý typ průkazu nese sadu **atributů** definovaných klubem v souladu s pr
 | `gun_license_verified` | `true` | Klub ověřil zbrojní oprávnění při registraci |
 | `valid_until` | 2026-12-31 | Konec sezóny |
 | `club_id` | `cz-strelecky-klub-brno` | |
+
+**Podmínka automatické obnovy** (evidována v soutěžní databázi, ne v credentialu): `competitions_attended ≥ 3` v aktuální sezóně a `gun_license_valid = true`. Issuer ověřuje tyto příznaky při každém refresh požadavku.
 
 ## Startovní lístek (`CompetitionEntry`)
 
@@ -62,9 +66,11 @@ Závodník se registruje online: klub v jedné **kombinované prezentaci** poža
 
 | Událost | Akce vydavatele |
 |---------|-----------------|
-| Nezaplacený příspěvek | `status` → `ke obnově` nebo pozastavení |
-| Vyloučení | revokace klubového průkazu |
-| Ukončení členství | revokace nebo `status` → `ukončené` |
+| Automatická obnova členství | background refresh → nový `ClubMembership`, revokace starého |
+| Automatická obnova závodníka | background refresh → nový `CompetitorLicense`, revokace starého |
+| Nezaplacený příspěvek | `status` → `ke obnově` nebo pozastavení; refresh odmítnut |
+| Vyloučení | revokace klubového průkazu + zrušení refresh tokenu |
+| Ukončení členství | revokace nebo `status` → `ukončené` + zrušení refresh tokenu |
 | Změna role | vydání aktualizovaného průkazu |
 | Odhlášení ze závodu | revokace startovního lístku |
 
