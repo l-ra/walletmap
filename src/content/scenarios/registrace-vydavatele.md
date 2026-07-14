@@ -305,9 +305,11 @@ OID4VCI umožňuje issuerovi vyžadovat **šifrování odpovědi** na `credentia
 |------|--------|
 | `alg_values_supported` | Povolené algoritmy pro dohodu / obal klíče (JWE `alg`), např. `ECDH-ES+A256KW` |
 | `enc_values_supported` | Povolené algoritmy pro šifrování obsahu (JWE `enc`), např. `A256GCM` |
-| `encryption_required` | `true` = peněženka **musí** credential response zašifrovat |
+| `encryption_required` | `true` = peněženka **musí** v Credential Requestu přiložit `credential_response_encryption` s vlastním `jwk` |
 
-**Tok:** peněženka vygeneruje efemérní klíč, odvodí sdílené tajemství s veřejným klíčem issuer instance (z access certifikátu nebo z `jwks` v metadatech) a odešle credential jako **JWE**. Issuer dešifruje **privátním klíčem** své instance.
+**Tok:** peněženka vygeneruje efemérní klíčový pár a veřejný klíč vloží do `credential_response_encryption.jwk` v Credential Requestu. Issuer odpověď zašifruje tímto klíčem jako **JWE**; peněženka ji dešifruje odpovídajícím privátním klíčem.
+
+**Kde issuer získá šifrovací klíč:** z pole `credential_response_encryption.jwk` v každém Credential Requestu — ne z access certifikátu ani z `jwks` v metadatech (ta uvádějí jen podporované algoritmy).
 
 Pokud issuer šifrování nevyžaduje, pole v metadatech chybí nebo `encryption_required` je `false`.
 

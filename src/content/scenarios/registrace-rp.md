@@ -160,6 +160,24 @@ aHt8lHIx/CjYFrZ2lI2RUozPZUfC
 
 </details>
 
+<details>
+<summary>Prohloubení — šifrování authorization response (OID4VP)</summary>
+
+U scénářů s `response_mode` **`direct_post.jwt`** (typicky zámky střeliště) OID4VP vyžaduje šifrování authorization response na aplikační vrstvě — `vp_token` necestuje v plaintextu přes front channel.
+
+| Kde | Co |
+|-----|-----|
+| `client_metadata.jwks` v presentation requestu | RP publikuje **veřejný** šifrovací klíč (typicky efemérní, na request) |
+| `client_metadata.encrypted_response_enc_values_supported` | Povolené JWE `enc` algoritmy (např. `A128GCM`) |
+| Privátní klíč na RP instanci | RP jím dešifruje přijatou odpověď; **není** to klíč z WRPAC pro podpis requestu (může být stejný pár, ale účel je jiný) |
+| `wallet_metadata` peněženky | Peněženka deklaruje podporované `authorization_encryption_*` algoritmy |
+
+**Tok:** RP vygeneruje šifrovací pár → veřejný klíč vloží do `client_metadata.jwks` → peněženka zašifruje `vp_token` jako JWE → RP dešifruje privátním klíčem podle `kid` v hlavičce JWE.
+
+Podrobný příklad a tabulka kroků: [RP certifikáty a verifier metadata](/scenare/strelecky-klub/rp-certifikaty-a-verifier#sifrovani-authorization-response).
+
+</details>
+
 ### Registration certificate — jedna na intended use
 
 Pokud registrátor vydává registration certificates (**ETSI TS 119 475**), platí:
