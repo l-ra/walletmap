@@ -99,17 +99,85 @@ Každý technický systém, který komunikuje s peněženkou, je **Relying Party
 
 </details>
 
-Access certifikát se prezentuje peněžence při každém OID4VP requestu. Peněženka ověří podpis vůči LoTE.
+Access certifikát se prezentuje peněžence při každém OID4VP requestu. Peněženka ověří řetěz důvěry certifikátu vůči **LoTE** a shodu s `client_id`.
+
+<details>
+<summary>Prohloubení — access certifikát (X.509)</summary>
+
+Access certifikát je standardní **X.509** certifikát ([RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280)) vydaný **Access Certificate Authority** (ACA). Slouží k **autentizaci RP instance** vůči peněžence — ne k zápisu registrace intended use (ten je v registration certificate nebo v registru).
+
+Stejný typ certifikátu používá i **issuer instance** při OID4VCI — viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele), sekce access certifikát.
+
+**Vystavení — co musí udělat držitel instance**
+
+1. Vygenerovat kryptografický pár klíčů (typicky **ES256** / P-256).
+2. **Privátní klíč** vytvořit, uložit a spravovat na instanci (HSM, TPM, zabezpečené úložiště) — nesmí opustit provoz a nesmí být sdílen mezi instancemi.
+3. Z privátního klíče vytvořit **Certificate Signing Request (CSR)** s identifikátorem instance (DNS jméno v **Subject Alternative Name** musí odpovídat `client_id`, např. `app.walletmap-club.cz`).
+4. Zaslat CSR **vydavateli access certifikátů** (ACA) — obvykle přes portál registrátora po schválení registrace.
+5. Po vydání nasadit certifikát na instanci; privátním klíčem podepisovat OID4VP request object.
+
+**Ověření peněženkou**
+
+Peněženka ověří platnost certifikátu, nepoužití odvolaného stavu, řetěz vůči **trust anchor** ACA v **LoTE** a shodu SAN DNS s `client_id` (např. `x509_san_dns:app.walletmap-club.cz`).
+
+**Příklad — access certifikát RP instance (modelový PEM)**
+
+```
+-----BEGIN CERTIFICATE-----
+MIICITCCAcegAwIBAgIUdM4hwZVkIwdIIvSgiHTUA3WQFxQwCgYIKoZIzj0EAwIw
+RzEaMBgGA1UEAwwRQ1ogRVVESSBBY2Nlc3MgQ0ExHDAaBgNVBAoME01pbmlzdGVy
+c3R2byB2bml0cmExCzAJBgNVBAYTAkNaMB4XDTI2MDcxNDA1NDQxN1oXDTI4MDcx
+MzA1NDQxN1owUDEeMBwGA1UEAwwVYXBwLndhbGxldG1hcC1jbHViLmN6MSEwHwYD
+VQQKDBhTdHJlbGVja3kga2x1YiBCcm5vIHoucy4xCzAJBgNVBAYTAkNaMFkwEwYH
+KoZIzj0CAQYIKoZIzj0DAQcDQgAEIGt3QxYuTs6L7x3ocTtpt4OmRPvuaLRatIcm
+AJ0ubpVSRcNkUoowxa9zjhRJT9FxV0VPWdNaXNRP2TaoO4LE4KOBhzCBhDAgBgNV
+HREEGTAXghVhcHAud2FsbGV0bWFwLWNsdWIuY3owCwYDVR0PBAQDAgWgMBMGA1Ud
+JQQMMAoGCCsGAQUFBwMCMB0GA1UdDgQWBBRHaCj1JzSwWHF5GEzoi30OnYXigjAf
+BgNVHSMEGDAWgBRP0RoMUHN5U3r5wB/m9c6a2h7pLzAKBggqhkjOPQQDAgNIADBF
+AiAtwEzu3Mxj0nFnurke1HJJR8/+9EKBjvCWJwJdftph0QIhAIPVAymTptTP4l9r
+aHt8lHIx/CjYFrZ2lI2RUozPZUfC
+-----END CERTIFICATE-----
+```
+
+| Pole | Hodnota (model) |
+|------|-----------------|
+| Issuer | `CN=CZ EUDI Access CA` |
+| Subject | `CN=app.walletmap-club.cz, O=Střelecký klub Brno z.s., C=CZ` |
+| SAN | `DNS:app.walletmap-club.cz` |
+| Veřejný klíč | EC P-256 (ES256) |
+
+> V produkci je certifikát podepsaný reálnou ACA z LoTE. Ukázka ilustruje vazbu hostname ↔ `client_id`.
+
+</details>
 
 ### Registration certificate — jedna na intended use
 
 Pokud registrátor vydává registration certificates (ETSI TS 119 475), platí:
 
-- **jeden registration certificate na každý intended use**
+- **jeden registration certificate na každý intended use** — opět standardní **X.509** certifikát vydaný registrátorem (Provider of Registration Certificates), nikoli ACA
 - `intendedUseIdentifier` v registru = identifikátor certifikátu
 - certifikát obsahuje: účel, privacy policy, seznam credential/claims
 
-Peněženka při zobrazení consent dialogu ověřuje shodu presentation requestu s registration certificate.
+Peněženka při zobrazení consent dialogu ověří podpis registration certificate a shodu presentation requestu s jeho obsahem. Certifikát **nepodepisuje** OID4VP request — k tomu slouží access certifikát instance.
+
+<details>
+<summary>Prohloubení — registration certificate RP (X.509)</summary>
+
+Registration certificate (RPRC) je **X.509** certifikát dle **ETSI TS 119 475**. Registrační údaje intended use (`purpose`, `privacyPolicy`, `credentials`, `claims`) jsou v certifikátových rozšířeních.
+
+**Vystavení**
+
+Po registraci intended use u registrátora klub obdrží RPRC podepsaný klíčem registrátora (DER/PEM). Klub ho nasadí na příslušnou RP instanci a přikládá do OID4VP requestu **by value** (dle RPRC_19).
+
+**Ověření peněženkou**
+
+1. Ověří podpis certifikátu vůči důvěryhodnému vydavateli registration certificates.
+2. Porovná `input_descriptors` s registrovanými `credentials` a `claims`.
+3. Zobrazí `purpose` a `privacyPolicy` z certifikátu v consent dialogu.
+
+Mapování TS5 → RPRC: [RP certifikáty a verifier metadata](/scenare/strelecky-klub/rp-certifikaty-a-verifier).
+
+</details>
 
 <details>
 <summary>Registration certificate — struktura (zjednodušeně)</summary>

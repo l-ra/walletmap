@@ -33,7 +33,7 @@ Tento článek prohlubuje [registraci RP](/scenare/strelecky-klub/registrace-rp)
 
 ## Mapování TS5 → ETSI TS 119 475 (RPRC)
 
-Každý `IntendedUse` z registru se promítne do **jednoho registration certificate** (RPRC). Tabulka mapování:
+Každý `IntendedUse` z registru se promítne do **jednoho registration certificate** (RPRC) — standardního **X.509** certifikátu vydaného registrátorem. Tabulka mapování:
 
 | TS5 (registr) | ETSI TS 119 475 (RPRC) | RPRC požadavek |
 |---------------|------------------------|----------------|
@@ -86,7 +86,7 @@ Každý `IntendedUse` z registru se promítne do **jednoho registration certific
 
 ## Access certificate a verifier metadata
 
-Každá RP Instance publikuje **verifier metadata** (OpenID4VP) a autentizuje se access certifikátem.
+Každá RP Instance publikuje **verifier metadata** (OpenID4VP) a autentizuje se access certifikátem — standardním **X.509** certifikátem vydaným ACA (viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele) a [Registrace RP](/scenare/strelecky-klub/registrace-rp), sekce access certifikát). Držitel instance generuje klíčový pár, zasílá CSR vydavateli access certifikátů a privátním klíčem podepisuje presentation request.
 
 ### client_id vázaný na certifikát
 
@@ -189,8 +189,8 @@ Plus dle **RPRC_19**: celý registration certificate **by value** (ne odkaz).
 
 ## Ověření peněženkou — krok za krokem
 
-1. **Access cert** — ověří podpis, platnost, LoTE; spáruje s `client_id`
-2. **RPRC** (RPRC_17) — ověří podpis registration cert vůči Provider of registration certificates
+1. **Access cert** (X.509) — ověří podpis, platnost, řetěz vůči LoTE; spáruje s `client_id`. Privátní klíč drží RP instance, certifikát vydala ACA po CSR.
+2. **RPRC** (X.509, RPRC_17) — ověří podpis registration cert vůči Provider of registration certificates
 3. **Registr** (RPRC_18) — pokud RPRC chybí, dotaz `GET /wrp?intendeduseidentifier=iu-klub-app`
 4. **Claims** (RPRC_21) — porovná `input_descriptors` s registrovanými claims; varování při přebytku
 5. **Consent** (RPA_07) — zobrazí název RP, účel, privacy policy, seznam sdílených atributů
