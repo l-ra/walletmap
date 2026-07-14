@@ -6,8 +6,10 @@ order: 22
 category: clenstvi
 roles: ["Řadový člen", "Člen výboru", "Klub (vydavatel)"]
 deepenLinks:
-  - label: "OID4VCI — Status List"
-    url: "https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html"
+  - label: "Revokace a status list — prohloubení"
+    url: "/scenare/strelecky-klub/revokace-a-status-list"
+  - label: "IETF — Token Status List"
+    url: "https://datatracker.ietf.org/doc/html/draft-ietf-oauth-status-list"
 prev: schvaleni-a-vydani-clenstvi
 next: zmena-funkce-clena
 ---

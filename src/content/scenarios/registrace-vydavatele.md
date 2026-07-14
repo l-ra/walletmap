@@ -505,13 +505,13 @@ Dle ARF (ISSU_34a, ISSU_34b) peněženka před přijetím credential offer:
 
 ## Revokace a status list
 
-Vydavatel provozuje **status list** nebo notification endpoint pro:
+Vydavatel provozuje **status list** (Token Status List dle IETF) a volitelně **notification endpoint** (OID4VCI — zpětná vazba z peněženky po vydání) pro:
 
 - ukončení / vyloučení člena → revokace `ClubMembership`
 - ztráta zbrojního oprávnění → revokace `CompetitorLicense`
 - odhlášení ze závodu → revokace `CompetitionEntry`
 
-Detail revokačních mechanismů — samostatný budoucí článek.
+→ **Detailní prohloubení:** [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list).
 
 ## Vazba na scénáře klubu
 
@@ -523,4 +523,4 @@ Detail revokačních mechanismů — samostatný budoucí článek.
 
 Při vydání `CompetitorLicense` klub zároveň vystupuje jako **RP** — v kombinované prezentaci ověřuje PID a zbrojní oprávnění. Viz [Registrace RP](/scenare/strelecky-klub/registrace-rp), intended use `iu-reg-zavodnik`.
 
-→ **Další prohloubení:** [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani) — credential offer, WIA/KA atestace, proofy, status list.
+→ **Další prohloubení:** [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani) — credential offer, WIA/KA atestace, proofy; [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list) — mechanismy revokace a kontrol.

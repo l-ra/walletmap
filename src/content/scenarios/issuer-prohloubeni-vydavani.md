@@ -21,7 +21,7 @@ deepenLinks:
   - label: "Základ registrace vydavatele"
     url: "/scenare/strelecky-klub/registrace-vydavatele"
 prev: registrace-vydavatele
-next: registrace-rp
+next: revokace-a-status-list
 ---
 
 Tento článek prohlubuje [registraci vydavatele](/scenare/strelecky-klub/registrace-vydavatele) o provozní detaily: jak peněženka ověřuje metadata, jak probíhá vydání včetně **WIA a KA atestací** dle TS3, a jak klub spravuje revokaci průkazů.
@@ -432,56 +432,11 @@ Authorization Server klubu paralelně publikuje v metadatech požadavek na **WIA
 
 Klub musí zneplatnit průkaz při vyloučení, ukončení členství nebo odhlášení ze závodu. Tato **revokace průkazu** je nezávislá na revokaci WIA/KA spravované Wallet Providerem — viz [WIA a KA při vydání](#wua-wia-ka). Issuer může volitelně sledovat `client_status` a `key_storage_status` z vydání a při jejich revokaci proaktivně zneplatnit i vydané průkazy.
 
-### Notification endpoint (OID4VCI)
+Pro revokaci průkazů issuer publikuje **Token Status List** (IETF [draft-ietf-oauth-status-list](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-status-list)) — při vydání vloží do SD-JWT VC claim `status.status_list` s `uri` a `idx`. Ověřovatel a peněženka stav kontrolují stažením Status List Token z `uri`.
 
-Peněženka po vydání registruje `notification_id`. Issuer při revokaci pošle:
+**OID4VCI `notification_endpoint`** slouží k opačnému směru: peněženka informuje issuer o výsledku *vydání* (`credential_accepted`, `credential_failure`, `credential_deleted`) — **nikoli** k oznámení revokace issuerem.
 
-<details>
-<summary>notification — revokace průkazu</summary>
-
-```json
-{
-  "notification_id": "notif-0042-2026",
-  "event": "credential_deleted",
-  "event_description": "Členství ukončeno dle žádosti člena"
-}
-```
-
-</details>
-
-### Status list (alternativa / doplněk)
-
-Issuer publikuje token status list (JWT s seznamem revokovaných `jti`):
-
-<details>
-<summary>status_list_uri v credential metadata</summary>
-
-```json
-{
-  "club_membership_sd_jwt": {
-    "format": "dc+sd-jwt",
-    "vct": "urn:walletmap:club:membership:1",
-    "status_list": {
-      "uri": "https://issuer.walletmap-club.cz/statuslists/club-membership/1",
-      "idx": 42042
-    }
-  }
-}
-```
-
-</details>
-
-Ověřovatel (zámek, aplikace) kontroluje status při každé prezentaci — revokovaný průkaz projde i online dotazem na status list.
-
-## Revokace podle typu průkazu
-
-| Událost | Průkaz | Mechanismus |
-|---------|--------|-------------|
-| Vyloučení člena | ClubMembership | okamžitá revokace + status list |
-| Nezaplacený příspěvek | ClubMembership | `status` → pozastaveno; volitelně revokace |
-| Ztráta zbrojního oprávnění | CompetitorLicense | revokace po re-verifikaci |
-| Odhlášení ze závodu | CompetitionEntry | revokace konkrétního `entry_id` |
-| Prodloužení sezóny | CompetitorLicense | revokace starého + vydání nového |
+→ **Detailní prohloubení:** [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list) — mechanismy, odpovědnosti, kontrolní postupy, komplementarita notification vs. status list.
 
 ## Issuer metadata podle role vydávání
 
