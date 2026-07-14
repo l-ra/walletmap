@@ -18,7 +18,7 @@ deepenLinks:
     url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf"
   - label: "ETSI TS 119 411-8 — WRPAC Access Certificate Policy"
     url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf"
-prev: issuer-prohloubeni-vydavani
+prev: revokace-a-status-list
 next: rp-certifikaty-a-verifier
 ---
 
@@ -612,5 +612,5 @@ Při každém OID4VP requestu peněženka (pokud uživatel aktivoval kontrolu):
 ## Další prohloubení
 
 - [RP certifikáty a verifier metadata](/scenare/strelecky-klub/rp-certifikaty-a-verifier) — mapování TS5 → ETSI 119 475, verifier metadata, presentation request
-- Offline verifikace u zámků (cached status list) — připravujeme
+- Offline verifikace u zámků (cached status list) — viz [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list#kontrola-overovatelem-rp)
 - Registrace intermediary pro provozovatele zámků třetí strany — připravujeme

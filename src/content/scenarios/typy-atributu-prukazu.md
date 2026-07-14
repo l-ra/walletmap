@@ -68,4 +68,4 @@ Závodník se registruje online: klub v jedné **kombinované prezentaci** poža
 | Změna role | vydání aktualizovaného průkazu |
 | Odhlášení ze závodu | revokace startovního lístku |
 
-Mechanismus revokace dle OID4VCI a status listu — detaily v samostatném článku.
+Mechanismus revokace dle IETF Token Status List a OID4VCI — viz [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list).

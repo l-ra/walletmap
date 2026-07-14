@@ -63,4 +63,4 @@ Kombinovaná presentation definition požaduje:
 
 ## Offline režim
 
-Pro odlehlá stanoviště může terminál ověřovat lokálně přes **status list** a cached klíče — detail v budoucím článku o offline verifikaci.
+Pro odlehlá stanoviště může terminál ověřovat lokálně přes **status list** a cached klíče — viz [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list#kontrola-overovatelem-rp) (ARF VCR_13, cache a offline režim).
