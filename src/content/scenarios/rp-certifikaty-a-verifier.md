@@ -24,13 +24,13 @@ Tento článek prohlubuje [registraci RP](/scenare/strelecky-klub/registrace-rp)
 
 ## Tři vrstvy důvěry RP
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. Registr (TS5)     WalletRelyingParty + IntendedUse   │
-│ 2. WRPAC (X.509)     Autenticita RP Instance (OID4VP)   │
-│ 3. WRPRC (JWT/CWT)   Obsah registrovaného intended use  │
-└─────────────────────────────────────────────────────────┘
-         ↓ peněženka ověří vše před consent dialogem
+```mermaid
+flowchart TD
+    A["1. Registr (TS5)<br/>WalletRelyingParty + IntendedUse"]
+    B["2. WRPAC (X.509)<br/>Autenticita RP Instance (OID4VP)"]
+    C["3. WRPRC (JWT/CWT)<br/>Obsah registrovaného intended use"]
+    D["Peněženka ověří vše před consent dialogem"]
+    A --> B --> C --> D
 ```
 
 ## Mapování TS5 → ETSI TS 119 475 (WRPRC)

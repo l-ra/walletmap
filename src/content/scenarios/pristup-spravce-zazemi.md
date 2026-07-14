@@ -25,10 +25,12 @@ Elektronické zámky **zázemí** (šatny, sklad, technické místnosti) otevír
 
 ## Technický průběh — zámek jako Verifier
 
-```
-Zámek vygeneruje presentation request →
-  Peněženka (BLE/NFC/QR) → VP →
-    Zámek ověří: podpis klubu + role + platnost → Otevření
+```mermaid
+flowchart LR
+    A["Zámek vygeneruje presentation request"] --> B["Peněženka (BLE/NFC/QR)"]
+    B --> C["VP"]
+    C --> D["Zámek ověří: podpis klubu + role + platnost"]
+    D --> E["Otevření"]
 ```
 
 Presentation definition zámku zázemí:
