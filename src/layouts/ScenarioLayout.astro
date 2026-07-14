@@ -51,14 +51,16 @@ const grouped = Object.entries(categoryLabels)
     />
     <style>
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { color-scheme: dark; }
       body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         background: #0b0d1a;
         color: #e8edf5;
         line-height: 1.7;
       }
-      a { color: #8cb4ff; text-decoration: none; }
-      a:hover { text-decoration: underline; }
+      a { color: #9ec8ff; text-decoration: none; }
+      a:hover { color: #cfe4ff; text-decoration: underline; }
+      a:visited { color: #b8a8ff; }
       .page { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
       header {
         display: flex;
@@ -194,6 +196,16 @@ const grouped = Object.entries(categoryLabels)
         color: #c8d0e0;
       }
       main :global(li) { margin-bottom: 0.4em; }
+      main :global(a) {
+        color: #9ec8ff;
+        text-decoration: none;
+        word-break: break-word;
+      }
+      main :global(a:hover) {
+        color: #cfe4ff;
+        text-decoration: underline;
+      }
+      main :global(a:visited) { color: #b8a8ff; }
       main :global(table) {
         width: 100%;
         border-collapse: collapse;
