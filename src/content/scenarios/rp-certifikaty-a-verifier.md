@@ -6,8 +6,10 @@ order: 14
 category: system
 roles: ["Klub (ověřovatel)"]
 deepenLinks:
-  - label: "ETSI TS 119 475 — Registration Certificates"
-    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11947501/01.00.01_60/ts_11947501v010001p.pdf"
+  - label: "ETSI TS 119 475 — WRPRC Registration Certificate"
+    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf"
+  - label: "ETSI TS 119 411-8 — WRPAC Access Certificate Policy"
+    url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf"
   - label: "ETSI TS 119 472-2 — Presentation Extensions"
     url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/11947202/01.00.01_60/ts_11947202v010001p.pdf"
   - label: "HAIP — Relying Party Authentication"
@@ -25,15 +27,15 @@ Tento článek prohlubuje [registraci RP](/scenare/strelecky-klub/registrace-rp)
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ 1. Registr (TS5)     WalletRelyingParty + IntendedUse   │
-│ 2. Access cert       Autenticita RP Instance (OID4VP)   │
-│ 3. Registration cert Obsah registrovaného intended use  │
+│ 2. WRPAC (X.509)     Autenticita RP Instance (OID4VP)   │
+│ 3. WRPRC (JWT/CWT)   Obsah registrovaného intended use  │
 └─────────────────────────────────────────────────────────┘
          ↓ peněženka ověří vše před consent dialogem
 ```
 
-## Mapování TS5 → ETSI TS 119 475 (RPRC)
+## Mapování TS5 → ETSI TS 119 475 (WRPRC)
 
-Každý `IntendedUse` z registru se promítne do **jednoho registration certificate** (RPRC). Tabulka mapování:
+Každý `IntendedUse` z registru se promítne do **jednoho WRPRC** (*Wallet-Relying Party Registration Certificate*) — **podepsaného JWT** (`typ: rc-wrp+jwt`) nebo **CWT** (`typ: rc-wrp+cwt`) dle **ETSI TS 119 475** §5.2, nikoli do X.509 certifikátu. Tabulka mapování:
 
 | TS5 (registr) | ETSI TS 119 475 (RPRC) | RPRC požadavek |
 |---------------|------------------------|----------------|
@@ -51,7 +53,7 @@ Každý `IntendedUse` z registru se promítne do **jednoho registration certific
 | `WalletRelyingParty.usesIntermediary` | Association to intermediary | RPRC_04 |
 
 <details>
-<summary>Příklad — RPRC pro iu-klub-app (výsledná struktura v certifikátu)</summary>
+<summary>Příklad — payload WRPRC pro iu-klub-app (dekódovaný)</summary>
 
 ```json
 {
@@ -84,9 +86,9 @@ Každý `IntendedUse` z registru se promítne do **jednoho registration certific
 
 </details>
 
-## Access certificate a verifier metadata
+## WRPAC a verifier metadata
 
-Každá RP Instance publikuje **verifier metadata** (OpenID4VP) a autentizuje se access certifikátem.
+Každá RP Instance publikuje **verifier metadata** (OpenID4VP) a autentizuje se **WRPAC** — X.509 access certifikátem dle **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)** (viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele) a [Registrace RP](/scenare/strelecky-klub/registrace-rp), prohloubení access certifikátu). Držitel instance generuje klíčový pár, zasílá CSR vydavateli access certifikátů a privátním klíčem podepisuje presentation request.
 
 ### client_id vázaný na certifikát
 
@@ -112,7 +114,7 @@ Dle ARF (RPA_02) a HAIP používá RP Instance prefix `x509_san_dns` nebo `x509_
 
 </details>
 
-Access certifikát pro `app.walletmap-club.cz` musí mít SAN DNS odpovídající `client_id`. Peněženka ověří shodu certifikátu s metadata a LoTE.
+Access certifikát (WRPAC) pro `app.walletmap-club.cz` musí mít SAN DNS odpovídající `client_id`. Peněženka ověří shodu certifikátu s metadata, profil dle TS 119 411-8 a řetěz vůči LoTE.
 
 <details>
 <summary>Verifier metadata — rp-lock-range (zámek střeliště, proximity)</summary>
@@ -144,7 +146,7 @@ Každý OID4VP request od RP Instance musí obsahovat:
 | d) Registrar URL | `registryURI` | `https://registry.eudi.cz/api/v1` |
 | e) intended use ID | `intendedUseIdentifier` | `iu-klub-app` |
 
-Plus dle **RPRC_19**: celý registration certificate **by value** (ne odkaz).
+Plus dle **RPRC_19**: celý WRPRC (JWS compact string) **by value** (ne odkaz).
 
 <details>
 <summary>Presentation request — iu-klub-app (kompletní koncept)</summary>
@@ -179,7 +181,7 @@ Plus dle **RPRC_19**: celý registration certificate **by value** (ne odkaz).
     "registry_uri": "https://registry.eudi.cz/api/v1",
     "intended_use_identifier": "iu-klub-app"
   },
-  "eudi_rp_registration_certificate": "MIIC…(DER base64)…"
+  "eudi_rp_registration_certificate": "eyJhbGciOiJFUzI1NiIsInR5cCI6InJjLXdycCtqd3QifQ.eyJpbnRlbmRlZF91c2VfaWRlbnRpZmllciI6Iml1LWtsdWItYXBwIn0.signature"
 }
 ```
 
@@ -189,8 +191,8 @@ Plus dle **RPRC_19**: celý registration certificate **by value** (ne odkaz).
 
 ## Ověření peněženkou — krok za krokem
 
-1. **Access cert** — ověří podpis, platnost, LoTE; spáruje s `client_id`
-2. **RPRC** (RPRC_17) — ověří podpis registration cert vůči Provider of registration certificates
+1. **WRPAC** (X.509, TS 119 411-8) — ověří podpis, platnost, profil, řetěz vůči LoTE; spáruje s `client_id`. Privátní klíč drží RP instance, certifikát vydala ACA po CSR.
+2. **WRPRC** (JWT/CWT, TS 119 475 §5.2, RPRC_17) — ověří podpis AdES B-B a `x5c` vůči Provider of registration certificates
 3. **Registr** (RPRC_18) — pokud RPRC chybí, dotaz `GET /wrp?intendeduseidentifier=iu-klub-app`
 4. **Claims** (RPRC_21) — porovná `input_descriptors` s registrovanými claims; varování při přebytku
 5. **Consent** (RPA_07) — zobrazí název RP, účel, privacy policy, seznam sdílených atributů
@@ -260,8 +262,8 @@ Oba kroky používají stejný `wrpIdentifier`, ale různé role a certifikáty:
 
 | Krok | Role | Certifikát |
 |------|------|------------|
-| Ověření PID | Service_Provider | RP access cert + RPRC `iu-reg-zavodnik` |
-| Vydání průkazu | Non_Q_EAA_Provider | Issuer access cert + issuer registration cert |
+| Ověření PID | Service_Provider | WRPAC + WRPRC `iu-reg-zavodnik` |
+| Vydání průkazu | Non_Q_EAA_Provider | Issuer access cert (X.509) + WRPRC s `provides_attestations` |
 
 ## Distribuce certifikátů (RPRC_10)
 
@@ -274,7 +276,7 @@ Po registraci klub distribuuje:
 | RPRC `iu-zamek-streliste` | embedded zařízení zámku střeliště |
 | RPRC `iu-rozhodci` | tablet rozhodčího |
 
-Access certifikáty se distribuují stejně — jeden na instanci.
+WRPAC (access certifikáty) se distribuují stejně — jeden na instanci.
 
 ## Připravujeme dále
 

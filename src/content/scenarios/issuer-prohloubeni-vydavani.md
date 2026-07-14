@@ -36,6 +36,18 @@ GET /.well-known/openid-credential-issuer
 <details>
 <summary>signed_metadata — struktura JWS payload (zjednodušeně)</summary>
 
+**Protected header:**
+
+```json
+{
+  "alg": "ES256",
+  "typ": "JWT",
+  "x5c": ["MIICKDCCAc2gAwIBAgIUdM4hwZVkIwdIIvSgiHTUA3WQFxMw…"]
+}
+```
+
+**Payload:**
+
 ```json
 {
   "iss": "https://issuer.walletmap-club.cz",
@@ -49,7 +61,39 @@ GET /.well-known/openid-credential-issuer
 }
 ```
 
-Podpis: private key vázaná na access certifikát vydavatele. Peněženka ověří řetěz vůči LoTE.
+Výsledný `signed_metadata` = `base64url(header).base64url(payload).base64url(signature)`.
+
+Podpis: **privátní klíč** vázaný na access certifikát vydavatele (držitel issuer instance ho vytvořil při CSR a spravuje na serveru). Peněženka ověří JWS podpis veřejným klíčem z `x5c` a řetěz access certifikátu vůči **LoTE**.
+
+</details>
+
+## Šifrování credential response
+
+Pokud issuer v metadatech uvádí `credential_response_encryption` s `encryption_required: true`, peněženka musí credential response na `credential` endpoint odeslat jako **JWE**.
+
+<details>
+<summary>credential_response_encryption — příklad a tok</summary>
+
+**V metadatech issuer:**
+
+```json
+{
+  "credential_response_encryption": {
+    "alg_values_supported": ["ECDH-ES+A256KW"],
+    "enc_values_supported": ["A256GCM"],
+    "encryption_required": true
+  }
+}
+```
+
+| Krok | Kdo | Co |
+|------|-----|-----|
+| 1 | Issuer | Publikuje podporované `alg` / `enc` a případně `jwks` s encryption klíčem |
+| 2 | Peněženka | Vygeneruje efemérní klíč, odvodí sdílené tajemství s veřejným klíčem issuer instance |
+| 3 | Peněženka | Odešle credential response jako JWE (`alg`, `enc` dle metadat) |
+| 4 | Issuer | Dešifruje JWE **privátním klíčem** access certifikátu své instance |
+
+Účel: credential necestuje v plaintextu přes síť, i když je transport zabezpečen TLS.
 
 </details>
 
