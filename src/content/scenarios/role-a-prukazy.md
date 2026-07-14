@@ -32,8 +32,8 @@ Každá role v klubu má definovaná oprávnění. Role se projevují jako **atr
 
 | Průkaz | Účel | Platnost |
 |--------|------|----------|
-| Klubový průkaz | Identita člena, role, stav členství | 1 rok, obnova po zaplacení příspěvku |
-| Průkaz závodníka | Oprávnění startovat v sezóně | 1 sezóna, prodloužitelný |
+| Klubový průkaz | Identita člena, role, stav členství | 1 rok, automatická obnova po zaplacení příspěvku (background refresh) |
+| Průkaz závodníka | Oprávnění startovat v sezóně | 1 sezóna, automatické prodloužení po 3 závodech (background refresh) |
 | Startovní lístek | Účast na konkrétní soutěži | Po dobu soutěže |
 
 ### Vydávané státem

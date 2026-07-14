@@ -438,15 +438,66 @@ Pro revokaci průkazů issuer publikuje **Token Status List** (IETF [draft-ietf-
 
 → **Detailní prohloubení:** [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list) — mechanismy, odpovědnosti, kontrolní postupy, komplementarita notification vs. status list.
 
+## Automatická obnova credentialů (background refresh)
+
+Klubový průkaz (`ClubMembership`) i průkaz závodníka (`CompetitorLicense`) podporují **automatickou obnovu na pozadí** pomocí [[OID4VCI]] refresh tokenů. Podmínky způsobilosti se vyhodnocují v klubovém backendu — mimo platební tok peněženky.
+
+| Credential | Podmínka obnovy | Zdroj dat |
+|------------|-----------------|-----------|
+| `ClubMembership` | `membership_fees_paid = true` | ekonomický systém klubu |
+| `CompetitorLicense` | `competitions_attended ≥ 3` v sezóně | soutěžní databáze klubu |
+
+### Průběh background refresh
+
+1. Při počátečním vydání issuer vrátí `refresh_token` spolu s `access_token`
+2. Peněženka uloží metadata vydání pro budoucí `reissueDocument(backgroundOnly: true)`
+3. Před vypršením platnosti (nebo po splnění podmínky) peněženka iniciuje refresh
+4. Issuer na token endpointu ověří `refresh_token` a dotáže interní záznamy na podmínky způsobilosti
+5. Při splnění vydá aktualizovaný credential; starý se revokuje na status listu
+6. Při nesplnění odmítne refresh a peněženka informuje uživatele
+
+<details>
+<summary>Token endpoint — refresh_token grant</summary>
+
+```json
+POST /token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token&refresh_token=<refresh_token_value>
+```
+
+Issuer ověří:
+
+1. platnost a revokační stav `refresh_token`
+2. podmínky způsobilosti v interních záznamech (`membership_fees_paid` nebo `competitions_attended`)
+3. aktuálnost atributů (role, `gun_license_valid`)
+
+Odpověď při úspěchu:
+
+```json
+{
+  "access_token": "<new_access_token>",
+  "token_type": "Bearer",
+  "expires_in": 86400,
+  "refresh_token": "<new_refresh_token>",
+  "c_nonce": "<nonce_for_proof>",
+  "c_nonce_expires_in": 86400
+}
+```
+
+</details>
+
+Při **re-vydání** (background refresh) peněženka musí použít **novou KA**, která ještě nebyla použita (TS3 §2.4.2). Issuer musí umět **revokovat refresh token** při ukončení členství, vyloučení nebo ztrátě zbrojního oprávnění.
+
 ## Issuer metadata podle role vydávání
 
 Klub vydává ze **jedné issuer instance**, ale metadata rozlišují tři konfigurace. Každá má vlastní `scope` pro authorization server:
 
-| configuration_id | scope | Kdo iniciuje | Grant type |
-|------------------|-------|--------------|------------|
-| `club_membership_sd_jwt` | `club_membership` | výbor po schválení | pre-authorized_code |
-| `competitor_license_sd_jwt` | `competitor_license` | závodník po registraci | authorization_code |
-| `competition_entry_sd_jwt` | `competition_entry` | závodník po platbě startovného | pre-authorized_code |
+| configuration_id | scope | Kdo iniciuje | Grant type | Automatická obnova |
+|------------------|-------|--------------|------------|:------------------:|
+| `club_membership_sd_jwt` | `club_membership` | výbor po schválení | pre-authorized_code | ✅ (`membership_fees_paid`) |
+| `competitor_license_sd_jwt` | `competitor_license` | závodník po registraci | authorization_code | ✅ (`competitions_attended ≥ 3`) |
+| `competition_entry_sd_jwt` | `competition_entry` | závodník po platbě startovného | pre-authorized_code | — |
 
 <details>
 <summary>authorization_server — scope mapování</summary>
@@ -473,8 +524,10 @@ Klub vydává ze **jedné issuer instance**, ale metadata rozlišují tři konfi
 | Operace | Scénář |
 |---------|--------|
 | Vydání členství | [Schválení a vydání](/scenare/strelecky-klub/schvaleni-a-vydani-clenstvi) |
+| Automatická obnova členství | [Obnova a ukončení](/scenare/strelecky-klub/obnova-a-ukonceni-clenstvi) |
 | Revokace členství | [Obnova a ukončení](/scenare/strelecky-klub/obnova-a-ukonceni-clenstvi) |
 | Vydání závodníka | [Vydání průkazu závodníka](/scenare/strelecky-klub/vydani-prukazu-zavodnika) |
+| Automatická obnova závodníka | [Vydání průkazu závodníka](/scenare/strelecky-klub/vydani-prukazu-zavodnika) |
 | Startovní lístek | [Registrace na soutěž](/scenare/strelecky-klub/registrace-na-soutez) |
 
 Pro ověřování státních dokladů před vydáním závodníka klub vystupuje jako RP — viz [Registrace RP](/scenare/strelecky-klub/registrace-rp) a [RP certifikáty a verifier](/scenare/strelecky-klub/rp-certifikaty-a-verifier).
