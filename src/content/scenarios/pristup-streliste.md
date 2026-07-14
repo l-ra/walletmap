@@ -35,9 +35,9 @@ Elektronické zámky **střeliště** mají odlišná pravidla od zámků zázem
    - `status: platný`
 4. Dveře se otevřou
 
-## Logika zámku — dvě presentation definitions
+## Logika zámku — kombinovaná prezentace s alternativou
 
-Zámek střeliště akceptuje **jeden z dvou** typů průkazů:
+Zámek střeliště v jedné OID4VP transakci akceptuje **jeden z dvou** typů průkazů — kombinovaná presentation definition obsahuje oba `input_descriptors` a `submission_requirements` určí, že stačí splnit jednu z variant:
 
 | Typ | Podmínka | Typický kontext |
 |-----|----------|-----------------|

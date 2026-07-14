@@ -519,6 +519,6 @@ Detail revokačních mechanismů — samostatný budoucí článek.
 | CompetitorLicense | [Vydání průkazu závodníka](/scenare/strelecky-klub/vydani-prukazu-zavodnika) |
 | CompetitionEntry | [Registrace na soutěž](/scenare/strelecky-klub/registrace-na-soutez) |
 
-Při vydání `CompetitorLicense` klub zároveň vystupuje jako **RP** — ověřuje PID a zbrojní oprávnění. Viz [Registrace RP](/scenare/strelecky-klub/registrace-rp), intended use `iu-reg-zavodnik`.
+Při vydání `CompetitorLicense` klub zároveň vystupuje jako **RP** — v kombinované prezentaci ověřuje PID a zbrojní oprávnění. Viz [Registrace RP](/scenare/strelecky-klub/registrace-rp), intended use `iu-reg-zavodnik`.
 
 → **Další prohloubení:** [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani) — credential offer, WIA/KA atestace, proofy, status list.

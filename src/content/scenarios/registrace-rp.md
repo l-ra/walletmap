@@ -224,6 +224,18 @@ Mapování TS5 → WRPRC: [RP certifikáty a verifier metadata](/scenare/strelec
 
 Níže je registrace každého intended use dle TS5 (`IntendedUse` + `Credential` + `Claim`). Každé použití odpovídá konkrétnímu scénáři v modelu klubu.
 
+### Kombinovaná prezentace
+
+Když intended use registruje **více credential typů**, RP je v jedné OID4VP transakci žádá jako **kombinovanou prezentaci** — jedna presentation definition s více `input_descriptors`, jeden consent dialog v peněžence. Platí pro:
+
+| Intended use | Credential typy | Logika |
+|--------------|-----------------|--------|
+| `iu-reg-zavodnik` | PID + zbrojní opr. + (průkaz zbraně) | všechny povinné/volitelné doklady najednou |
+| `iu-rozhodci` | CompetitorLicense + CompetitionEntry | oba průkazy najednou |
+| `iu-zamek-streliste` | ClubMembership / CompetitionEntry | alternativa — závodník předloží jeden z typů (`submission_requirements`) |
+
+Peněženka ověří, že všechny `input_descriptors` odpovídají credential typům a claims registrovaným v příslušném WRPRC.
+
 ---
 
 ### IU-1: Přihlášení do klubové aplikace
@@ -347,7 +359,54 @@ Níže je registrace každého intended use dle TS5 (`IntendedUse` + `Credential
 
 </details>
 
-> Třetí credential (průkaz zbraně) je volitelný — klub ho registruje, ale vyžaduje jen pokud to vyžadují pravidla soutěže.
+<details>
+<summary>OID4VP presentation definition — kombinovaná prezentace (iu-reg-zavodnik)</summary>
+
+```json
+{
+  "id": "iu-reg-zavodnik",
+  "purpose": "Ověření totožnosti a zbrojního oprávnění při registraci závodníka",
+  "input_descriptors": [
+    {
+      "id": "pid",
+      "format": { "dc+sd-jwt": { "vct": "urn:eudi:pid:1" } },
+      "constraints": {
+        "fields": [
+          { "path": ["$.given_name"] },
+          { "path": ["$.family_name"] },
+          { "path": ["$.birth_date"] }
+        ]
+      }
+    },
+    {
+      "id": "gun_license",
+      "format": { "dc+sd-jwt": { "vct": "urn:czechia:zbrojni-opravneni:1" } },
+      "constraints": {
+        "fields": [
+          { "path": ["$.license_number"] },
+          { "path": ["$.valid_until"] },
+          { "path": ["$.categories"] }
+        ]
+      }
+    },
+    {
+      "id": "weapon_permit",
+      "format": { "dc+sd-jwt": { "vct": "urn:czechia:prukaz-zbrane:1" } },
+      "constraints": {
+        "fields": [
+          { "path": ["$.weapon_type"] },
+          { "path": ["$.serial_number"] },
+          { "path": ["$.valid_until"] }
+        ]
+      }
+    }
+  ]
+}
+```
+
+</details>
+
+> Třetí `input_descriptor` (průkaz zbraně) je volitelný — klub ho zahrne do kombinované prezentace jen pokud to vyžadují pravidla soutěže.
 
 ---
 
@@ -408,7 +467,7 @@ Níže je registrace každého intended use dle TS5 (`IntendedUse` + `Credential
 
 **Scénář:** [Přístup na střeliště](/scenare/strelecky-klub/pristup-streliste)  
 **RP Instance:** `rp-lock-range`  
-**Poznámka:** Dvě alternativní credential — členství NEBO startovní lístek.
+**Poznámka:** Kombinovaná prezentace se dvěma credential typy — závodník předloží **členství NEBO** startovní lístek (`submission_requirements`).
 
 <details>
 <summary>intendedUse — iu-zamek-streliste (registrační struktura)</summary>
@@ -449,6 +508,8 @@ Níže je registrace každého intended use dle TS5 (`IntendedUse` + `Credential
 ```
 
 </details>
+
+> Oba credential typy jsou v jedné kombinované prezentaci; `submission_requirements` určí, že závodník může předložit klubový průkaz **nebo** startovní lístek.
 
 ---
 
@@ -498,6 +559,8 @@ Níže je registrace každého intended use dle TS5 (`IntendedUse` + `Credential
 ```
 
 </details>
+
+> Oba credential typy se žádají v **jedné kombinované prezentaci** — závodník potvrdí sdílení průkazu závodníka i startovního lístku jedním consent dialogem.
 
 ## Ověření peněženkou při prezentaci
 

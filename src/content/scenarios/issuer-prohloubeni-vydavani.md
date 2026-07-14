@@ -129,9 +129,9 @@ Výbor schválí žádost → issuer vygeneruje offer bez interaktivního přihl
 
 Deeplink: `openid-credential-offer://?credential_offer_uri=https%3A%2F%2Fissuer…%2Foffer%2Fabc123`
 
-### Authorization code (registrace závodníka po ověření PID)
+### Authorization code (registrace závodníka — kombinovaná prezentace státních dokladů)
 
-Závodník nejdřív projde OID4VP ověřením státních dokladů, pak issuer nabídne CompetitorLicense:
+Závodník nejdřív projde OID4VP ověřením státních dokladů v **jedné kombinované prezentaci** (PID + zbrojní oprávnění), pak issuer nabídne CompetitorLicense:
 
 <details>
 <summary>credential_offer — CompetitorLicense (authorization_code)</summary>
