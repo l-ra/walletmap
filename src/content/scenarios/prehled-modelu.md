@@ -41,7 +41,7 @@ Klub vystupuje jako **vydavatel (Issuer)** vlastních průkazů a zároveň jako
 
 1. Podá žádost o členství → schválení výborem → **klubový průkaz** v peněžence
 2. Přihlásí se do klubové aplikace průkazem
-3. Požádá o registraci závodníka → předloží **PID** a **zbrojní oprávnění** → obdrží **průkaz závodníka**
+3. Požádá o registraci závodníka → v jedné **kombinované prezentaci** předloží **PID** a **zbrojní oprávnění** → obdrží **průkaz závodníka**
 4. Přihlásí se na soutěž → obdrží **startovní lístek**
 5. Na střelnici předloží průkazy zámku / rozhodčímu
 

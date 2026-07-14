@@ -56,7 +56,7 @@ Každý typ průkazu nese sadu **atributů** definovaných klubem v souladu s pr
 
 ## Selektivní sdílení — příklad
 
-Závodník se registruje online: klub požaduje **PID** (jméno, datum narození) a **zbrojní oprávnění** (číslo, platnost). Závodník v peněžence vidí žádost a sdílí **pouze požadované atributy**, ne celý doklad.
+Závodník se registruje online: klub v jedné **kombinované prezentaci** požaduje **PID** (jméno, datum narození) a **zbrojní oprávnění** (číslo, platnost). Závodník v peněžence vidí jeden consent dialog se všemi požadovanými atributy a sdílí **pouze to, co klub žádá**, ne celé doklady.
 
 ## Revokace a aktualizace
 

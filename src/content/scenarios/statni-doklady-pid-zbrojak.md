@@ -29,13 +29,13 @@ Stát vydává do peněženky doklady, které klub **nevyužívá jako vydavatel
 
 1. Stát nabídne PID a zbrojní doklady do peněženky (mimo kompetenci klubu)
 2. Závodník je uloží vedle klubových průkazů
-3. Při registraci u klubu **selektivně sdílí** jen požadované atributy
+3. Při registraci u klubu v **jedné kombinované prezentaci** selektivně sdílí jen požadované atributy ze všech dotčených dokladů
 4. Peněženka zobrazuje, kdo a kdy doklad viděl (audit pro držitele)
 
 ## User journey — klub (ověřovatel)
 
-1. Připraví **presentation definition** pro každý státní doklad
-2. V žádosti specifikuje přesný seznam atributů (data minimization)
+1. Připraví **presentation definition** s více `input_descriptors` — jednu kombinovanou žádost pro PID, zbrojní oprávnění a volitelně průkaz zbraně
+2. V žádosti specifikuje přesný seznam atributů u každého dokladu (data minimization)
 3. Ověří:
    - kryptografický podpis **státního vydavatele** (trust chain EUDIW)
    - platnost dokladu (datum, status)

@@ -249,20 +249,70 @@ Pro PID a zbrojní oprávnění klub registruje credential typy **státního vyd
 
 </details>
 
-Peněženka ověří, že klub smí tyto atributy žádat — a zároveň že presentation request nepřekračuje registrovaný rozsah.
+Peněženka ověří, že klub smí tyto atributy žádat — a zároveň že presentation request nepřekračuje registrovaný rozsah. Všechny credential typy se předkládají v **jedné kombinované prezentaci** (více `input_descriptors`, jeden consent dialog).
+
+<details>
+<summary>Presentation request — iu-reg-zavodnik (kombinovaná prezentace)</summary>
+
+```json
+{
+  "client_id": "x509_san_dns:app.walletmap-club.cz",
+  "response_type": "vp_token",
+  "response_mode": "direct_post",
+  "nonce": "n-reg-zavodnik-01",
+  "presentation_definition": {
+    "id": "iu-reg-zavodnik",
+    "purpose": "Ověření totožnosti a zbrojního oprávnění při registraci závodníka",
+    "input_descriptors": [
+      {
+        "id": "pid",
+        "format": { "dc+sd-jwt": { "vct": "urn:eudi:pid:1" } },
+        "constraints": {
+          "fields": [
+            { "path": ["$.given_name"] },
+            { "path": ["$.family_name"] },
+            { "path": ["$.birth_date"] }
+          ]
+        }
+      },
+      {
+        "id": "gun_license",
+        "format": { "dc+sd-jwt": { "vct": "urn:czechia:zbrojni-opravneni:1" } },
+        "constraints": {
+          "fields": [
+            { "path": ["$.license_number"] },
+            { "path": ["$.valid_until"] },
+            { "path": ["$.categories"] }
+          ]
+        }
+      }
+    ]
+  },
+  "eudi_rp_info": {
+    "wrp_name": "Střelecký klub Brno",
+    "wrp_identifier": "urn:eudi:CZ:EUID:…",
+    "intended_use_description": "Ověření totožnosti a zbrojního oprávnění při registraci závodníka",
+    "registry_uri": "https://registry.eudi.cz/api/v1",
+    "intended_use_identifier": "iu-reg-zavodnik"
+  },
+  "eudi_rp_registration_certificate": "eyJhbGciOiJFUzI1NiIsInR5cCI6InJjLXdycCtqd3QifQ.eyJpbnRlbmRlZF91c2VfaWRlbnRpZmllciI6Iml1LXJlZy16YXZvZG5payJ9.signature"
+}
+```
+
+</details>
 
 ## Vydavatel jako RP v jednom transakčním toku
 
 Při vydání CompetitorLicense klub:
 
-1. jako **RP** (`iu-reg-zavodnik`) ověří PID + zbrojní oprávnění
+1. jako **RP** (`iu-reg-zavodnik`) v **kombinované prezentaci** ověří PID + zbrojní oprávnění
 2. jako **Issuer** nabídne CompetitorLicense
 
 Oba kroky používají stejný `wrpIdentifier`, ale různé role a certifikáty:
 
 | Krok | Role | Certifikát |
 |------|------|------------|
-| Ověření PID | Service_Provider | WRPAC + WRPRC `iu-reg-zavodnik` |
+| Ověření státních dokladů | Service_Provider | WRPAC + WRPRC `iu-reg-zavodnik` |
 | Vydání průkazu | Non_Q_EAA_Provider | Issuer access cert (X.509) + WRPRC s `provides_attestations` |
 
 ## Distribuce certifikátů (RPRC_10)
