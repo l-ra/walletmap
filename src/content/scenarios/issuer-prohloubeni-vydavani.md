@@ -30,13 +30,13 @@ Tento článek prohlubuje [registraci vydavatele](/scenare/strelecky-klub/regist
 
 Před zobrazením credential offer peněženka provede:
 
-```
-GET /.well-known/openid-credential-issuer
-  → ověří signed_metadata (JWS, access certifikát vydavatele)
-  → ověří issuer_info (registration_cert / registrar_dataset)
-  → zkontroluje entitlement Non_Q_EAA_Provider
-  → ověří, že požadovaný vct je v providesAttestations
-  → zobrazí display[] uživateli
+```mermaid
+flowchart TD
+    A["GET /.well-known/openid-credential-issuer"] --> B["ověří signed_metadata (JWS, access certifikát vydavatele)"]
+    B --> C["ověří issuer_info (registration_cert / registrar_dataset)"]
+    C --> D["zkontroluje entitlement Non_Q_EAA_Provider"]
+    D --> E["ověří, že požadovaný vct je v providesAttestations"]
+    E --> F["zobrazí display[] uživateli"]
 ```
 
 <details>
@@ -165,17 +165,19 @@ Klubové průkazy (`ClubMembership`, `CompetitorLicense`, `CompetitionEntry`) js
 
 ### Tok vydání — kde která atestace vstupuje
 
-```
-Peněženka                          Authorization Server              Credential Issuer (klub)
-    |                                        |                                  |
-    |-- PAR + WIA + WIA-PoP ---------------->|                                  |
-    |<-- authorization code ------------------|                                  |
-    |-- Token Request + WIA + WIA-PoP ------>|                                  |
-    |<-- access token (může nést client_status z WIA) -------------------------|
-    |                                        |                                  |
-    |-- Credential Request + proof (jwt/attestation) s KA ------------------->|
-    |                                        |                                  | ověří KA, proof, nonce
-    |<-- SD-JWT VC s cnf vázaným na attested_keys[0] --------------------------|
+```mermaid
+sequenceDiagram
+    participant W as Peněženka
+    participant AS as Authorization Server
+    participant CI as Credential Issuer (klub)
+
+    W->>AS: PAR + WIA + WIA-PoP
+    AS-->>W: authorization code
+    W->>AS: Token Request + WIA + WIA-PoP
+    AS-->>W: access token (může nést client_status z WIA)
+    W->>CI: Credential Request + proof (jwt/attestation) s KA
+    Note over CI: ověří KA, proof, nonce
+    CI-->>W: SD-JWT VC s cnf vázaným na attested_keys[0]
 ```
 
 WIA a KA cestují **oddělenými kanály** OID4VCI/OAuth. Issuer (Credential Issuer) přímo vidí KA a proof; informace z WIA (zejména `client_status`) musí dostat od Authorization Serveru — typicky přes access token nebo interní vazbu mezi AS a issuer instancí klubu.

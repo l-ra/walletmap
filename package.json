@@ -11,5 +11,9 @@
   },
   "devDependencies": {
     "astro": "^5.7.10"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1",
+    "rehype-mermaid": "^3.0.0"
   }
 }

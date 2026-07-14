@@ -43,11 +43,16 @@ Aplikace eviduje oba podpisy s časovým razítkem.
 
 ## Technický průběh — vydavatel (Issuer)
 
-```
-Výbor schválí → Aplikace zavolá Issuer API →
-  Credential Offer (OID4VCI) → Peněženka →
-    WIA k Authorization Serveru → Token exchange →
-    Credential Request s KA + proof → Vydání SD-JWT VC → Uložení v peněžence
+```mermaid
+flowchart LR
+    A["Výbor schválí"] --> B["Aplikace zavolá Issuer API"]
+    B --> C["Credential Offer (OID4VCI)"]
+    C --> D["Peněženka"]
+    D --> E["WIA k Authorization Serveru"]
+    E --> F["Token exchange"]
+    F --> G["Credential Request s KA + proof"]
+    G --> H["Vydání SD-JWT VC"]
+    H --> I["Uložení v peněžence"]
 ```
 
 Detail WIA/KA atestací a jejich role při revokaci peněženky: [Vydávání, metadata a revokace](/scenare/strelecky-klub/issuer-prohloubeni-vydavani#wua-wia-ka).

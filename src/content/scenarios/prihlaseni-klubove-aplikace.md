@@ -36,12 +36,12 @@ Stejný postup, ale aplikace na základě atributů `membership_level` a `roles`
 
 ## Technický průběh — ověřovatel (Relying Party)
 
-```
-Aplikace vygeneruje presentation request (OID4VP) →
-  Peněženka zobrazí consent →
-    Holder vytvoří VP (SD-JWT) →
-      Aplikace ověří podpis a platnost →
-        Vytvoří session
+```mermaid
+flowchart TD
+    A["Aplikace vygeneruje presentation request (OID4VP)"] --> B["Peněženka zobrazí consent"]
+    B --> C["Holder vytvoří VP (SD-JWT)"]
+    C --> D["Aplikace ověří podpis a platnost"]
+    D --> E["Vytvoří session"]
 ```
 
 Úkoly ověřovatele:

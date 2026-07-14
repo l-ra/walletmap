@@ -157,6 +157,17 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
         margin-bottom: 8px;
       }
       main :global(details[open] summary) { margin-bottom: 12px; }
+      main :global(picture:has(img[id^="mermaid"])) {
+        display: block;
+        margin: 1.5em 0;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+      main :global(picture:has(img[id^="mermaid"]) img) {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
       main :global(.article-list) {
         list-style: none;
         margin: 2em 0 0;
