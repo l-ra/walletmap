@@ -30,8 +30,8 @@ Dokud výbor neschválí, peněženka žádný průkaz neobsahuje. Klub může v
 
 Pokud klub vyžaduje PID už při registraci:
 
-1. Web klubu zahájí **OID4VP** transakci
-2. Zájemce v peněžence vybere **PID** a sdílí požadované atributy (jméno, datum narození)
+1. Web klubu zahájí [[OID4VP]] transakci
+2. Zájemce v peněžence vybere [[PID]] a sdílí požadované atributy (jméno, datum narození)
 3. Klub porovná údaje s formulářem a uloží referenci do žádosti
 
 > Tento krok není povinný v základním průběhu — klub může totožnost ověřit až při první návštěvě osobně.

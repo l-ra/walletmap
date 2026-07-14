@@ -1,0 +1,297 @@
+{
+  "EUDIW": {
+    "abbr": "EUDIW",
+    "fullName": {
+      "cs": "Evropská peněženka digitální identity",
+      "en": "EU Digital Identity Wallet"
+    },
+    "shortDescription": "Mobilní aplikace nebo cloudová služba pro bezpečné ukládání a sdílení digitálních průkazů a atestací dle evropského rámce eIDAS 2.0.",
+    "longDescription": "EUDIW (EU Digital Identity Wallet) je peněženka, kterou občan používá k přijímání, uchovávání a selektivnímu sdílení digitálních dokladů — např. PID, atestací od vydavatelů nebo státních credentialů.\n\nPeněženka komunikuje s vydavateli přes OID4VCI a s ověřovateli přes OID4VP. Integrita instance a klíčů se prokazuje atestacemi WIA a KA.",
+    "tags": ["ekosystem", "eidas"],
+    "related": ["PID", "OID4VP", "OID4VCI", "WIA", "KA"],
+    "sources": [
+      {
+        "label": "EUDI Wallet — oficiální portál",
+        "url": "https://digital-identity-wallet.europa.eu/"
+      }
+    ]
+  },
+  "PID": {
+    "abbr": "PID",
+    "fullName": {
+      "cs": "EU Digital Identity (osobní identifikační doklad)",
+      "en": "Person Identification Data"
+    },
+    "shortDescription": "Digitální doklad totožnosti vydávaný státem v rámci EUDIW — obsahuje ověřitelné atributy jako jméno a datum narození.",
+    "longDescription": "PID (Person Identification Data / EU Digital Identity) je státem vydávaný credential v peněžence. Slouží k prokázání totožnosti občana vůči spolehlivým stranám bez nutnosti sdílet celý fyzický doklad.\n\nV modelovém scénáři střeleckého klubu se PID používá při registraci závodníka, ověření totožnosti při žádosti o členství nebo v kombinovaných prezentacích spolu s dalšími doklady.",
+    "tags": ["credential", "statni-doklady"],
+    "related": ["EUDIW", "OID4VP", "RP"],
+    "sources": [
+      {
+        "label": "ARF — Topic 33 PID",
+        "url": "https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework"
+      }
+    ]
+  },
+  "OID4VP": {
+    "abbr": "OID4VP",
+    "fullName": {
+      "cs": "OpenID for Verifiable Presentations",
+      "en": "OpenID for Verifiable Presentations"
+    },
+    "shortDescription": "Protokol pro žádost o a sdílení verifikovatelných prezentací z peněženky ověřovateli (Relying Party).",
+    "longDescription": "OID4VP definuje, jak ověřovatel (Verifier / RP) požádá peněženku o credential nebo vybrané atributy a jak peněženka odpoví verifikovatelnou prezentací.\n\nTypický tok: RP publikuje verifier metadata, podepíše presentation request (např. klíčem z WRPAC), peněženka zobrazí consent dialog a vrátí VP. RP ověřuje podpisy, platnost credentialů a případně stav WIA/KA.",
+    "tags": ["protokol", "oid4"],
+    "related": ["RP", "WRPAC", "WRPRC", "PID"],
+    "sources": [
+      {
+        "label": "OpenID4VP specifikace",
+        "url": "https://openid.net/specs/openid-4-verifiable-presentations-1_0.html"
+      }
+    ]
+  },
+  "OID4VCI": {
+    "abbr": "OID4VCI",
+    "fullName": {
+      "cs": "OpenID for Verifiable Credential Issuance",
+      "en": "OpenID for Verifiable Credential Issuance"
+    },
+    "shortDescription": "Protokol pro vydávání verifikovatelných credentialů z vydavatele do peněženky.",
+    "longDescription": "OID4VCI popisuje credential offer, authorization code / pre-authorized code flow, credential request/response a související metadata vydavatele.\n\nVydavatel může vyžadovat WIA v PAR/Token Requestu a KA v credential requestu u device-bound credentialů. Odpověď může být podepsaná nebo zašifrovaná (JWE), pokud peněženka poskytne ephemeral klíč.",
+    "tags": ["protokol", "oid4"],
+    "related": ["WIA", "KA", "JWE", "PAR"],
+    "sources": [
+      {
+        "label": "OpenID4VCI specifikace",
+        "url": "https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html"
+      }
+    ]
+  },
+  "RP": {
+    "abbr": "RP",
+    "fullName": {
+      "cs": "Spolehlivá strana (Relying Party)",
+      "en": "Relying Party"
+    },
+    "shortDescription": "Subjekt, který se spoléhá na credential z peněženky — typicky ověřovatel identity nebo atributů uživatele.",
+    "longDescription": "Relying Party (RP) je organizace nebo služba, která požaduje od držitele peněženky prezentaci credentialů nebo atributů. V terminologii ETSI může mít registraci (WRPRC) a technickou instanci s access certifikátem (WRPAC).\n\nVe scénáři střeleckého klubu vystupuje klub jako RP při ověřování PID při registraci závodníka nebo při přihlášení do klubové aplikace.",
+    "tags": ["role", "ekosystem"],
+    "related": ["WRPRC", "WRPAC", "OID4VP", "Verifier"],
+    "sources": []
+  },
+  "Verifier": {
+    "abbr": "Verifier",
+    "fullName": {
+      "cs": "Ověřovatel",
+      "en": "Verifier"
+    },
+    "shortDescription": "Technická nebo organizační strana, která ověřuje prezentaci credentialů — v praxi často stejný subjekt jako RP.",
+    "longDescription": "Verifier je subjekt, který iniciuje OID4VP transakci a ověřuje obdrženou verifikovatelnou prezentaci. Může jít o webovou aplikaci, terminál na střelnici nebo systém rozhodčího na závodě.\n\nV ETSI/EUDIW terminologii je Verifier úzce svázán s RP registrací (WRPRC) a instance certifikátem (WRPAC).",
+    "tags": ["role", "ekosystem"],
+    "related": ["RP", "OID4VP", "WRPAC"],
+    "sources": []
+  },
+  "WRPRC": {
+    "abbr": "WRPRC",
+    "fullName": {
+      "cs": "Wallet-Relying Party Registration Certificate",
+      "en": "Wallet-Relying Party Registration Certificate"
+    },
+    "shortDescription": "Registrační certifikát RP — podepsaný JWT nebo CWT s entitlements a metadaty intended use dle ETSI TS 119 475.",
+    "longDescription": "WRPRC není X.509 certifikát, ale podepsaný JWT (`typ: rc-wrp+jwt`) nebo CWT (`typ: rc-wrp+cwt`) vydaný Provider of Registration Certificates.\n\nPayload obsahuje registraci subjektu — např. intended use, požadované credentialy a claims, privacy policy URI nebo registry URI. Peněženka WRPRC ověřuje vůči LoTE a používá při rozhodování, zda RP důvěřovat.\n\nStejný formát se používá i pro registraci vydavatelů atestací (např. Non_Q_EAA_Provider).",
+    "tags": ["certifikaty", "rp", "etsi"],
+    "related": ["WRPAC", "LoTE", "OID4VP", "RP"],
+    "sources": [
+      {
+        "label": "ETSI TS 119 475",
+        "url": "https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf"
+      }
+    ]
+  },
+  "WRPAC": {
+    "abbr": "WRPAC",
+    "fullName": {
+      "cs": "Wallet-Relying Party Access Certificate",
+      "en": "Wallet-Relying Party Access Certificate"
+    },
+    "shortDescription": "X.509 access certifikát RP instance pro autentizaci vůči peněžence — profil dle ETSI TS 119 411-8.",
+    "longDescription": "WRPAC je standardní X.509 certifikát vydaný Access Certificate Authority (ACA). Slouží k autentizaci technické instance RP vůči peněžence — např. k podpisu presentation request v OID4VP.\n\nNení určen k zápisu registrace subjektu (ta je ve WRPRC). Vazba WRPAC ↔ WRPRC a mapování atributů popisuje ETSI TS 119 475.",
+    "tags": ["certifikaty", "rp", "etsi"],
+    "related": ["WRPRC", "ACA", "OID4VP"],
+    "sources": [
+      {
+        "label": "ETSI TS 119 411-8",
+        "url": "https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf"
+      }
+    ]
+  },
+  "WIA": {
+    "abbr": "WIA",
+    "fullName": {
+      "cs": "Wallet Instance Attestation",
+      "en": "Wallet Instance Attestation"
+    },
+    "shortDescription": "Atestace integrity a autenticity instance peněženky (aplikace) — předkládá se Authorization Serveru.",
+    "longDescription": "WIA prokazuje, že peněženka běží na důvěryhodné instanci aplikace. V OID4VCI se typicky posílá v PAR a Token Requestu jako OAuth Client Attestation.\n\nJe vyžadována při vydávání PID i atestací. Revokační stav WIA může být publikován přes Token Status List; PID Provider může být povinen stav kontrolovat a při revokaci WIA revokovat PID.",
+    "tags": ["atestace", "penazenka"],
+    "related": ["KA", "WUA", "OID4VCI"],
+    "sources": []
+  },
+  "KA": {
+    "abbr": "KA",
+    "fullName": {
+      "cs": "Key Attestation",
+      "en": "Key Attestation"
+    },
+    "shortDescription": "Atestace bezpečnosti úložiště klíčů (WSCD/keystore) a veřejných klíčů v něm — pro device-bound credentialy.",
+    "longDescription": "Key Attestation (KA) prokazuje, že kryptografické klíče pro credential jsou chráněny v certifikovaném úložišti (WSCD nebo keystore). V OID4VCI se předkládá v poli `proofs` credential requestu.\n\nNa rozdíl od WIA se KA vyžaduje primárně u device-bound credentialů vázaných na klíč (`cnf`). Revokační stav KA lze publikovat přes Token Status List.",
+    "tags": ["atestace", "penazenka"],
+    "related": ["WIA", "WUA", "WSCD", "OID4VCI"],
+    "sources": []
+  },
+  "WUA": {
+    "abbr": "WUA",
+    "fullName": {
+      "cs": "Wallet Unit Attestation",
+      "en": "Wallet Unit Attestation"
+    },
+    "shortDescription": "Deštníkový termín pro WIA a KA dohromady — atestace peněženky jako celku dle ARF Topic 9 / TS3.",
+    "longDescription": "Wallet Unit Attestation (WUA) je v aktuálních specifikacích (TS3, ARF Topic 9) souhrnný pojem pro dvě samostatné atestace:\n\n• WIA — integrita Wallet Instance (aplikace)\n• KA — bezpečnost úložiště klíčů\n\nV praxi se stále pracuje s WIA a KA odděleně; WUA označuje oba mechanismy dohromady.",
+    "tags": ["atestace", "penazenka"],
+    "related": ["WIA", "KA"],
+    "sources": []
+  },
+  "LoTE": {
+    "abbr": "LoTE",
+    "fullName": {
+      "cs": "List of Trusted Entities",
+      "en": "List of Trusted Entities"
+    },
+    "shortDescription": "Seznam důvěryhodných subjektů — peněženka podle něj ověřuje certifikáty vydavatelů, RP a registrátorů.",
+    "longDescription": "List of Trusted Entities (LoTE) je důvěryhodný seznam, vůči kterému peněženka validuje řetězce certifikátů a vydavatele registrací (WRPRC, access certifikáty vydavatelů atd.).\n\nBez platné vazby na LoTE peněženka registraci nebo access certifikát nepřijme.",
+    "tags": ["duvera", "ekosystem"],
+    "related": ["WRPRC", "WRPAC", "ACA"],
+    "sources": []
+  },
+  "ACA": {
+    "abbr": "ACA",
+    "fullName": {
+      "cs": "Access Certificate Authority",
+      "en": "Access Certificate Authority"
+    },
+    "shortDescription": "Certifikační autorita vydávající access certifikáty (WRPAC) pro technické instance RP a vydavatelů.",
+    "longDescription": "Access Certificate Authority (ACA) vydává X.509 access certifikáty pro autentizaci instancí vůči peněžence. Držitel instance generuje klíčový pár, odešle CSR a obdrží certifikát dle příslušné certifikační politiky (např. ETSI TS 119 411-8 pro WRPAC).",
+    "tags": ["certifikaty", "pki"],
+    "related": ["WRPAC", "LoTE"],
+    "sources": []
+  },
+  "eIDAS": {
+    "abbr": "eIDAS",
+    "fullName": {
+      "cs": "Nařízení EU o elektronické identifikaci a službách vytvářejících důvěru",
+      "en": "electronic IDentification, Authentication and trust Services"
+    },
+    "shortDescription": "Evropský právní rámec pro digitální identitu a důvěryhodné služby — EUDIW je jeho technickým nástrojem.",
+    "longDescription": "Nařízení eIDAS (eIDAS 2.0) stanovuje pravidla pro evropskou digitální identitu včetně povinného nabízení EUDIW členskými státy a pravidel pro kvalifikované elektronické atestace a důvěryhodné služby.\n\nTechnické specifikace EUDIW (ARF, ETSI, OpenID) implementují požadavky tohoto rámce.",
+    "tags": ["pravni", "ekosystem"],
+    "related": ["EUDIW", "PID"],
+    "sources": [
+      {
+        "label": "eIDAS 2.0 — EUR-Lex",
+        "url": "https://eur-lex.europa.eu/"
+      }
+    ]
+  },
+  "SD-JWT-VC": {
+    "abbr": "SD-JWT VC",
+    "fullName": {
+      "cs": "Selective Disclosure JWT Verifiable Credential",
+      "en": "Selective Disclosure JWT Verifiable Credential"
+    },
+    "shortDescription": "Formát verifikovatelného credentialu založený na SD-JWT umožňující selektivní sdílení claimů.",
+    "longDescription": "SD-JWT VC je jeden z podporovaných formátů credentialů v ekosystému EUDIW. Umožňuje držiteli sdílet pouze vybrané atributy bez odhalení celého credentialu.\n\nFormát se používá pro různé typy atestací a dokladů vydávaných v OID4VCI toku.",
+    "tags": ["format", "credential"],
+    "related": ["OID4VCI", "OID4VP"],
+    "sources": [
+      {
+        "label": "SD-JWT VC draft",
+        "url": "https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/"
+      }
+    ]
+  },
+  "JWE": {
+    "abbr": "JWE",
+    "fullName": {
+      "cs": "JSON Web Encryption",
+      "en": "JSON Web Encryption"
+    },
+    "shortDescription": "Šifrovaný JWT formát — v OID4VCI pro důvěrnou credential response zašifrovanou klíčem peněženky.",
+    "longDescription": "JWE (JSON Web Encryption) se v OID4VCI používá, když vydavatel vyžaduje šifrování credential response. Peněženka v credential requestu přiloží ephemeral veřejný klíč (`credential_response_encryption.jwk`) a vydavatel odpoví zašifrovaným payloadem.",
+    "tags": ["kryptografie", "jwt"],
+    "related": ["OID4VCI", "JWS"],
+    "sources": [
+      {
+        "label": "RFC 7516 — JWE",
+        "url": "https://datatracker.ietf.org/doc/html/rfc7516"
+      }
+    ]
+  },
+  "JWS": {
+    "abbr": "JWS",
+    "fullName": {
+      "cs": "JSON Web Signature",
+      "en": "JSON Web Signature"
+    },
+    "shortDescription": "Podepsaný JWT formát — používá se pro WRPRC, signed_metadata vydavatele a další tokeny.",
+    "longDescription": "JWS (JSON Web Signature) zajišťuje integritu a autenticitu JSON payloadu. V EUDIW se vyskytuje u registration certificates (WRPRC), signed issuer metadat a dalších struktur v compact serializaci `header.payload.signature`.",
+    "tags": ["kryptografie", "jwt"],
+    "related": ["WRPRC", "JWE"],
+    "sources": [
+      {
+        "label": "RFC 7515 — JWS",
+        "url": "https://datatracker.ietf.org/doc/html/rfc7515"
+      }
+    ]
+  },
+  "PAR": {
+    "abbr": "PAR",
+    "fullName": {
+      "cs": "Pushed Authorization Request",
+      "en": "Pushed Authorization Request"
+    },
+    "shortDescription": "OAuth mechanismus pro předání authorization requestu na server — v OID4VCI i s WIA.",
+    "longDescription": "Pushed Authorization Request (PAR, RFC 9126) umožňuje klientovi (peněžence) nejdřív odeslat authorization request na server a v prohlížeči předat pouze `request_uri`. V OID4VCI se zde typicky předává i Wallet Instance Attestation.",
+    "tags": ["oauth", "protokol"],
+    "related": ["OID4VCI", "WIA"],
+    "sources": [
+      {
+        "label": "RFC 9126 — PAR",
+        "url": "https://datatracker.ietf.org/doc/html/rfc9126"
+      }
+    ]
+  },
+  "WSCD": {
+    "abbr": "WSCD",
+    "fullName": {
+      "cs": "Wallet Secure Cryptographic Device",
+      "en": "Wallet Secure Cryptographic Device"
+    },
+    "shortDescription": "Bezpečné kryptografické zařízení peněženky — úložiště klíčů, které KA atestuje.",
+    "longDescription": "Wallet Secure Cryptographic Device (WSCD) je hardwarové nebo softwarové úložiště klíčů splňující požadavky na ochranu klíčů v peněžence. Key Attestation (KA) prokazuje bezpečnost tohoto úložiště vůči vydavateli credentialu.",
+    "tags": ["penazenka", "kryptografie"],
+    "related": ["KA", "WIA"],
+    "sources": []
+  },
+  "CIR": {
+    "abbr": "CIR",
+    "fullName": {
+      "cs": "Credential Issuer Registry",
+      "en": "Credential Issuer Registry"
+    },
+    "shortDescription": "Registr vydavatelů credentialů — metadata a identita vydavatele pro peněženku a ekosystém.",
+    "longDescription": "Credential Issuer Registry (CIR) je registr obsahující informace o vydavatelích credentialů v národním nebo evropském ekosystému. Peněženka a další subjekty podle něj ověřují identitu vydavatele a dostupné credential typy.",
+    "tags": ["registr", "ekosystem"],
+    "related": ["LoTE", "OID4VCI"],
+    "sources": []
+  }
+}

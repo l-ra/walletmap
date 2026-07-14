@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { categoryLabels, seriesBasePath } from '../lib/scenarios';
+import GlossaryModal from '../components/GlossaryModal.astro';
 
 interface Props {
   title: string;
@@ -301,6 +302,7 @@ const grouped = Object.entries(categoryLabels)
           <a href="/">Domů</a>
           <a href={seriesBasePath}>Modelový příklad</a>
           <a href="/clanky">Články</a>
+          <a href="/slovnik-zkratek">Slovník zkratek</a>
         </nav>
       </header>
 
@@ -408,5 +410,6 @@ const grouped = Object.entries(categoryLabels)
         &copy; 2026 <a href="https://walletmap.eu">WalletMap.eu</a>
       </footer>
     </div>
+    <GlossaryModal />
   </body>
 </html>

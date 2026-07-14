@@ -14,19 +14,19 @@ prev: prihlaseni-klubove-aplikace
 next: vydani-prukazu-zavodnika
 ---
 
-Každý, kdo chce soutěžit, se registruje jako **závodník**. Klub musí ověřit **zbrojní oprávnění** (povinné) a identitu přes **PID** (doporučené). Volitelně může požadovat i **průkaz zbraně**.
+Každý, kdo chce soutěžit, se registruje jako **závodník**. Klub musí ověřit **zbrojní oprávnění** (povinné) a identitu přes [[PID]]. Volitelně může požadovat i **průkaz zbraně**.
 
 ## Předpoklady
 
-- Závodník má v peněžence **PID** od státu
+- Závodník má v peněžence [[PID]] od státu
 - Závodník má platné **zbrojní oprávnění** v peněžence
 - Závodník nemusí být členem klubu (dle statutu), ale v tomto modelu často ano
 
 ## User journey — závodník
 
 1. Na webu klubu zvolí **Registrace závodníka**
-2. Systém zahájí **OID4VP** transakci s **kombinovanou prezentací** — v jedné žádosti požádá o všechny potřebné státní doklady:
-   - **PID** — jméno, příjmení, datum narození
+2. Systém zahájí [[OID4VP]] transakci s **kombinovanou prezentací** — v jedné žádosti požádá o všechny potřebné státní doklady:
+   - [[PID]] — jméno, příjmení, datum narození
    - **zbrojní oprávnění** — číslo průkazu, platnost, kategorie
    - volitelně **průkaz zbraně** — typ, výrobní číslo, platnost (konkrétní zbraň)
 3. Závodník v peněžence vidí **jeden consent dialog** se seznamem všech požadovaných atributů ze všech dokladů

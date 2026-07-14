@@ -10,7 +10,8 @@
     "deploy:rsync": "bash scripts/deploy.sh"
   },
   "devDependencies": {
-    "astro": "^5.7.10"
+    "astro": "^5.7.10",
+    "mdast-util-find-and-replace": "^3.0.2"
   },
   "dependencies": {
     "playwright": "^1.61.1",

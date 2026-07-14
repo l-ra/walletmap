@@ -1,4 +1,6 @@
 ---
+import GlossaryModal from '../components/GlossaryModal.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -248,6 +250,7 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
           <a href="/">Domů</a>
           <a href="/scenare/strelecky-klub">Modelový příklad</a>
           <a href="/clanky">Články</a>
+          <a href="/slovnik-zkratek">Slovník zkratek</a>
         </nav>
       </header>
 
@@ -291,5 +294,6 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
         &copy; 2026 <a href="https://walletmap.eu">WalletMap.eu</a>
       </footer>
     </div>
+    <GlossaryModal />
   </body>
 </html>
