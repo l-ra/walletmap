@@ -9,7 +9,7 @@ deepenLinks:
   - label: "SD-JWT VC — formát průkazů"
     url: "https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/"
 prev: prehled-modelu
-next: nastaveni-ekosystemu
+next: zalohovani-a-obnova-penazenky
 ---
 
 Každá role v klubu má definovaná oprávnění. Role se projevují jako **atributy** na klubovém průkazu a určují, co může držitel dělat.

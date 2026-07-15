@@ -107,3 +107,7 @@ Pokud závodník nesplní podmínku 3 závodů nebo refresh token vypršel:
 | Nesplnění podmínky 3 závodů | refresh odmítnut; závodník může použít ruční postup |
 
 Závodník s pozastaveným průkazem se nemůže registrovat na soutěže.
+
+## Obnova po ztrátě zařízení
+
+Sezónní prodloužení přes `refresh_token` funguje jen na **stejné instanci peněženky**. Po ztrátě telefonu závodník obnoví průkaz v rámci [migrace peněženky](/scenare/strelecky-klub/zalohovani-a-obnova-penazenky) — klub vydá nový `CompetitorLicense` po ověření identity a stavu v databázi, starý průkaz zrevokuje.

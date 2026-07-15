@@ -26,6 +26,7 @@ Klub vystupuje jako **vydavatel (Issuer)** vlastních průkazů a zároveň jako
 3. **Soutěže** — registrace na konkrétní závod, startovní lístek
 4. **Přístup** — elektronické zámky zázemí a střeliště
 5. **Klubová aplikace** — přihlášení průkazem z peněženky
+6. **Záloha a obnova peněženky** — migrace na nové zařízení, opětovné vydání průkazů
 
 ## Zapojené strany
 
