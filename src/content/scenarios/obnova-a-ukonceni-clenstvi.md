@@ -130,3 +130,7 @@ Pokud člen nezaplatí včas:
 | Vyloučení | revokace + zrušení refresh tokenu | revokace | zrušit vše |
 
 Pravidla pro závodníka při ukončení členství závisí na statutu — závodník nemusí být totožný s členem klubu.
+
+## Obnova po ztrátě zařízení
+
+Tento scénář řeší **roční obnovu na stejném telefonu** pomocí `refresh_token`. Pokud člen **ztratí zařízení** nebo přejde na novou peněženku, `refresh_token` z původní instance nelze použít — nutné je **nové vydání** klubového průkazu dle procesu migrace. Viz [Zálohování a obnova peněženky](/scenare/strelecky-klub/zalohovani-a-obnova-penazenky).

@@ -10,7 +10,7 @@ deepenLinks:
     url: "/scenare/strelecky-klub/issuer-prohloubeni-vydavani"
   - label: "Prohloubení — RP a verifier"
     url: "/scenare/strelecky-klub/rp-certifikaty-a-verifier"
-prev: role-a-prukazy
+prev: zalohovani-a-obnova-penazenky
 next: registrace-vydavatele
 ---
 
