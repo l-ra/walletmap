@@ -543,7 +543,7 @@ Peněženka ověří, že všechny `input_descriptors` odpovídají credential t
 ### IU-5: Ověření rozhodčím na závodě
 
 **Scénář:** [Ověření rozhodčím](/scenare/strelecky-klub/rozhodci-overeni-zavodnika)  
-**RP Instance:** `rp-referee`
+**RP Instance:** `rp-referee` (vzdálený [[OID4VP]] — webová aplikace na tabletu)
 
 <details>
 <summary>intendedUse — iu-rozhodci (registrační struktura)</summary>

@@ -56,10 +56,10 @@ Po registraci klub obdrží:
 | Issuer | [[OID4VCI]] | vzdálený | `/.well-known/openid-credential-issuer` |
 | Klubová aplikace (RP) | [[OID4VP]] | vzdálený (web) | presentation request |
 | Registrace závodníka (web) | [[OID4VP]] | vzdálený | presentation request |
-| Zámky zázemí / střeliště (RP Instance) | ISO/IEC 18013-5 | proximity (NFC/BLE) | mdoc reader + ReaderAuth ([[WRPAC]]) |
-| Terminál rozhodčího | [[OID4VP]] nebo ISO/IEC 18013-5 | remote (QR) / proximity (NFC) | dle kanálu |
+| Zámky zázemí / střeliště (RP Instance) | ISO/IEC 18013-5 + [[OID4VP]] fallback | proximity (NFC/BLE), záloha QR | mdoc reader + ReaderAuth ([[WRPAC]]); QR = vzdálený OID4VP |
+| Terminál rozhodčího (`rp-referee`) | [[OID4VP]] | vzdálený (web na tabletu) | presentation request + [[WRPAC]] |
 
-ARF 3.0 rozlišuje **vzdálenou prezentaci** ([[OID4VP]]) a **proximity prezentaci** (ISO/IEC 18013-5). Embedded zámky s NFC/BLE používají druhý režim; autenticita čtečky se prokazuje [[WRPAC]] přes `ReaderAuth`.
+ARF 3.0 rozlišuje **vzdálenou prezentaci** ([[OID4VP]]) a **proximity prezentaci** (ISO/IEC 18013-5). Zámky primárně používají proximity; při selhání NFC/BLE nabídnou QR fallback ve vzdáleném [[OID4VP]] režimu. Terminál rozhodčího používá výhradně [[OID4VP]].
 
 ### 5. Ověření peněženkou
 

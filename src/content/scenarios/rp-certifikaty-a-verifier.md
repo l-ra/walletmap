@@ -164,7 +164,16 @@ U zámku střeliště mdoc request akceptuje alternativně i `urn:walletmap:club
 
 </details>
 
-> Šifrování přes `direct_post.jwt` a `client_metadata.jwks` platí pouze pro **vzdálený** [[OID4VP]] režim, ne pro ISO/IEC 18013-5 proximity. V proximity kanálu je šifrování součástí protokolu (session keys dle ISO/IEC 18013-5).
+### QR fallback (vzdálený OID4VP)
+
+Pokud NFC/BLE selže, zámek zobrazí QR kód a přepne do **vzdáleného [[OID4VP]]** režimu se stejným intended use a [[WRPRC]]. Zámek publikuje presentation request s `client_id` vázaným na [[WRPAC]] (např. `x509_san_dns:zamek-streliste.walletmap-club.cz`) — stejný princip jako u webové RP Instance, transport je však iniciovaný QR/deeplinkem místo prohlížeče.
+
+| Režim | Protokol | Transport |
+|-------|----------|-----------|
+| Primární | ISO/IEC 18013-5 | NFC / BLE |
+| Záložní | [[OID4VP]] | QR na displeji zámku |
+
+> Šifrování přes `direct_post.jwt` a `client_metadata.jwks` platí pro **vzdálený** [[OID4VP]] režim (včetně QR fallbacku), ne pro ISO/IEC 18013-5 proximity. V proximity kanálu je šifrování součástí protokolu (session keys dle ISO/IEC 18013-5).
 
 <a id="sifrovani-authorization-response"></a>
 
@@ -300,9 +309,9 @@ Odpověď (JWS-signed JSON) obsahuje `WalletRelyingParty` včetně `intendedUse`
 |--------------|-------------|----------|-------------------|------|--------|
 | `iu-klub-app` | rp-app | [[OID4VP]] | `x509_san_dns:app.…` | ✓ | [Přihlášení](/scenare/strelecky-klub/prihlaseni-klubove-aplikace) |
 | `iu-reg-zavodnik` | rp-app | [[OID4VP]] | `x509_san_dns:app.…` | ✓ | [Registrace závodníka](/scenare/strelecky-klub/registrace-zavodnika) |
-| `iu-zamek-zazemi` | rp-lock-back | ISO/IEC 18013-5 | WRPAC reader | ✓ | [Zázemí](/scenare/strelecky-klub/pristup-spravce-zazemi) |
-| `iu-zamek-streliste` | rp-lock-range | ISO/IEC 18013-5 | WRPAC reader | ✓ | [Střeliště](/scenare/strelecky-klub/pristup-streliste) |
-| `iu-rozhodci` | rp-referee | [[OID4VP]] / ISO 18013-5 | dle kanálu | ✓ | [Rozhodčí](/scenare/strelecky-klub/rozhodci-overeni-zavodnika) |
+| `iu-zamek-zazemi` | rp-lock-back | ISO/IEC 18013-5 + [[OID4VP]] fallback | WRPAC reader / QR | ✓ | [Zázemí](/scenare/strelecky-klub/pristup-spravce-zazemi) |
+| `iu-zamek-streliste` | rp-lock-range | ISO/IEC 18013-5 + [[OID4VP]] fallback | WRPAC reader / QR | ✓ | [Střeliště](/scenare/strelecky-klub/pristup-streliste) |
+| `iu-rozhodci` | rp-referee | [[OID4VP]] | `x509_san_dns:rozhodci.…` | ✓ | [Rozhodčí](/scenare/strelecky-klub/rozhodci-overeni-zavodnika) |
 
 Jedna RP Instance může obsluhovat více intended uses (rp-app má dvě), ale každý request nese **právě jeden** RPRC odpovídající aktuálnímu účelu.
 
@@ -416,5 +425,4 @@ WRPAC (access certifikáty) se distribuují stejně — jeden na instanci.
 
 - Offline verifikace u zámků (cached status list + WRPAC) v ISO/IEC 18013-5 režimu
 - Intermediary (Relying Party Service třetí strany) pro provozovatele HW zámků — ARF 3.0 Topic 44
-- Wallet-to-wallet interakce (rozhodčí s peněženkou jako verifier) — ARF 3.0 Topic J
 - Přesné OID4VP extension OID dle finálního CIR

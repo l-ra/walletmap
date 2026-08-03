@@ -10,6 +10,8 @@ deepenLinks:
     url: "https://eudi.dev/latest/"
   - label: "ISO/IEC 18013-5 — mdoc proximity"
     url: "https://www.iso.org/standard/69084.html"
+  - label: "OID4VP — záložní režim (QR fallback)"
+    url: "https://openid.net/specs/openid-4-verifiable-presentations-1_0.html"
 prev: rozhodci-overeni-zavodnika
 next: pristup-streliste
 ---
@@ -19,15 +21,22 @@ Elektronické zámky **zázemí** (šatny, sklad, technické místnosti) otevír
 ## User journey — správce střelnice
 
 1. Přistoupí k zámku zázemí
-2. Zámek zobrazí QR kód nebo aktivuje NFC čtečku
-3. Správce v peněžence potvrdí prezentaci klubového průkazu
+2. Přiloží telefon k NFC čtečce (nebo naváže BLE spojení) — **primární kanál**
+3. V peněžence potvrdí proximity prezentaci (ISO/IEC 18013-5)
 4. Sdílí atributy: `roles` (obsahuje `správce střelnice`), `status`, `valid_until`
 5. Zámek ověří a otevře dveře
 6. V logu zázemí se zapíše čas a `member_id`
 
-## Technický průběh — zámek jako proximity reader
+Pokud NFC/BLE selže (poškozená anténa, slabý signál), zámek zobrazí **QR kód** a přepne do záložního **vzdáleného [[OID4VP]]** režimu — stejný intended use (`iu-zamek-zazemi`), jiný transport.
 
-Zámek zázemí je **RP Instance** v proximity režimu — komunikuje s peněženkou přes **ISO/IEC 18013-5** (NFC/BLE), nikoli přes [[OID4VP]]. Autenticita čtečky se prokazuje `ReaderAuth` podepsaným [[WRPAC]].
+## Technický průběh — hybridní zámek
+
+Zámek zázemí je **RP Instance** se dvěma režimy:
+
+| Priorita | Kanál | Protokol | Kdy |
+|----------|-------|----------|-----|
+| 1 | NFC / BLE | ISO/IEC 18013-5 (`ReaderAuth` + [[WRPAC]]) | standardní přístup |
+| 2 | QR na displeji | [[OID4VP]] (vzdálený) | selhání proximity |
 
 ```mermaid
 flowchart LR
@@ -35,9 +44,10 @@ flowchart LR
     B --> C["mdoc response"]
     C --> D["Zámek ověří: podpis klubu + role + platnost"]
     D --> E["Otevření"]
+    A2["Zámek (QR fallback)<br/>OID4VP + WRPAC"] -.->|záloha| B
 ```
 
-Presentation definition zámku zázemí (mdoc request):
+Presentation definition zámku zázemí (mdoc request v primárním režimu):
 
 - typ: `ClubMembership`
 - požadované atributy: `roles` obsahuje `správce střelnice`
