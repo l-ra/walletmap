@@ -51,17 +51,21 @@ Po registraci klub obdrží:
 
 ### 4. Nasazení služeb
 
-| Služba | Protokol | Endpoint |
-|--------|----------|----------|
-| Issuer | OID4VCI | `/.well-known/openid-credential-issuer` |
-| Klubová aplikace (RP) | OID4VP | presentation request |
-| Zámky / terminál rozhodčího (RP Instance) | OID4VP | proximity nebo remote |
+| Služba | Protokol | Režim | Endpoint |
+|--------|----------|-------|----------|
+| Issuer | [[OID4VCI]] | vzdálený | `/.well-known/openid-credential-issuer` |
+| Klubová aplikace (RP) | [[OID4VP]] | vzdálený (web) | presentation request |
+| Registrace závodníka (web) | [[OID4VP]] | vzdálený | presentation request |
+| Zámky zázemí / střeliště (RP Instance) | ISO/IEC 18013-5 + [[OID4VP]] fallback | proximity (NFC/BLE), záloha QR | mdoc reader + ReaderAuth ([[WRPAC]]); QR = vzdálený OID4VP |
+| Terminál rozhodčího (`rp-referee`) | [[OID4VP]] | vzdálený (web na tabletu) | presentation request + [[WRPAC]] |
+
+ARF 3.0 rozlišuje **vzdálenou prezentaci** ([[OID4VP]]) a **proximity prezentaci** (ISO/IEC 18013-5). Zámky primárně používají proximity; při selhání NFC/BLE nabídnou QR fallback ve vzdáleném [[OID4VP]] režimu. Terminál rozhodčího používá výhradně [[OID4VP]].
 
 ### 5. Ověření peněženkou
 
 Před interakcí peněženka:
 
-1. ověří **access certificate** vydavatele / RP vůči LoTE
+1. ověří **access certificate** vydavatele / RP vůči [[LoTE]] (ETSI TS 119 602) a příslušné Trusted List (ETSI TS 119 612), kde je to vyžadováno
 2. zkontroluje **registration certificate** nebo dotaz na registr (TS5)
 3. u RP porovná požadované claims s registrovaným **intended use**
 4. u vydavatele ověří `providesAttestations` a `entitlement`

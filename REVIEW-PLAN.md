@@ -2,7 +2,7 @@
 
 Stav ověření: 15. 7. 2026.
 
-Tento plán vychází ze systematické kontroly 22 scénářů série `strelecky-klub` vůči eIDAS po novele (EU) 2024/1183, CIR (EU) 2025/848, ARF 2.8.0, OID4VCI/OID4VP a aktuální české úpravě zbraní. Je určen jako podklad pro schválení rozsahu následné textové revize; neprovádí žádné obsahové změny.
+Tento plán vychází ze systematické kontroly 22 scénářů série `strelecky-klub` vůči eIDAS po novele (EU) 2024/1183, CIR (EU) 2025/848, **ARF 3.0.0**, OID4VCI/OID4VP a aktuální české úpravě zbraní. Je určen jako podklad pro schválení rozsahu následné textové revize; neprovádí žádné obsahové změny.
 
 ## Cíl revize
 
@@ -50,7 +50,7 @@ Model nesmí ztotožňovat stát s Qualified Trust Service Providerem ani považ
 
 ### 4. OID4VP versus proximity u zámků
 
-ARF 2.8.0 rozlišuje vzdálenou prezentaci přes [[OID4VP]] a proximity prezentaci přes ISO/IEC 18013-5. Scénáře zámků nyní popisují NFC/BLE proximity jako [[OID4VP]].
+ARF 3.0.0 rozlišuje vzdálenou prezentaci přes [[OID4VP]] a proximity prezentaci přes ISO/IEC 18013-5. Scénáře zámků dříve popisovaly NFC/BLE proximity jako [[OID4VP]] — **opraveno** v revizi ARF 3.0.
 
 **Plán změny:**
 
@@ -172,7 +172,7 @@ Současná série kombinuje uživatelský průvodce, provozní model a hlubokou 
 
 - [Nařízení eIDAS, ve znění nařízení (EU) 2024/1183](https://eur-lex.europa.eu/eli/reg/2024/1183/oj)
 - [Prováděcí nařízení Komise (EU) 2025/848](https://eur-lex.europa.eu/eli/reg_impl/2025/848/oj)
-- [EUDI Wallet Architecture and Reference Framework 2.8.0](https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/2.8.0/architecture-and-reference-framework-main/)
+- [EUDI Wallet Architecture and Reference Framework 3.0.0](https://eudi.dev/latest/)
 - [OpenID for Verifiable Credential Issuance 1.0](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html)
 - [Ministerstvo vnitra ČR — změny právní úpravy zbraní od 1. 1. 2026](https://mv.gov.cz/clanek/hlavni-zmeny-v-pravni-uprave-na-useku-zbrani-streliva-a-munice-od-1-ledna-2026)
 - [DIA — EUDIW v ČR](https://eudiw.dia.gov.cz/cs)
