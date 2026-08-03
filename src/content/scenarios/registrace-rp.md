@@ -26,15 +26,24 @@ Klub jako **Service Provider** (Relying Party) registruje u národního registr�
 
 ## Právní rámec
 
-Dle **čl. 5b odst. 11 eIDAS** a **CIR (EU) 2025/848** musí každá organizace, která vyžaduje údaje z peněženky, být registrována v národním registru. Registrace zahrnuje:
+Dle **čl. 5b odst. 1 eIDAS** a **CIR (EU) 2025/848** se musí registrovat **wallet-relying party**, která hodlá využívat peněženku pro poskytování veřejných nebo soukromých služeb **prostřednictvím digitální interakce**. Registrace zahrnuje:
 
 - identitu subjektu (EUID)
 - popis služeb a účel zpracování (GDPR)
 - seznam **intended uses** — jednotlivých způsobů, jak RP hodlá prezentace využívat
+- identifikátory **Relying Party Services** (ARF 3.0, Topic 44) — logické služby RP, ke kterým se intended uses váží
+
+Členský stát **může** (nemusí) vydávat [[WRPRC]]; peněženka vždy ověřuje [[WRPAC]] a registraci vůči národnímu registru (TS5).
 
 ## Základní registrační struktura klubu
 
-Klub registruje **jeden** záznam `WalletRelyingParty` s entitlement `Service_Provider` a polem `intendedUse` obsahujícím 5 použití.
+Klub registruje **jeden** záznam `WalletRelyingParty` s entitlement `Service_Provider`, třemi **Relying Party Services** (ARF 3.0) a polem `intendedUse` obsahujícím 5 použití.
+
+| Service ID | Popis služby | Intended uses |
+|------------|--------------|---------------|
+| `srv-klub` | Klubová aplikace a registrace závodníků | `iu-klub-app`, `iu-reg-zavodnik` |
+| `srv-pristup` | Elektronické zámky střelnice | `iu-zamek-zazemi`, `iu-zamek-streliste` |
+| `srv-soutez` | Ověření na závodech | `iu-rozhodci` |
 
 <details>
 <summary>WalletRelyingParty — základní registrační záznam klubu</summary>
@@ -431,7 +440,7 @@ Peněženka ověří, že všechny `input_descriptors` odpovídají credential t
 ### IU-3: Přístup správce do zázemí
 
 **Scénář:** [Přístup správce do zázemí](/scenare/strelecky-klub/pristup-spravce-zazemi)  
-**RP Instance:** `rp-lock-back` (proximity — NFC/BLE u zámku)
+**RP Instance:** `rp-lock-back` (proximity — NFC/BLE, ISO/IEC 18013-5)
 
 <details>
 <summary>intendedUse — iu-zamek-zazemi (registrační struktura)</summary>
@@ -613,4 +622,4 @@ Při každém OID4VP requestu peněženka (pokud uživatel aktivoval kontrolu):
 
 - [RP certifikáty a verifier metadata](/scenare/strelecky-klub/rp-certifikaty-a-verifier) — mapování TS5 → ETSI 119 475, verifier metadata, presentation request
 - Offline verifikace u zámků (cached status list) — viz [Revokace a status list](/scenare/strelecky-klub/revokace-a-status-list#kontrola-overovatelem-rp)
-- Registrace intermediary pro provozovatele zámků třetí strany — připravujeme
+- Registrace intermediary (Relying Party Service třetí strany) pro provozovatele zámků — viz ARF 3.0 §3.11.2 a Topic 44; v modelu klubu zatím přímé nasazení

@@ -51,17 +51,21 @@ Po registraci klub obdrží:
 
 ### 4. Nasazení služeb
 
-| Služba | Protokol | Endpoint |
-|--------|----------|----------|
-| Issuer | OID4VCI | `/.well-known/openid-credential-issuer` |
-| Klubová aplikace (RP) | OID4VP | presentation request |
-| Zámky / terminál rozhodčího (RP Instance) | OID4VP | proximity nebo remote |
+| Služba | Protokol | Režim | Endpoint |
+|--------|----------|-------|----------|
+| Issuer | [[OID4VCI]] | vzdálený | `/.well-known/openid-credential-issuer` |
+| Klubová aplikace (RP) | [[OID4VP]] | vzdálený (web) | presentation request |
+| Registrace závodníka (web) | [[OID4VP]] | vzdálený | presentation request |
+| Zámky zázemí / střeliště (RP Instance) | ISO/IEC 18013-5 | proximity (NFC/BLE) | mdoc reader + ReaderAuth ([[WRPAC]]) |
+| Terminál rozhodčího | [[OID4VP]] nebo ISO/IEC 18013-5 | remote (QR) / proximity (NFC) | dle kanálu |
+
+ARF 3.0 rozlišuje **vzdálenou prezentaci** ([[OID4VP]]) a **proximity prezentaci** (ISO/IEC 18013-5). Embedded zámky s NFC/BLE používají druhý režim; autenticita čtečky se prokazuje [[WRPAC]] přes `ReaderAuth`.
 
 ### 5. Ověření peněženkou
 
 Před interakcí peněženka:
 
-1. ověří **access certificate** vydavatele / RP vůči LoTE
+1. ověří **access certificate** vydavatele / RP vůči [[LoTE]] (ETSI TS 119 602) a příslušné Trusted List (ETSI TS 119 612), kde je to vyžadováno
 2. zkontroluje **registration certificate** nebo dotaz na registr (TS5)
 3. u RP porovná požadované claims s registrovaným **intended use**
 4. u vydavatele ověří `providesAttestations` a `entitlement`

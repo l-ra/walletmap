@@ -106,7 +106,9 @@ Každý vydávaný typ se registruje jako `ProvidedAttestation` — bez seznamu 
 |----------|------|---------------------|
 | `issuer.walletmap-club.cz` | OID4VCI vydávání | Klub (EAA Provider) |
 
-Certifikát vydává ACA, jejíž kořenový certifikát je zapsán v **List of Trusted Entities (LoTE)**. Peněženka ověří řetěz důvěry vůči LoTE a platnost certifikátu; issuer instancí se jím podepisuje `signed_metadata` a autentizuje se při komunikaci s peněženkou.
+Certifikát vydává ACA, jejíž kořenový certifikát je zapsán v [[LoTE]] (ETSI TS 119 602). Peněženka ověří řetěz důvěry vůči LoTE a platnost certifikátu; issuer instancí se jím podepisuje `signed_metadata` a autentizuje se při komunikaci s peněženkou.
+
+> ARF 3.0 vyžaduje správu trust anchorů z [[LoTE]] i z národních Trusted Lists (ETSI TS 119 612). Pro access certifikát issuer instance platí LoTE; pro WIA/KA peněženky platí Trusted List poskytovatelů peněženek.
 
 <details>
 <summary>Prohloubení — access certifikát (X.509)</summary>

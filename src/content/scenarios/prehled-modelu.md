@@ -8,12 +8,14 @@ roles: []
 deepenLinks:
   - label: "EUDI Wallet — oficiální portál"
     url: "https://digital-identity-wallet.europa.eu/"
-  - label: "Architecture and Reference Framework (ARF)"
-    url: "https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework"
+  - label: "ARF 3.0.0 — Architecture and Reference Framework"
+    url: "https://eudi.dev/latest/"
 next: role-a-prukazy
 ---
 
 Střelecký klub pořádá pravidelné závody ve sportovní střelbě, umožňuje členům přístup na střelnici a vyžaduje účast členů na organizaci klubových akcí. Klub se rozhodl využívat **evropskou peněženku digitální identity** pro vydávání a ověřování průkazů.
+
+> Model vychází z **ARF 3.0.0** (červenec 2026) — vzdálené ověřování přes [[OID4VP]], proximity (NFC/BLE) přes ISO/IEC 18013-5, registrace RP dle CIR (EU) 2025/848.
 
 ## Celková situace
 

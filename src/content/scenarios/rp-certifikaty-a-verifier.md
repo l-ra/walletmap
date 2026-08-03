@@ -6,6 +6,8 @@ order: 14
 category: system
 roles: ["Klub (ověřovatel)"]
 deepenLinks:
+  - label: "ARF 3.0.0 — Architecture and Reference Framework"
+    url: "https://eudi.dev/latest/"
   - label: "ETSI TS 119 475 — WRPRC Registration Certificate"
     url: "https://www.etsi.org/deliver/etsi_ts/119400_119499/119475/01.02.01_60/ts_119475v010201p.pdf"
   - label: "ETSI TS 119 411-8 — WRPAC Access Certificate Policy"
@@ -86,7 +88,18 @@ Každý `IntendedUse` z registru se promítne do **jednoho WRPRC** (*Wallet-Rely
 
 </details>
 
-## WRPAC a verifier metadata
+## Vzdálená vs. proximity prezentace (ARF 3.0)
+
+ARF 3.0 rozlišuje dva prezentační režimy:
+
+| Režim | Protokol | Typické nasazení v klubu | Autenticita verifieru |
+|-------|----------|--------------------------|------------------------|
+| **Vzdálený** | [[OID4VP]] | Klubová aplikace, web registrace, QR u rozhodčího | [[WRPAC]] v signed request + [[WRPRC]] |
+| **Proximity** | ISO/IEC 18013-5 | Zámky (NFC/BLE), terminál rozhodčího | `ReaderAuth` s [[WRPAC]] |
+
+Níže jsou příklady pro **vzdálený** režim ([[OID4VP]]). Proximity zámky používají mdoc request/response dle ISO/IEC 18013-5 — viz [Proximity reader — zámek střeliště](#proximity-reader-zamek-streliste).
+
+## WRPAC a verifier metadata (vzdálený režim)
 
 Každá RP Instance publikuje **verifier metadata** (OpenID4VP) a autentizuje se [[WRPAC]] — X.509 access certifikátem dle **[ETSI TS 119 411-8](https://www.etsi.org/deliver/etsi_ts/119400_119499/11941108/01.01.01_60/ts_11941108v010101p.pdf)** (viz [Registrace vydavatele](/scenare/strelecky-klub/registrace-vydavatele) a [Registrace RP](/scenare/strelecky-klub/registrace-rp), prohloubení access certifikátu). Držitel instance generuje klíčový pár, zasílá CSR vydavateli access certifikátů a privátním klíčem podepisuje presentation request.
 
@@ -114,36 +127,55 @@ Dle ARF (RPA_02) a HAIP používá RP Instance prefix `x509_san_dns` nebo `x509_
 
 </details>
 
-Access certifikát (WRPAC) pro `app.walletmap-club.cz` musí mít SAN DNS odpovídající `client_id`. Peněženka ověří shodu certifikátu s metadata, profil dle TS 119 411-8 a řetěz vůči LoTE.
+Access certifikát (WRPAC) pro `app.walletmap-club.cz` musí mít SAN DNS odpovídající `client_id`. Peněženka ověří shodu certifikátu s metadata, profil dle TS 119 411-8 a řetěz vůči [[LoTE]].
+
+<a id="proximity-reader-zamek-streliste"></a>
+
+## Proximity reader — zámek střeliště (ISO/IEC 18013-5)
+
+Embedded zámky (`rp-lock-range`, `rp-lock-back`) **nepoužívají** [[OID4VP]] verifier metadata. Místo toho fungují jako **mdoc reader** dle ISO/IEC 18013-5:
+
+1. Zámek naváže BLE/NFC spojení a odešle **mdoc request** s požadovanými atributy.
+2. V poli `ReaderAuth` podepíše session transcript privátním klíčem [[WRPAC]].
+3. Peněženka ověří `ReaderAuth`, řetěz [[WRPAC]] vůči [[LoTE]] a shodu požadovaných claims s [[WRPRC]] / registrací.
+4. Peněženka vrátí **mdoc response** se selektivně sdílenými atributy.
 
 <details>
-<summary>Verifier metadata — rp-lock-range (zámek střeliště, proximity)</summary>
+<summary>mdoc request — rp-lock-range (proximity, zjednodušeně)</summary>
 
 ```json
 {
-  "client_id": "x509_san_dns:zamek-streliste.walletmap-club.cz",
-  "client_name": "Zámek střeliště",
-  "response_types_supported": ["vp_token"],
-  "vp_formats_supported": {
-    "dc+sd-jwt": { "alg_values_supported": ["ES256"] }
+  "docType": "urn:walletmap:club:membership:1",
+  "nameSpaces": {
+    "urn:walletmap:club:membership:1": {
+      "member_id": null,
+      "status": null,
+      "valid_until": null
+    }
+  },
+  "readerAuth": {
+    "x5c": ["<WRPAC zámku střeliště>"],
+    "signature": "<podpis session transcript>"
   }
 }
 ```
 
-U embedded zámků (proximity, `direct_post.jwt`) se šifrování odpovědi nekonfiguruje ve statických metadatech — parametry `jwks` a `encrypted_response_enc_values_supported` RP předává v `client_metadata` každého presentation requestu (viz [Šifrování authorization response](#sifrovani-authorization-response)).
+U zámku střeliště mdoc request akceptuje alternativně i `urn:walletmap:club:entry:1` — logika čtečky určí, který typ credentialu byl předložen.
 
 </details>
 
+> Šifrování přes `direct_post.jwt` a `client_metadata.jwks` platí pouze pro **vzdálený** [[OID4VP]] režim, ne pro ISO/IEC 18013-5 proximity. V proximity kanálu je šifrování součástí protokolu (session keys dle ISO/IEC 18013-5).
+
 <a id="sifrovani-authorization-response"></a>
 
-## Šifrování authorization response
+## Šifrování authorization response (vzdálený OID4VP)
 
-U prezentací s `response_mode` vyžadujícím šifrování (typicky **`direct_post.jwt`** u zámků a jiných front-channel scénářů) peněženka musí authorization response (obsahující `vp_token`) odeslat jako [[JWE]]. RP proto v presentation requestu v `client_metadata` přiloží vlastní veřejný šifrovací klíč (`jwks`).
+U prezentací s `response_mode` vyžadujícím šifrování (typicky **`direct_post.jwt`** u vzdálených front-channel scénářů) peněženka musí authorization response (obsahující `vp_token`) odeslat jako [[JWE]]. RP proto v presentation requestu v `client_metadata` přiloží vlastní veřejný šifrovací klíč (`jwks`).
 
 **Kde RP získá šifrovací klíč:** veřejný klíč pro šifrování odpovědi RP **negeneruje peněženka** — RP ho vytvoří na své instanci (typicky **efemérní klíčový pár** pro daný request, případně dedikovaný šifrovací pár oddělený od podpisového klíče WRPAC) a veřejnou část publikuje v `client_metadata.jwks` presentation requestu. Odpovídající **privátní klíč** drží na zařízení (HSM, TPM, zabezpečené úložiště) a jím přijatou odpověď dešifruje. Peněženka si klíč od RP nepředává zpět — v `wallet_metadata` jen deklaruje podporované algoritmy (`authorization_encryption_alg_values_supported`, `authorization_encryption_enc_values_supported`).
 
 <details>
-<summary>Šifrovaná prezentace — rp-lock-range (direct_post.jwt)</summary>
+<summary>Šifrovaná prezentace — vzdálený OID4VP (direct_post.jwt, koncept)</summary>
 
 **Presentation request** (výňatek — `client_metadata` se šifrováním):
 
@@ -262,15 +294,15 @@ Odpověď (JWS-signed JSON) obsahuje `WalletRelyingParty` včetně `intendedUse`
 
 </details>
 
-## Mapování intended use → RP Instance → presentation
+## Mapování intended use → RP Instance → protokol
 
-| intended use | RP Instance | client_id | RPRC | Scénář |
-|--------------|-------------|-----------|------|--------|
-| `iu-klub-app` | rp-app | `x509_san_dns:app.…` | ✓ | [Přihlášení](/scenare/strelecky-klub/prihlaseni-klubove-aplikace) |
-| `iu-reg-zavodnik` | rp-app | `x509_san_dns:app.…` | ✓ | [Registrace závodníka](/scenare/strelecky-klub/registrace-zavodnika) |
-| `iu-zamek-zazemi` | rp-lock-back | `x509_san_dns:zamek-zazemi.…` | ✓ | [Zázemí](/scenare/strelecky-klub/pristup-spravce-zazemi) |
-| `iu-zamek-streliste` | rp-lock-range | `x509_san_dns:zamek-streliste.…` | ✓ | [Střeliště](/scenare/strelecky-klub/pristup-streliste) |
-| `iu-rozhodci` | rp-referee | `x509_san_dns:rozhodci.…` | ✓ | [Rozhodčí](/scenare/strelecky-klub/rozhodci-overeni-zavodnika) |
+| intended use | RP Instance | Protokol | client_id / reader | RPRC | Scénář |
+|--------------|-------------|----------|-------------------|------|--------|
+| `iu-klub-app` | rp-app | [[OID4VP]] | `x509_san_dns:app.…` | ✓ | [Přihlášení](/scenare/strelecky-klub/prihlaseni-klubove-aplikace) |
+| `iu-reg-zavodnik` | rp-app | [[OID4VP]] | `x509_san_dns:app.…` | ✓ | [Registrace závodníka](/scenare/strelecky-klub/registrace-zavodnika) |
+| `iu-zamek-zazemi` | rp-lock-back | ISO/IEC 18013-5 | WRPAC reader | ✓ | [Zázemí](/scenare/strelecky-klub/pristup-spravce-zazemi) |
+| `iu-zamek-streliste` | rp-lock-range | ISO/IEC 18013-5 | WRPAC reader | ✓ | [Střeliště](/scenare/strelecky-klub/pristup-streliste) |
+| `iu-rozhodci` | rp-referee | [[OID4VP]] / ISO 18013-5 | dle kanálu | ✓ | [Rozhodčí](/scenare/strelecky-klub/rozhodci-overeni-zavodnika) |
 
 Jedna RP Instance může obsluhovat více intended uses (rp-app má dvě), ale každý request nese **právě jeden** RPRC odpovídající aktuálnímu účelu.
 
@@ -382,6 +414,7 @@ WRPAC (access certifikáty) se distribuují stejně — jeden na instanci.
 
 ## Připravujeme dále
 
-- Offline verifikace u zámků (cached RPRC + status list)
-- Intermediary pro provozovatele HW zámků (Topic 52)
+- Offline verifikace u zámků (cached status list + WRPAC) v ISO/IEC 18013-5 režimu
+- Intermediary (Relying Party Service třetí strany) pro provozovatele HW zámků — ARF 3.0 Topic 44
+- Wallet-to-wallet interakce (rozhodčí s peněženkou jako verifier) — ARF 3.0 Topic J
 - Přesné OID4VP extension OID dle finálního CIR

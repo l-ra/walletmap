@@ -6,7 +6,9 @@ order: 43
 category: zavodnik
 roles: ["Rozhodčí", "Závodník"]
 deepenLinks:
-  - label: "OID4VP — Verifier"
+  - label: "ARF 3.0 — OID4VP (remote) a ISO 18013-5 (proximity)"
+    url: "https://eudi.dev/latest/"
+  - label: "OID4VP — Verifier (vzdálený režim)"
     url: "https://openid.net/specs/openid-4-verifiable-presentations-1_0.html"
 prev: registrace-na-soutez
 next: pristup-spravce-zazemi
@@ -19,8 +21,8 @@ Na soutěži rozhodčí ověřuje, že závodník má platný **průkaz závodn�
 1. Přihlásí se do aplikace rozhodčích (klubovým průkazem s rolí `rozhodčí`)
 2. Vybere aktuální soutěž ze seznamu
 3. U vstupu na střeliště nebo v sekretariátu zahájí ověření:
-   - naskenuje QR kód z peněženky závodníka, NEBO
-   - závodník přiloží telefon k terminálu (NFC / BLE)
+   - naskenuje QR kód z peněženky závodníka → **vzdálená [[OID4VP]]** transakce, NEBO
+   - závodník přiloží telefon k terminálu → **proximity ISO/IEC 18013-5** (NFC / BLE)
 4. Systém ověří:
    - platný průkaz závodníka (`license_status: platný`, správná sezóna)
    - platný startovní lístek (`competition_id` odpovídá, `status: platný`, čas v rozsahu)
@@ -36,18 +38,23 @@ Na soutěži rozhodčí ověřuje, že závodník má platný **průkaz závodn�
 
 ## Technický průběh
 
-Rozhodčí terminál funguje jako [[Verifier]]:
+Rozhodčí terminál funguje jako [[Verifier]] — protokol závisí na kanálu:
+
+| Kanál | Protokol | Autenticita verifieru |
+|-------|----------|------------------------|
+| QR / webová aplikace | [[OID4VP]] (vzdálený) | [[WRPAC]] + [[WRPRC]] v presentation requestu |
+| NFC / BLE u terminálu | ISO/IEC 18013-5 (proximity) | `ReaderAuth` s [[WRPAC]] |
 
 ```mermaid
 flowchart LR
-    A["Rozhodčí zahájí ověření"] --> B["Presentation Request<br/>(kombinovaná prezentace, 2 credential typy)"]
+    A["Rozhodčí zahájí ověření"] --> B["Presentation Request<br/>(OID4VP nebo mdoc)"]
     B --> C["Peněženka"]
-    C --> D["VP"]
+    C --> D["VP / mdoc response"]
     D --> E["Verifier ověří podpisy a platnost"]
     E --> F["Výsledek"]
 ```
 
-Kombinovaná presentation definition požaduje:
+Kombinovaná žádost požaduje (v obou režimech):
 
 - `CompetitorLicense` — atributy: `competitor_id`, `license_status`, `season`
 - `CompetitionEntry` — atributy: `competition_id`, `status`, `valid_from`, `valid_until`

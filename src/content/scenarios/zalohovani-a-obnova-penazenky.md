@@ -202,7 +202,7 @@ Jediný předpoklad: klub musí **včas revokovat** staré credentialy a **vydat
 | Wallet Provider | formát TS10, šifrování, úložiště zálohy | import, orchestrace žádostí o vydání | nová [[WIA]] / [[KA]] |
 | Klub (issuer) | — | identifikace člena, kontrola podmínek, [[OID4VCI]] vydání, revokace starého | — |
 | Stát (PID, zbroják) | — | nové vydání státních dokladů | — |
-| Střelnice (verifier) | — | — | standardní [[OID4VP]] kontrola |
+| **Střelnice (verifier)** | — | — | ISO/IEC 18013-5 proximity (ReaderAuth + [[WRPAC]]) |
 
 ## Typické situace
 

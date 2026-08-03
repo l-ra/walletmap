@@ -6,8 +6,10 @@ order: 50
 category: pristup
 roles: ["Správce střelnice"]
 deepenLinks:
-  - label: "OID4VP — Proximity Presentation"
-    url: "https://openid.net/specs/openid-4-verifiable-presentations-1_0.html"
+  - label: "ARF 3.0 — proximity prezentace (ISO/IEC 18013-5)"
+    url: "https://eudi.dev/latest/"
+  - label: "ISO/IEC 18013-5 — mdoc proximity"
+    url: "https://www.iso.org/standard/69084.html"
 prev: rozhodci-overeni-zavodnika
 next: pristup-streliste
 ---
@@ -23,17 +25,19 @@ Elektronické zámky **zázemí** (šatny, sklad, technické místnosti) otevír
 5. Zámek ověří a otevře dveře
 6. V logu zázemí se zapíše čas a `member_id`
 
-## Technický průběh — zámek jako Verifier
+## Technický průběh — zámek jako proximity reader
+
+Zámek zázemí je **RP Instance** v proximity režimu — komunikuje s peněženkou přes **ISO/IEC 18013-5** (NFC/BLE), nikoli přes [[OID4VP]]. Autenticita čtečky se prokazuje `ReaderAuth` podepsaným [[WRPAC]].
 
 ```mermaid
 flowchart LR
-    A["Zámek vygeneruje presentation request"] --> B["Peněženka (BLE/NFC/QR)"]
-    B --> C["VP"]
+    A["Zámek (mdoc reader)<br/>ReaderAuth + WRPAC"] --> B["Peněženka (BLE/NFC)"]
+    B --> C["mdoc response"]
     C --> D["Zámek ověří: podpis klubu + role + platnost"]
     D --> E["Otevření"]
 ```
 
-Presentation definition zámku zázemí:
+Presentation definition zámku zázemí (mdoc request):
 
 - typ: `ClubMembership`
 - požadované atributy: `roles` obsahuje `správce střelnice`

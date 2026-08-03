@@ -6,7 +6,7 @@
       "en": "EU Digital Identity Wallet"
     },
     "shortDescription": "Mobilní aplikace nebo cloudová služba pro bezpečné ukládání a sdílení digitálních průkazů a atestací dle evropského rámce eIDAS 2.0.",
-    "longDescription": "EUDIW (EU Digital Identity Wallet) je peněženka, kterou občan používá k přijímání, uchovávání a selektivnímu sdílení digitálních dokladů — např. PID, atestací od vydavatelů nebo státních credentialů.\n\nPeněženka komunikuje s vydavateli přes OID4VCI a s ověřovateli přes OID4VP. Integrita instance a klíčů se prokazuje atestacemi WIA a KA.",
+    "longDescription": "EUDIW (EU Digital Identity Wallet) je peněženka, kterou občan používá k přijímání, uchovávání a selektivnímu sdílení digitálních dokladů — např. PID, atestací od vydavatelů nebo státních credentialů.\n\nPeněženka komunikuje s vydavateli přes OID4VCI. S ověřovateli vzdáleně přes OID4VP; v proximity režimu (NFC/BLE) dle ARF 3.0 přes ISO/IEC 18013-5. Integrita instance a klíčů se prokazuje atestacemi WIA a KA.",
     "tags": ["ekosystem", "eidas"],
     "related": ["PID", "OID4VP", "OID4VCI", "WIA", "KA"],
     "sources": [
@@ -28,8 +28,8 @@
     "related": ["EUDIW", "OID4VP", "RP"],
     "sources": [
       {
-        "label": "ARF — Topic 33 PID",
-        "url": "https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework"
+        "label": "ARF 3.0.0 — Topic 33 PID",
+        "url": "https://eudi.dev/latest/"
       }
     ]
   },
@@ -39,8 +39,8 @@
       "cs": "OpenID for Verifiable Presentations",
       "en": "OpenID for Verifiable Presentations"
     },
-    "shortDescription": "Protokol pro žádost o a sdílení verifikovatelných prezentací z peněženky ověřovateli (Relying Party).",
-    "longDescription": "OID4VP definuje, jak ověřovatel (Verifier / RP) požádá peněženku o credential nebo vybrané atributy a jak peněženka odpoví verifikovatelnou prezentací.\n\nTypický tok: RP publikuje verifier metadata, podepíše presentation request (např. klíčem z WRPAC), peněženka zobrazí consent dialog a vrátí VP. RP ověřuje podpisy, platnost credentialů a případně stav WIA/KA.",
+    "shortDescription": "Protokol pro vzdálenou žádost o a sdílení verifikovatelných prezentací z peněženky ověřovateli (Relying Party).",
+    "longDescription": "OID4VP definuje vzdálenou prezentaci — jak ověřovatel (Verifier / RP) požádá peněženku o credential nebo vybrané atributy a jak peněženka odpoví verifikovatelnou prezentací přes síť.\n\nTypický tok: RP publikuje verifier metadata, podepíše presentation request (např. klíčem z WRPAC), peněženka zobrazí consent dialog a vrátí VP. RP ověřuje podpisy, platnost credentialů a případně stav WIA/KA.\n\nARF 3.0 proximity prezentaci (NFC/BLE, wallet-to-wallet) neřeší přes OID4VP, ale přes ISO/IEC 18013-5.",
     "tags": ["protokol", "oid4"],
     "related": ["RP", "WRPAC", "WRPRC", "PID"],
     "sources": [
@@ -167,8 +167,8 @@
       "cs": "List of Trusted Entities",
       "en": "List of Trusted Entities"
     },
-    "shortDescription": "Seznam důvěryhodných subjektů — peněženka podle něj ověřuje certifikáty vydavatelů, RP a registrátorů.",
-    "longDescription": "List of Trusted Entities (LoTE) je důvěryhodný seznam, vůči kterému peněženka validuje řetězce certifikátů a vydavatele registrací (WRPRC, access certifikáty vydavatelů atd.).\n\nBez platné vazby na LoTE peněženka registraci nebo access certifikát nepřijme.",
+    "shortDescription": "Seznam důvěryhodných subjektů (ETSI TS 119 602) — peněženka podle něj ověřuje RP, vydavatele atestací a registrátory.",
+    "longDescription": "List of Trusted Entities (LoTE, ETSI TS 119 602) je strojově čitelný registr důvěryhodných subjektů ekosystému peněženky — RP, vydavatelů atestací, registrátorů a access certifikačních autorit.\n\nARF 3.0 vyžaduje, aby peněženky, RP a vydavatelé spravovali trust anchory z LoTE i z národních Trusted Lists (ETSI TS 119 612) pro kvalifikované služby. WRPRC a WRPAC se ověřují vůči LoTE; WIA vůči Trusted List poskytovatelů peněženek.\n\nBez platné vazby na příslušný trust anchor peněženka registraci nebo access certifikát nepřijme.",
     "tags": ["duvera", "ekosystem"],
     "related": ["WRPRC", "WRPAC", "ACA"],
     "sources": []

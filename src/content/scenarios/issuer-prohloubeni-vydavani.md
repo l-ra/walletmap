@@ -175,7 +175,7 @@ Závodník nejdřív projde OID4VP ověřením státních dokladů v **jedné ko
 
 ## Wallet Unit Attestations (WUA) — WIA a KA při vydání
 
-Dle **TS3** (EC TS03, aktuálně v1.5) a revidovaného **ARF Topic 9** se pojem **Wallet Unit Attestation (WUA)** používá jako **deštníkový termín** pro dvě samostatné atestace peněženky při vydávání:
+Dle **TS3** (EC TS03, aktuálně v1.5) a **ARF 3.0 Topic 9** se pojem **Wallet Unit Attestation (WUA)** používá jako **deštníkový termín** pro dvě samostatné atestace peněženky při vydávání:
 
 | Atestace | Co potvrzuje | Kam ji peněženka posílá | Kdy je povinná |
 |----------|--------------|-------------------------|----------------|
@@ -205,7 +205,7 @@ WIA a KA cestují **oddělenými kanály** OID4VCI/OAuth. Issuer (Credential Iss
 
 ### WIA — Wallet Instance Attestation
 
-WIA je JWT podepsaný **Wallet Providerem** (`x5c` v hlavičce, ověření vůči Trusted List for Wallet Providers). Peněženka ji posílá jako `OAuth-Client-Attestation` spolu s `OAuth-Client-Attestation-PoP` (dle OID4VCI Appendix E).
+WIA je JWT podepsaný **Wallet Providerem** (`x5c` v hlavičce, ověření vůči **Trusted List** poskytovatelů peněženek dle ETSI TS 119 612). Peněženka ji posílá jako `OAuth-Client-Attestation` spolu s `OAuth-Client-Attestation-PoP` (dle OID4VCI Appendix E).
 
 **Technická platnost** WIA je krátká — TS3 vyžaduje TTL **méně než 24 hodin** (`exp` na úrovni tokenu). To zajišťuje, že integrita aplikace byla ověřena nedávno.
 
@@ -253,7 +253,7 @@ WIA je JWT podepsaný **Wallet Providerem** (`x5c` v hlavičce, ověření vůč
 
 **Co issuer (klub) ověřuje u WIA** (přes AS nebo předaný kontext):
 
-1. podpis WIA a WIA-PoP vůči certifikátu WP na Trusted List
+1. podpis WIA a WIA-PoP vůči certifikátu WP na Trusted List (ETSI TS 119 612)
 2. WIA neexpirovala (`exp`)
 3. `client_status` není revokovaný (kontrola status listu)
 4. volitelně: `wallet_name`, `wallet_version`, certifikační údaje řešení peněženky
@@ -321,7 +321,7 @@ Dekódovaný header `jwt` proofu obsahuje `key_attestation` (KA JWT). Payload ob
 
 **Co issuer (klub) ověřuje u KA** (dle OID4VCI Appendix F.4 + TS3):
 
-1. podpis KA vůči certifikátu WP na Trusted List
+1. podpis KA vůči certifikátu WP na Trusted List (ETSI TS 119 612)
 2. platný `c_nonce` / `nonce` z `nonce_endpoint`
 3. u `jwt` proof: podpis proofu klíčem `attested_keys[0]`
 4. `key_storage_status` není revokovaný

@@ -21,9 +21,10 @@ Elektronické zámky **střeliště** mají odlišná pravidla od zámků zázem
 ## User journey — člen klubu
 
 1. Přistoupí k zámku střeliště
-2. Prezentuje **klubový průkaz** z peněženky
-3. Zámek ověří `status: aktivní` a platnost
-4. Dveře se otevřou
+2. Přiloží telefon k NFC čtečce (nebo naváže BLE spojení)
+3. V peněžence potvrdí proximity prezentaci (ISO/IEC 18013-5)
+4. Zámek ověří `status: aktivní` a platnost
+5. Dveře se otevřou
 
 ## User journey — závodník (mimo pravidelný provoz)
 
@@ -35,9 +36,9 @@ Elektronické zámky **střeliště** mají odlišná pravidla od zámků zázem
    - `status: platný`
 4. Dveře se otevřou
 
-## Logika zámku — kombinovaná prezentace s alternativou
+## Logika zámku — proximity prezentace s alternativou
 
-Zámek střeliště v jedné OID4VP transakci akceptuje **jeden z dvou** typů průkazů — kombinovaná presentation definition obsahuje oba `input_descriptors` a `submission_requirements` určí, že stačí splnit jednu z variant:
+Zámek střeliště v jedné ISO/IEC 18013-5 transakci akceptuje **jeden z dvou** typů průkazů — mdoc request obsahuje obě sady požadovaných atributů a logika čtečky určí, která varianta byla předložena:
 
 | Typ | Podmínka | Typický kontext |
 |-----|----------|-----------------|
