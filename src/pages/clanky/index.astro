@@ -7,9 +7,9 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft)).so
 );
 ---
 
-<ArticleLayout title="Články" description="Publikace o evropské digitální identitě">
-  <h1>Články</h1>
-  <p>Přehled publikací o EU Digital Identity Wallet, standardech a implementacích.</p>
+<ArticleLayout title="Články a novinky ARF" description="Týdenní přehledy ARF a publikace o evropské digitální identitě">
+  <h1>Články a novinky ARF</h1>
+  <p>Týdenní shrnutí vývoje Architecture and Reference Framework a další publikace o EU Digital Identity Wallet.</p>
 
   {articles.length === 0 ? (
     <p>Žádné články zatím nejsou publikované.</p>

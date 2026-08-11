@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WalletMap.eu – Mapa evropské digitální identity</title>
-  <meta name="description" content="WalletMap.eu: připravujeme detailní technologickou a uživatelskou mapu evropské peněženky digitální identity (EU Digital Identity Wallet).">
+  <meta name="description" content="WalletMap.eu mapuje využití EU Digital Identity Wallet na konkrétních modelových případech — od use case až po technickou specifikaci. Týdenní přehled vývoje ARF.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -21,7 +21,6 @@
     a:hover { color: #cfe4ff; text-decoration: underline; }
     a:visited { color: #b8a8ff; }
 
-    /* ── Animated background ── */
     .bg-grid {
       position: fixed; inset: 0;
       background-image:
@@ -40,7 +39,6 @@
       -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 70%);
     }
 
-    /* ── Floating orbs ── */
     .orb {
       position: fixed;
       border-radius: 50%;
@@ -57,10 +55,8 @@
       100% { transform: translate(30px, -40px) scale(1.1); }
     }
 
-    /* ── Layout ── */
     .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
-    /* ── Header ── */
     header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 20px 0;
@@ -68,6 +64,7 @@
     .logo {
       font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em;
       display: flex; align-items: center; gap: 10px;
+      color: #fff;
     }
     .logo svg { width: 32px; height: 32px; }
     .logo span { color: #5b8dff; }
@@ -75,23 +72,16 @@
       font-size: 0.9rem; font-weight: 500; color: #8892b0;
       transition: color 0.2s; margin-left: 32px;
     }
-    nav a:hover { color: #fff; }
+    nav a:hover { color: #fff; text-decoration: none; }
 
-    /* ── Hero ── */
     .hero {
       min-height: calc(100vh - 80px);
       display: flex; align-items: center; justify-content: center;
       text-align: center;
       padding: 40px 0 80px;
+      position: relative;
     }
     .hero__inner { max-width: 820px; }
-    .hero__badge {
-      display: inline-block;
-      padding: 8px 18px; border-radius: 100px;
-      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
-      background: rgba(55, 125, 255, 0.12); color: #8cb4ff; border: 1px solid rgba(55, 125, 255, 0.2);
-      margin-bottom: 28px;
-    }
     .hero h1 {
       font-size: clamp(2.5rem, 7vw, 4.2rem);
       font-weight: 800; line-height: 1.1; letter-spacing: -0.03em;
@@ -118,6 +108,7 @@
     }
     .btn--primary:hover {
       transform: translateY(-2px); box-shadow: 0 8px 36px rgba(43, 106, 255, 0.45);
+      text-decoration: none; color: #fff;
     }
     .btn--outline {
       background: transparent; color: #c8d0e0;
@@ -125,9 +116,9 @@
     }
     .btn--outline:hover {
       border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05);
+      text-decoration: none; color: #fff;
     }
 
-    /* ── Scroll indicator ── */
     .scroll-indicator {
       position: absolute; bottom: 30px; left: 50%; translate: -50% 0;
       display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -152,7 +143,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Sections common ── */
     section { padding: 100px 0; }
     .section-label {
       font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
@@ -167,84 +157,123 @@
       color: #8892b0; font-size: 1.05rem; max-width: 640px;
     }
 
-    /* ── About ── */
-    #about { text-align: center; }
-    #about .section-sub { margin: 0 auto 60px; }
+    #approach { text-align: center; }
+    #approach .section-sub { margin: 0 auto 60px; }
 
-    .cards {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px; text-align: left;
+    .vertical-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      text-align: left;
     }
-    .card {
+    .vertical-step {
       background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 20px; padding: 32px 28px;
-      transition: transform 0.3s, border-color 0.3s;
-      backdrop-filter: blur(4px);
-    }
-    .card:hover { transform: translateY(-4px); border-color: rgba(79, 140, 255, 0.3); }
-    .card__icon {
-      width: 48px; height: 48px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px; font-size: 1.4rem;
-    }
-    .card__icon--blue  { background: rgba(43,106,255,0.15); color: #6b9aff; }
-    .card__icon--cyan  { background: rgba(0,200,255,0.13); color: #5de0ff; }
-    .card__icon--purple{ background: rgba(124,58,237,0.14); color: #b28aff; }
-    .card__icon--green { background: rgba(16,185,129,0.13); color: #5eead4; }
-    .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
-    .card p { font-size: 0.9rem; color: #8892b0; }
-
-    /* ── Vision / Timeline ── */
-    #vision { text-align: center; background: rgba(255,255,255,0.01); }
-    #vision .section-sub { margin: 0 auto 50px; }
-    .timeline {
-      display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
-    }
-    .timeline__step {
-      flex: 1; min-width: 180px; max-width: 240px;
-      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px; padding: 28px 20px; text-align: center;
+      border-radius: 16px; padding: 24px 20px;
       position: relative;
     }
-    .timeline__step:not(:last-child)::after {
-      content: '→';
-      position: absolute; right: -14px; top: 50%; translate: 0 -50%;
-      color: #2b6aff; font-size: 1.4rem;
+    .vertical-step__num {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+      color: #4f8cff; margin-bottom: 10px;
     }
-    .timeline__num {
-      width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px; font-weight: 700; font-size: 0.9rem;
-      background: rgba(43,106,255,0.15); color: #6b9aff;
-    }
-    .timeline__step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-    .timeline__step p { font-size: 0.82rem; color: #6a7488; }
+    .vertical-step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .vertical-step p { font-size: 0.88rem; color: #8892b0; }
 
-    /* ── Newsletter ── */
-    #newsletter {
-      text-align: center;
+    #usecases { background: rgba(255,255,255,0.01); }
+    #usecases .section-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end;
+      justify-content: space-between; gap: 24px; margin-bottom: 48px;
     }
-    .newsletter-box {
-      max-width: 540px; margin: 0 auto;
+    #usecases .section-sub { margin: 0; }
+
+    .usecase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .usecase-card {
+      display: flex; flex-direction: column;
       background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px; padding: 48px 36px;
-      backdrop-filter: blur(6px);
+      border-radius: 20px; padding: 36px 32px;
+      transition: transform 0.3s, border-color 0.3s;
+      color: inherit;
+      text-decoration: none;
+      min-height: 280px;
     }
-    .newsletter-box h2 { font-size: 1.6rem; margin-bottom: 12px; }
-    .newsletter-box p { color: #8892b0; margin-bottom: 28px; font-size: 0.95rem; }
-    .newsletter-box .form-row {
-      display: flex; gap: 12px; max-width: 420px; margin: 0 auto;
+    .usecase-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(79, 140, 255, 0.35);
+      text-decoration: none;
+      color: inherit;
     }
-    .newsletter-box input {
-      flex: 1; padding: 14px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.05); color: #fff; font-size: 0.95rem; outline: none;
-      transition: border-color 0.2s;
+    .usecase-card:visited { color: inherit; }
+    .usecase-card__domain {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #5de0ff; margin-bottom: 14px;
     }
-    .newsletter-box input::placeholder { color: #5a6480; }
-    .newsletter-box input:focus { border-color: #2b6aff; }
-    .newsletter-box .btn { flex-shrink: 0; }
+    .usecase-card h3 {
+      font-size: 1.45rem; font-weight: 700; margin-bottom: 12px; color: #fff;
+    }
+    .usecase-card p {
+      font-size: 0.95rem; color: #8892b0; flex: 1; margin-bottom: 24px;
+    }
+    .usecase-card__meta {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+    }
+    .usecase-card__chip {
+      font-size: 0.72rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 6px;
+      background: rgba(55, 125, 255, 0.12); color: #8cb4ff;
+      border: 1px solid rgba(55, 125, 255, 0.2);
+    }
+    .usecase-card__cta {
+      font-size: 0.9rem; font-weight: 600; color: #4f8cff;
+    }
+    .usecase-card:hover .usecase-card__cta { color: #8cb4ff; }
 
-    /* ── Footer ── */
+    #news .section-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end;
+      justify-content: space-between; gap: 24px; margin-bottom: 40px;
+    }
+    #news .section-sub { margin: 0; }
+
+    .news-feature {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px; padding: 40px 36px;
+    }
+    .news-feature__date {
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em;
+      color: #4f8cff; margin-bottom: 12px;
+    }
+    .news-feature h3 {
+      font-size: clamp(1.3rem, 3vw, 1.7rem);
+      font-weight: 700; margin-bottom: 16px; line-height: 1.3;
+    }
+    .news-feature p {
+      color: #8892b0; font-size: 1rem; margin-bottom: 16px; max-width: 820px;
+    }
+    .news-feature__points {
+      list-style: none; margin: 24px 0 28px;
+      display: grid; gap: 12px;
+    }
+    .news-feature__points li {
+      padding-left: 18px; position: relative;
+      color: #c8d0e0; font-size: 0.95rem;
+    }
+    .news-feature__points li::before {
+      content: '';
+      position: absolute; left: 0; top: 0.55em;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #4f8cff;
+    }
+    .news-feature__actions {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+    .news-feature__actions .btn { padding: 12px 28px; font-size: 0.95rem; }
+    .news-archive-link {
+      font-size: 0.9rem; color: #8892b0; margin-left: 8px;
+    }
+    .news-archive-link:hover { color: #cfe4ff; }
+
     footer {
       border-top: 1px solid rgba(255,255,255,0.06);
       padding: 30px 0; text-align: center; font-size: 0.85rem; color: #5a6480;
@@ -252,25 +281,26 @@
     footer a { color: #9ec8ff; }
     footer a:hover { text-decoration: underline; }
 
-    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .vertical-steps { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 640px) {
-      nav a { margin-left: 20px; font-size: 0.8rem; }
+      nav a { margin-left: 16px; font-size: 0.8rem; }
       .hero__actions { flex-direction: column; align-items: center; }
-      .newsletter-box .form-row { flex-direction: column; }
-      .timeline__step:not(:last-child)::after { content: '↓'; right: auto; bottom: -16px; top: auto; left: 50%; translate: -50% 0; }
+      .vertical-steps { grid-template-columns: 1fr; }
+      .usecase-grid { grid-template-columns: 1fr; }
+      .news-feature { padding: 28px 22px; }
       section { padding: 60px 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background -->
   <div class="bg-grid"></div>
   <div class="orb orb--1"></div>
   <div class="orb orb--2"></div>
   <div class="orb orb--3"></div>
 
-  <!-- Header -->
   <div class="container">
     <header>
       <div class="logo">
@@ -278,36 +308,31 @@
         Wallet<span>Map</span>
       </div>
       <nav>
-        <a href="#about">O projektu</a>
-        <a href="/scenare/strelecky-klub">Modelový příklad</a>
-        <a href="#vision">Vize</a>
-        <a href="#newsletter">Novinky</a>
+        <a href="#usecases">Modelové případy</a>
+        <a href="#news">Novinky ARF</a>
+        <a href="/clanky">Články</a>
+        <a href="/slovnik-zkratek">Slovník</a>
       </nav>
     </header>
   </div>
 
-  <!-- Hero -->
   <section class="hero">
     <div class="hero__inner container">
-      <div class="hero__badge">Připravujeme</div>
       <h1>
-        Mapa evropské<br>
-        <span class="highlight">digitální identity</span>
+        Wallet<span style="color:#5b8dff;-webkit-text-fill-color:#5b8dff;">Map</span><br>
+        <span class="highlight">od use case k technologii</span>
       </h1>
       <p>
-        WalletMap.eu vytváří ucelenou technologickou a uživatelskou mapu
-        evropské peněženky digitální identity (EU Digital Identity Wallet).
-        Přehled standardů, implementací, certifikací a reálného nasazení napříč EU.
+        Mapujeme využití evropské peněženky digitální identity (EUDIW)
+        na konkrétních modelových případech — kompletní vertikála od
+        provozního scénáře přes role a průkazy až po protokoly, certifikáty a trust.
       </p>
       <div class="hero__actions">
-        <a href="/scenare/strelecky-klub" class="btn btn--primary">
-          🎯 Modelový příklad — střelecký klub
+        <a href="#usecases" class="btn btn--primary">
+          Modelové případy
         </a>
-        <a href="#newsletter" class="btn btn--outline">
-          ⏳ Upozornit na spuštění
-        </a>
-        <a href="#about" class="btn btn--outline">
-          Zjistit více ↓
+        <a href="#news" class="btn btn--outline">
+          Týdenní přehled ARF
         </a>
       </div>
     </div>
@@ -317,113 +342,121 @@
     </div>
   </section>
 
-  <!-- About -->
-  <section id="about">
+  <section id="approach">
     <div class="container">
-      <div class="section-label">O projektu</div>
-      <h2 class="section-title">Co je WalletMap?</h2>
+      <div class="section-label">Přístup</div>
+      <h2 class="section-title">Kompletní vertikála každého případu</h2>
       <p class="section-sub">
-        Chceme vytvořit centrální místo, kde najdete vše podstatné o evropské
-        digitální identitě — od technických specifikací až po reálné zkušenosti.
+        Každý modelový případ pokrývá všechny vrstvy: co se děje v provozu,
+        kdo vystupuje v jaké roli, jaké průkazy a atributy se používají
+        a jak to sedí na evropské specifikace.
       </p>
-      <div class="cards">
-        <div class="card">
-          <div class="card__icon card__icon--blue">🔷</div>
-          <h3>Technologická mapa</h3>
-          <p>Přehled protokolů, standardů (EBSI, OIDC4VP, SD-JWT, ISO 18013-5) a architektur referenčních implementací.</p>
+      <div class="vertical-steps">
+        <div class="vertical-step">
+          <div class="vertical-step__num">01</div>
+          <h3>Use case</h3>
+          <p>Konkrétní situace: členství, přístup, soutěž, správa průkazů.</p>
         </div>
-        <div class="card">
-          <div class="card__icon card__icon--cyan">🌐</div>
-          <h3>Katalog implementací</h3>
-          <p>Mapy wallet řešení napříč členskými státy EU včetně pilotních projektů a produkčního nasazení.</p>
+        <div class="vertical-step">
+          <div class="vertical-step__num">02</div>
+          <h3>Role a procesy</h3>
+          <p>Držitel, vydavatel, ověřovatel — user journey a provozní pravidla.</p>
         </div>
-        <div class="card">
-          <div class="card__icon card__icon--purple">🔐</div>
-          <h3>Certifikace & soulad</h3>
-          <p>Přehled certifikačních schémat, eIDAS 2.0 požadavků a auditu bezpečnosti wallet řešení.</p>
+        <div class="vertical-step">
+          <div class="vertical-step__num">03</div>
+          <h3>Průkazy a data</h3>
+          <p>Atestace, selektivní sdílení, status, revokace a intended use.</p>
         </div>
-        <div class="card">
-          <div class="card__icon card__icon--green">👤</div>
-          <h3>Uživatelská zkušenost</h3>
-          <p>Best practices pro UX, onboarding, recovery a přístupnost digitální peněženky pro všechny občany EU.</p>
+        <div class="vertical-step">
+          <div class="vertical-step__num">04</div>
+          <h3>Technologie</h3>
+          <p>OID4VCI / OID4VP, WRPAC / WRPRC, proximity, trust listy a ARF.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Vision / Timeline -->
-  <section id="vision">
+  <section id="usecases">
     <div class="container">
-      <div class="section-label">Naše vize</div>
-      <h2 class="section-title">Cesta k mapě</h2>
-      <p class="section-sub">
-        Projekt budujeme postupně. Každá fáze přidá novou vrstvu detailu a propojení.
-      </p>
-      <div class="timeline">
-        <div class="timeline__step">
-          <div class="timeline__num">1</div>
-          <h4>Research</h4>
-          <p>Analýza standardů, specifikací a existujících implementací napříč EU.</p>
+      <div class="section-head">
+        <div>
+          <div class="section-label">Modelové případy</div>
+          <h2 class="section-title">Kde EUDIW dává smysl</h2>
+          <p class="section-sub">
+            Každý případ je samostatná vertikála — od provozního procesu
+            po technickou implementaci v evropském rámci.
+          </p>
         </div>
-        <div class="timeline__step">
-          <div class="timeline__num">2</div>
-          <h4>Struktura mapy</h4>
-          <p>Návrh taxonomie, vztahů a vrstev technologické mapy.</p>
-        </div>
-        <div class="timeline__step">
-          <div class="timeline__num">3</div>
-          <h4>Data & vizualizace</h4>
-          <p>Interaktivní grafové zobrazení s filtrováním a detaily.</p>
-        </div>
-        <div class="timeline__step">
-          <div class="timeline__num">4</div>
-          <h4>Live mapa</h4>
-          <p>Veřejné spuštění s možností přispívat a sledovat změny.</p>
-        </div>
+      </div>
+      <div class="usecase-grid">
+        <a class="usecase-card" href="/scenare/strelecky-klub">
+          <div class="usecase-card__domain">Sport &amp; přístup</div>
+          <h3>Střelecký klub</h3>
+          <p>
+            Členské průkazy, registrace závodníků se státními doklady,
+            startovní lístky, elektronické zámky střelnice a ověřování
+            rozhodčím — včetně registrace RP, vydávání a revokace.
+          </p>
+          <div class="usecase-card__meta">
+            <span class="usecase-card__chip">OID4VCI</span>
+            <span class="usecase-card__chip">OID4VP</span>
+            <span class="usecase-card__chip">WRPRC</span>
+            <span class="usecase-card__chip">Proximity</span>
+            <span class="usecase-card__chip">PID</span>
+          </div>
+          <span class="usecase-card__cta">Prohlédnout scénáře →</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Newsletter -->
-  <section id="newsletter">
+  <section id="news">
     <div class="container">
-      <div class="newsletter-box">
-        <h2>Nechte si poslat zprávu</h2>
+      <div class="section-head">
+        <div>
+          <div class="section-label">Novinky z přípravy ARF</div>
+          <h2 class="section-title">Týdenní přehled</h2>
+          <p class="section-sub">
+            Každý týden shrnujeme vývoj Architecture and Reference Framework
+            a souvisejících specifikací a referenčních implementací.
+          </p>
+        </div>
+      </div>
+      <article class="news-feature">
+        <div class="news-feature__date">3.–10. srpna 2026</div>
+        <h3>Týdenní EUDI Wallet přehled</h3>
         <p>
-          Jakmile bude mapa připravena k náhledu, pošleme vám krátké oznámení.
-          Žádný spam, jen jedno upozornění.
+          Týden byl obsahově klidnější než předchozí vlna kolem ARF&nbsp;3.0.0,
+          ale přinesl tři změny s velkým implementačním dopadem: korekci TS6
+          po legislativní úpravě registrace WRP, dokončení TS7 a přesun validace
+          registračních certifikátů issuerů do Android/iOS wallet core.
         </p>
-        <form class="form-row" action="#" method="post">
-          <input type="email" placeholder="Váš e-mail" required>
-          <button type="submit" class="btn btn--primary">Odeslat</button>
-        </form>
-        <p style="margin-top:16px;font-size:0.8rem;color:#5a6480;">
-          Zůstaňte v obraze — <a href="#">sledujte nás</a>
-        </p>
-      </div>
+        <ul class="news-feature__points">
+          <li>TS6 1.2.1 srovnává model služby s CIR 2025/848 ve znění CIR 2026/1730</li>
+          <li>TS7 finalizován jako 1.0 — členské státy mají povinně autorizovat vydávání WRPRC</li>
+          <li>Android i iOS Wallet Core validují WRPRC issueru při OpenID4VCI</li>
+          <li>Oprava porovnání scope WRPRC versus DCQL claim paths (wildcard vs. index)</li>
+        </ul>
+        <div class="news-feature__actions">
+          <a href="/clanky/arf-tydenni-prehled-2026-08-03" class="btn btn--primary">
+            Celý přehled
+          </a>
+          <a href="/clanky" class="news-archive-link">Všechny články →</a>
+        </div>
+      </article>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer>
     <div class="container">
       &copy; 2026 <a href="https://walletmap.eu">WalletMap.eu</a> &mdash; Mapa evropské digitální identity.
       <br style="margin-top:4px;display:inline-block;">
-      Postaveno s podporou evropské komunity digitální identity.
+      Modelové případy využití EU Digital Identity Wallet.
     </div>
   </footer>
 
-  <!-- Simple form handler (prevents actual submit for demo) -->
   <script>
-    document.querySelector('form')?.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const input = this.querySelector('input');
-      if (input && input.value) {
-        this.innerHTML = '<p style="color:#5eead4;font-weight:600;">✓ Děkujeme! Oznámení pošleme na <strong style="color:#fff;">' + input.value + '</strong>.</p>';
-      }
-    });
-    // Intersection Observer for reveal animations
-    const cards = document.querySelectorAll('.card, .timeline__step');
+    const revealEls = document.querySelectorAll('.vertical-step, .usecase-card, .news-feature');
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -431,8 +464,8 @@
           entry.target.style.transform = 'translateY(0)';
         }
       });
-    }, { threshold: 0.15 });
-    cards.forEach(el => {
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => {
       el.style.opacity = '0';
       el.style.transform = 'translateY(24px)';
       el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
