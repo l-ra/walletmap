@@ -79,6 +79,36 @@ Skript `node scripts/migrate-glossary.mjs` převádí `**ZKRATKA**` → `[[ZKRAT
 - **Jazyk obsahu:** čeština
 - **Build:** Astro 5, statický web; `npm run build`
 
+## Týdenní přehled ARF (postup pro agenty)
+
+Týdenní shrnutí vývoje EUDI Wallet se publikuje jako článek a na homepage se zobrazuje nejnovější vydání.
+
+### Soubory a konvence
+
+| Co | Kde |
+|----|-----|
+| Draft / finální text | `src/content/articles/arf-tydenni-prehled-YYYY-MM-DD.md` |
+| Datum ve jménu souboru | **pondělí** sledovaného týdne (např. období 10.–17. 8. → `2026-08-10`) |
+| Seznam všech článků | `/clanky` — generuje se automaticky z kolekce `articles` |
+| Náhled na homepage | `public/index.html`, sekce `#news` (`.news-feature`) |
+
+### Kroky při zapracování nového přehledu
+
+1. **Draft** ulož do `src/content/articles/arf-tydenni-prehled-YYYY-MM-DD.md` (nebo uprav existující).
+2. **Frontmatter** (viz `src/content/config.ts` a existující přehledy):
+   - `title`: `"Týdenní EUDI Wallet přehled — D.–D. měsíce RRRR"`
+   - `description`: krátké shrnutí pro meta a úvod stránky
+   - `pubDate`: **poslední den** sledovaného týdne (typicky neděle)
+   - `tags`: vždy `arf`, `tydenni-prehled` + relevantní termíny (např. `wrprc`, `oid4vci`)
+   - `draft: false` pro publikaci
+3. **Zkratky** — v prose použij `[[ID]]` dle `src/data/glossary.json` (viz sekce výše). V code blocích zkratky neanotuj.
+4. **Homepage** — v `public/index.html` aktualizuj blok `.news-feature`:
+   - období týdne, perex, 3–4 odrážky klíčových změn
+   - odkaz `Celý přehled` → `/clanky/arf-tydenni-prehled-YYYY-MM-DD` (slug = název souboru bez `.md`)
+5. **`npm run build`** — ověř, že build projde (neznámé `[[…]]` nebo chybný frontmatter build zastaví).
+
+Starší přehledy zůstávají v `src/content/articles/` a na `/clanky`; homepage vždy propaguje jen nejnovější.
+
 ## Obecná pravidla
 
 - Minimální rozsah změn — neměň nesouvisející soubory.

@@ -423,22 +423,22 @@
         </div>
       </div>
       <article class="news-feature">
-        <div class="news-feature__date">3.–10. srpna 2026</div>
+        <div class="news-feature__date">10.–17. srpna 2026</div>
         <h3>Týdenní EUDI Wallet přehled</h3>
         <p>
-          Týden byl obsahově klidnější než předchozí vlna kolem ARF&nbsp;3.0.0,
-          ale přinesl tři změny s velkým implementačním dopadem: korekci TS6
-          po legislativní úpravě registrace WRP, dokončení TS7 a přesun validace
-          registračních certifikátů issuerů do Android/iOS wallet core.
+          Týden byl ve standardech a ARF klidný — vývoj se přesunul do referenčních
+          knihoven. Nejpodstatnější jsou uvolnění validace Key Attestation v OpenID4VCI,
+          konsolidace WRPRC architektury v Android Wallet Core&nbsp;0.30.0 a otevřený
+          problém pre-authorized code při více Authorization Serverech.
         </p>
         <ul class="news-feature__points">
-          <li>TS6 1.2.1 srovnává model služby s CIR 2025/848 ve znění CIR 2026/1730</li>
-          <li>TS7 finalizován jako 1.0 — členské státy mají povinně autorizovat vydávání WRPRC</li>
-          <li>Android i iOS Wallet Core validují WRPRC issueru při OpenID4VCI</li>
-          <li>Oprava porovnání scope WRPRC versus DCQL claim paths (wildcard vs. index)</li>
+          <li>JVM OpenID4VCI #574 už nevynucuje TS3 profil Key Attestation — policy patří do vyšší vrstvy</li>
+          <li>Android Wallet Core 0.30.0: explicitní oddělení WRPRC authentication vs. evaluation</li>
+          <li>iOS WalletKit validuje issuer registration už při resolve credential offer</li>
+          <li>Draft Swift OpenID4VCI #316: pre-authorized code může skončit u špatného Authorization Serveru</li>
         </ul>
         <div class="news-feature__actions">
-          <a href="/clanky/arf-tydenni-prehled-2026-08-03" class="btn btn--primary">
+          <a href="/clanky/arf-tydenni-prehled-2026-08-10" class="btn btn--primary">
             Celý přehled
           </a>
           <a href="/clanky" class="news-archive-link">Všechny články →</a>
