@@ -274,6 +274,32 @@
     }
     .news-archive-link:hover { color: #cfe4ff; }
 
+    #harmonogram { background: rgba(255,255,255,0.015); }
+    #harmonogram .section-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end;
+      justify-content: space-between; gap: 24px; margin-bottom: 36px;
+    }
+    #harmonogram .section-sub { margin: 0; }
+    .timeline-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px; padding: 28px 28px 24px;
+    }
+    .timeline-card__figure {
+      margin: 0 0 20px; border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(79, 140, 255, 0.15);
+    }
+    .timeline-card__figure img {
+      display: block; width: 100%; height: auto;
+    }
+    .timeline-card__caption {
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 16px;
+    }
+    .timeline-card__caption p {
+      color: #8892b0; font-size: 0.92rem; max-width: 560px; margin: 0;
+    }
+    .timeline-card__caption .btn { padding: 12px 28px; font-size: 0.95rem; }
+
     footer {
       border-top: 1px solid rgba(255,255,255,0.06);
       padding: 30px 0; text-align: center; font-size: 0.85rem; color: #5a6480;
@@ -309,6 +335,7 @@
       </div>
       <nav>
         <a href="#usecases">Modelové případy</a>
+        <a href="#harmonogram">Harmonogram</a>
         <a href="#news">Novinky ARF</a>
         <a href="/clanky">Články</a>
         <a href="/slovnik-zkratek">Slovník</a>
@@ -339,6 +366,43 @@
     <div class="scroll-indicator">
       <div class="mouse"></div>
       <span>SCROLL</span>
+    </div>
+  </section>
+
+  <section id="harmonogram">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="section-label">Legislativa</div>
+          <h2 class="section-title">Harmonogram EUDIW</h2>
+          <p class="section-sub">
+            Klíčové termíny z nařízení eIDAS&nbsp;2.0 a prováděcích předpisů —
+            od účinnosti technických specifikací po povinnost nabídnout peněženku
+            a akceptovat ji u relying parties.
+          </p>
+        </div>
+      </div>
+      <div class="timeline-card">
+        <figure class="timeline-card__figure">
+          <img
+            src="/images/eudiw-legislativni-harmonogram.svg"
+            width="960"
+            height="320"
+            alt="Infografika harmonogramu EUDIW: 20. 5. 2024 účinnost nařízení, 24. 12. 2024 prováděcí předpisy peněženky, 27. 5. 2025 registrace RP, 24. 12. 2026 povinnost států nabídnout peněženku, 24. 12. 2027 povinná akceptace u regulovaných RP"
+            loading="lazy"
+          >
+        </figure>
+        <div class="timeline-card__caption">
+          <p>
+            Právní kotva běží od <strong style="color:#00d4ff;font-weight:600;">24.&nbsp;12.&nbsp;2024</strong>
+            (účinnost IR k peněžence). Odtud se počítá 24&nbsp;měsíců pro státy
+            a 36&nbsp;měsíců pro soukromé relying parties ve regulovaných odvětvích.
+          </p>
+          <a href="/clanky/eudiw-legislativni-harmonogram" class="btn btn--primary">
+            Celý přehled termínů
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -456,7 +520,7 @@
   </footer>
 
   <script>
-    const revealEls = document.querySelectorAll('.vertical-step, .usecase-card, .news-feature');
+    const revealEls = document.querySelectorAll('.vertical-step, .usecase-card, .news-feature, .timeline-card');
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
