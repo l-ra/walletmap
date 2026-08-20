@@ -286,10 +286,12 @@
     }
     .timeline-card__figure {
       margin: 0 0 20px; border-radius: 16px; overflow: hidden;
-      border: 1px solid rgba(79, 140, 255, 0.15);
+      border: 1px solid rgba(79, 140, 255, 0.25);
+      background: rgba(18, 22, 42, 0.9);
     }
     .timeline-card__figure img {
       display: block; width: 100%; height: auto;
+      min-height: 200px;
     }
     .timeline-card__caption {
       display: flex; flex-wrap: wrap; align-items: center;
@@ -378,7 +380,7 @@
           <p class="section-sub">
             Klíčové termíny z nařízení eIDAS&nbsp;2.0 a prováděcích předpisů —
             od účinnosti technických specifikací po povinnost nabídnout peněženku
-            a akceptovat ji u relying parties.
+            a akceptovat ji u spoléhajících stran.
           </p>
         </div>
       </div>
@@ -396,7 +398,7 @@
           <p>
             Právní kotva běží od <strong style="color:#00d4ff;font-weight:600;">24.&nbsp;12.&nbsp;2024</strong>
             (účinnost IR k peněžence). Odtud se počítá 24&nbsp;měsíců pro státy
-            a 36&nbsp;měsíců pro soukromé relying parties ve regulovaných odvětvích.
+            a 36&nbsp;měsíců pro soukromé spoléhající strany ve regulovaných odvětvích.
           </p>
           <a href="/clanky/eudiw-legislativni-harmonogram" class="btn btn--primary">
             Celý přehled termínů
@@ -520,7 +522,7 @@
   </footer>
 
   <script>
-    const revealEls = document.querySelectorAll('.vertical-step, .usecase-card, .news-feature, .timeline-card');
+    const revealEls = document.querySelectorAll('.vertical-step, .usecase-card, .news-feature');
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

@@ -14,7 +14,7 @@ prev: zalohovani-a-obnova-penazenky
 next: registrace-vydavatele
 ---
 
-Než klub vydá první členský průkaz, musí se zapojit do ekosystému EUDIW ve dvou rolích: **vydavatel (EAA Provider)** a **spolehlivá strana (Relying Party)**. Obě registrace probíhají u **národního registrátora** v členském státě, kde je klub založen.
+Než klub vydá první členský průkaz, musí se zapojit do ekosystému EUDIW ve dvou rolích: **vydavatel (EAA Provider)** a **spoléhající strana (Relying Party)**. Obě registrace probíhají u **národního registrátora** v členském státě, kde je klub založen.
 
 ## Dvě registrace — jeden subjekt
 

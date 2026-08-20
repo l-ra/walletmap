@@ -19,7 +19,7 @@ Střelecký klub pořádá pravidelné závody ve sportovní střelbě, umožňu
 
 ## Celková situace
 
-Klub vystupuje jako **vydavatel (Issuer)** vlastních průkazů a zároveň jako **spolehlivá strana (Relying Party)** při přihlašování do klubové aplikace a správě členské databáze. Střelnice a závody vystupují jako **ověřovatelé (Verifier)**. Stát vydává [[PID]], **zbrojní oprávnění** a případně **průkaz zbraně**.
+Klub vystupuje jako **vydavatel (Issuer)** vlastních průkazů a zároveň jako **spoléhající strana (Relying Party)** při přihlašování do klubové aplikace a správě členské databáze. Střelnice a závody vystupují jako **ověřovatelé (Verifier)**. Stát vydává [[PID]], **zbrojní oprávnění** a případně **průkaz zbraně**.
 
 ## Hlavní procesy
 
