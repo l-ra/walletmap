@@ -23,7 +23,7 @@
       "en": "Person Identification Data"
     },
     "shortDescription": "Digitální doklad totožnosti vydávaný státem v rámci EUDIW — obsahuje ověřitelné atributy jako jméno a datum narození.",
-    "longDescription": "PID (Person Identification Data / EU Digital Identity) je státem vydávaný credential v peněžence. Slouží k prokázání totožnosti občana vůči spolehlivým stranám bez nutnosti sdílet celý fyzický doklad.\n\nV modelovém scénáři střeleckého klubu se PID používá při registraci závodníka, ověření totožnosti při žádosti o členství nebo v kombinovaných prezentacích spolu s dalšími doklady.",
+    "longDescription": "PID (Person Identification Data / EU Digital Identity) je státem vydávaný credential v peněžence. Slouží k prokázání totožnosti občana vůči spoléhajícím stranám bez nutnosti sdílet celý fyzický doklad.\n\nV modelovém scénáři střeleckého klubu se PID používá při registraci závodníka, ověření totožnosti při žádosti o členství nebo v kombinovaných prezentacích spolu s dalšími doklady.",
     "tags": ["credential", "statni-doklady"],
     "related": ["EUDIW", "OID4VP", "RP"],
     "sources": [
@@ -70,7 +70,7 @@
   "RP": {
     "abbr": "RP",
     "fullName": {
-      "cs": "Spolehlivá strana (Relying Party)",
+      "cs": "Spoléhající strana (Relying Party)",
       "en": "Relying Party"
     },
     "shortDescription": "Subjekt, který se spoléhá na credential z peněženky — typicky ověřovatel identity nebo atributů uživatele.",

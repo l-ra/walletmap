@@ -19,7 +19,7 @@ Od tohoto data se počítají:
 | Termín | Právní základ | Co se týká |
 |--------|---------------|------------|
 | **24. 12. 2026** | čl. 5a odst. 1 nařízení (EU) 2024/1183 | Každý členský stát musí nabídnout **alespoň jednu certifikovanou** [[EUDIW]] občanům, rezidentům a právnickým osobám (24 měsíců od účinnosti IR podle čl. 5a odst. 23 a 5c odst. 6). |
-| **24. 12. 2027** | čl. 5f odst. 2 | Soukromé [[RP\|spolehlivé strany]] v regulovaných odvětvích (bankovnictví, energie, zdravotnictví, telekomunikace, doprava, vzdělávání aj.) a subjekty mimo mikro-/malé podniky, které **musí** používat silnou autentizaci, musí na **dobrovolnou žádost uživatele** akceptovat [[EUDIW]] (36 měsíců od účinnosti týchž IR). |
+| **24. 12. 2027** | čl. 5f odst. 2 | Soukromé [[RP\|spoléhající strany]] v regulovaných odvětvích (bankovnictví, energie, zdravotnictví, telekomunikace, doprava, vzdělávání aj.) a subjekty mimo mikro-/malé podniky, které **musí** používat silnou autentizaci, musí na **dobrovolnou žádost uživatele** akceptovat [[EUDIW]] (36 měsíců od účinnosti týchž IR). |
 | **24. 12. 2027** | čl. 5f odst. 3 | Velmi velké online platformy (VLOP dle DSA) musí u autentizace uživatelů rovněž umožnit použití [[EUDIW]] — opět jen na žádost uživatele a v rozsahu nezbytných dat. |
 
 > **Poznámka:** Komise termíny popisuje i jako „konec 2026“ resp. „konec 2027“. Kalendářní datum **24. prosince** odpovídá přesnému výpočtu 24/36 měsíců od 24. 12. 2024.
