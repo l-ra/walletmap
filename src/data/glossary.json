@@ -8,7 +8,7 @@
     "shortDescription": "Mobilní aplikace nebo cloudová služba pro bezpečné ukládání a sdílení digitálních průkazů a atestací dle evropského rámce eIDAS 2.0.",
     "longDescription": "EUDIW (EU Digital Identity Wallet) je peněženka, kterou občan používá k přijímání, uchovávání a selektivnímu sdílení digitálních dokladů — např. PID, atestací od vydavatelů nebo státních credentialů.\n\nPeněženka komunikuje s vydavateli přes OID4VCI. S ověřovateli vzdáleně přes OID4VP; v proximity režimu (NFC/BLE) dle ARF 3.0 přes ISO/IEC 18013-5. Integrita instance a klíčů se prokazuje atestacemi WIA a KA.",
     "tags": ["ekosystem", "eidas"],
-    "related": ["PID", "OID4VP", "OID4VCI", "WIA", "KA"],
+    "related": ["PID", "OID4VP", "OID4VCI", "WIA", "KA", "EAA", "QEAA"],
     "sources": [
       {
         "label": "EUDI Wallet — oficiální portál",
@@ -194,11 +194,62 @@
     "shortDescription": "Evropský právní rámec pro digitální identitu a důvěryhodné služby — EUDIW je jeho technickým nástrojem.",
     "longDescription": "Nařízení eIDAS (eIDAS 2.0) stanovuje pravidla pro evropskou digitální identitu včetně povinného nabízení EUDIW členskými státy a pravidel pro kvalifikované elektronické atestace a důvěryhodné služby.\n\nTechnické specifikace EUDIW (ARF, ETSI, OpenID) implementují požadavky tohoto rámce.",
     "tags": ["pravni", "ekosystem"],
-    "related": ["EUDIW", "PID"],
+    "related": ["EUDIW", "PID", "QEAA", "EAA", "PuB-EAA"],
     "sources": [
       {
         "label": "eIDAS 2.0 — EUR-Lex",
         "url": "https://eur-lex.europa.eu/"
+      }
+    ]
+  },
+  "EAA": {
+    "abbr": "EAA",
+    "fullName": {
+      "cs": "Elektronická atestace atributů",
+      "en": "Electronic Attestation of Attributes"
+    },
+    "shortDescription": "Elektronický záznam, který umožňuje ověřit atributy subjektu — v eIDAS zastřešuje kvalifikované, veřejné i nevázané atestace.",
+    "longDescription": "EAA (Electronic Attestation of Attributes) je v nařízení eIDAS 2.0 elektronická atestace, která umožňuje autentizovat atributy (věk, kvalifikace, členství, oprávnění aj.).\n\nKdyž se termín neupřesní, označuje všechny tři právní kategorie: kvalifikovanou QEAA, atestaci vydanou veřejným sektorem (PuB-EAA) a nevázanou (non-qualified) EAA. V registraci vydavatele se nevázaný poskytovatel označuje entitlements Non_Q_EAA_Provider.\n\nTechnický datový model a profily (SD-JWT VC, mdoc, JSON-LD, X.509 AC) popisuje ETSI TS 119 472-1; vydávání do peněženky ETSI TS 119 472-3 a OID4VCI.",
+    "tags": ["credential", "atestace", "eidas"],
+    "related": ["QEAA", "PuB-EAA", "PID", "EUDIW", "OID4VCI"],
+    "sources": [
+      {
+        "label": "ETSI TS 119 472-1",
+        "url": "https://www.etsi.org/deliver/etsi_ts/119400_119499/11947201/01.02.01_60/ts_11947201v010201p.pdf"
+      }
+    ]
+  },
+  "QEAA": {
+    "abbr": "QEAA",
+    "fullName": {
+      "cs": "Kvalifikovaná elektronická atestace atributů",
+      "en": "Qualified Electronic Attestation of Attributes"
+    },
+    "shortDescription": "Elektronická atestace atributů vydaná kvalifikovaným poskytovatelem důvěryhodných služeb — právní účinek odpovídá příloze V eIDAS.",
+    "longDescription": "QEAA je atestace vydaná Qualified Trust Service Providerem. Musí splnit přílohu V nařízení eIDAS 2.0: jednoznačnou identifikaci subjektu (nebo jasně označený pseudonym), dobu platnosti, kvalifikovaný elektronický podpis nebo pečeť vydavatele a službu pro ověření stavu (pokud není short-lived).\n\nProváděcí pravidla dává nařízení (EU) 2025/1569 (novelizované 2026/1735). V peněžence se QEAA typicky vydává jako SD-JWT VC nebo mdoc; podpis vydavatele je kvalifikovaný.",
+    "tags": ["credential", "atestace", "eidas"],
+    "related": ["EAA", "PuB-EAA", "PID", "eIDAS"],
+    "sources": [
+      {
+        "label": "Nařízení (EU) 2025/1569",
+        "url": "https://eur-lex.europa.eu/eli/reg_impl/2025/1569/oj"
+      }
+    ]
+  },
+  "PuB-EAA": {
+    "abbr": "PuB-EAA",
+    "fullName": {
+      "cs": "Elektronická atestace atributů vydaná veřejným sektorem",
+      "en": "Electronic Attestation of Attributes issued by or on behalf of a public sector body"
+    },
+    "shortDescription": "Atestace z autentického zdroje veřejné správy (nebo jejím jménem) — právní účinek podle přílohy VII eIDAS, srovnatelný s QEAA.",
+    "longDescription": "PuB-EAA vydává orgán veřejné správy odpovědný za autentický zdroj, nebo subjekt určený členským státem, aby atestace vydával jeho jménem (čl. 45f eIDAS). Typicky jde o údaje z registrů — bydliště, oprávnění, doklady.\n\nPrávní požadavky jsou v příloze VII: identifikace subjektu, platnost, stavová služba u ne-short-lived atestací. Na rozdíl od QEAA vydavatel nemusí být QTSP, ale musí splnit požadavky na veřejný sektor a podpisový certifikát.",
+    "tags": ["credential", "atestace", "eidas"],
+    "related": ["EAA", "QEAA", "PID", "eIDAS"],
+    "sources": [
+      {
+        "label": "Nařízení (EU) 2024/1183 — čl. 45f a příloha VII",
+        "url": "https://eur-lex.europa.eu/eli/reg/2024/1183/oj"
       }
     ]
   },
