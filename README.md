@@ -25,7 +25,7 @@ npm run preview  # náhled sestaveného webu
 ### Struktura
 
 ```
-public/index.html          landing page (beze změny, kopíruje se do dist/)
+src/pages/index.astro      landing page (tři nejnovější články z kolekce)
 src/content/articles/      články v Markdownu
 src/content/scenarios/     scénáře modelového příkladu
 src/data/glossary.json       slovník zkratek (povinný pro [[ZKRATKA]] v textu)

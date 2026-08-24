@@ -81,7 +81,7 @@ Skript `node scripts/migrate-glossary.mjs` převádí `**ZKRATKA**` → `[[ZKRAT
 
 ## Týdenní přehled ARF (postup pro agenty)
 
-Týdenní shrnutí vývoje EUDI Wallet se publikuje jako článek a na homepage se zobrazuje nejnovější vydání.
+Týdenní shrnutí vývoje EUDI Wallet se publikuje jako článek. Homepage automaticky zobrazí tři nejnovější publikované články.
 
 ### Soubory a konvence
 
@@ -90,24 +90,21 @@ Týdenní shrnutí vývoje EUDI Wallet se publikuje jako článek a na homepage 
 | Draft / finální text | `src/content/articles/arf-tydenni-prehled-YYYY-MM-DD.md` |
 | Datum ve jménu souboru | **pondělí** sledovaného týdne (např. období 10.–17. 8. → `2026-08-10`) |
 | Seznam všech článků | `/clanky` — generuje se automaticky z kolekce `articles` |
-| Náhled na homepage | `public/index.html`, sekce `#news` (`.news-feature`) |
+| Náhled na homepage | `src/pages/index.astro`, sekce `#news` (tři nejnovější články podle `pubDate`) |
 
 ### Kroky při zapracování nového přehledu
 
 1. **Draft** ulož do `src/content/articles/arf-tydenni-prehled-YYYY-MM-DD.md` (nebo uprav existující).
 2. **Frontmatter** (viz `src/content/config.ts` a existující přehledy):
    - `title`: `"Týdenní EUDI Wallet přehled — D.–D. měsíce RRRR"`
-   - `description`: krátké shrnutí pro meta a úvod stránky
+   - `description`: krátké shrnutí pro meta a úvod stránky (zobrazí se i na homepage)
    - `pubDate`: **poslední den** sledovaného týdne (typicky neděle)
    - `tags`: vždy `arf`, `tydenni-prehled` + relevantní termíny (např. `wrprc`, `oid4vci`)
    - `draft: false` pro publikaci
 3. **Zkratky** — v prose použij `[[ID]]` dle `src/data/glossary.json` (viz sekce výše). V code blocích zkratky neanotuj.
-4. **Homepage** — v `public/index.html` aktualizuj blok `.news-feature`:
-   - období týdne, perex, 3–4 odrážky klíčových změn
-   - odkaz `Celý přehled` → `/clanky/arf-tydenni-prehled-YYYY-MM-DD` (slug = název souboru bez `.md`)
-5. **`npm run build`** — ověř, že build projde (neznámé `[[…]]` nebo chybný frontmatter build zastaví).
+4. **`npm run build`** — ověř, že build projde (neznámé `[[…]]` nebo chybný frontmatter build zastaví). Homepage se aktualizuje sama z kolekce článků.
 
-Starší přehledy zůstávají v `src/content/articles/` a na `/clanky`; homepage vždy propaguje jen nejnovější.
+Starší přehledy zůstávají v `src/content/articles/` a na `/clanky`; homepage vždy zobrazuje tři nejnovější publikované články.
 
 ## Obecná pravidla
 
