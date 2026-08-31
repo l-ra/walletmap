@@ -3,7 +3,7 @@ title: "Týdenní EUDI Wallet přehled — 17.–24. srpna 2026"
 description: "TS5 v1.5 a TS6 v1.2.2 mění datový model WRP registrace, finalizace TS8 pro reporting do DPA a v iOS WalletKit oddělená WRPRC politika pro VP/VCI včetně kontroly entitlementů."
 pubDate: 2026-08-24
 tags: [arf, tydenni-prehled, wrprc, oid4vp, oid4vci, ts5, ts8]
-draft: true
+draft: false
 ---
 
 Tento týden se těžiště vývoje znovu přesunulo ke **specifikacím registrace Wallet-Relying Parties**. Nejdůležitější jsou **TS5 v1.5**, navazující **TS6 v1.2.2** a finalizace **TS8 v1.0**. V referenční implementaci se současně zpřesňuje interpretace [[WRPRC]]: nestačí kontrolovat, zda jsou požadované/vydávané credentialy uvedeny v certifikátu, ale kontroluje se také odpovídající **entitlement**.
