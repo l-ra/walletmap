@@ -6,8 +6,6 @@ tags: [arf, tydenni-prehled, wrprc, oid4vp, oid4vci]
 draft: false
 ---
 
-## Týdenní EUDI Wallet přehled — 24.–31. srpna 2026
-
 Tento týden nepřinesl novou revizi **ARF ani technických specifikací TS**; v obou dokumentačních repozitářích jsem za sledované období nenašel věcný merge. Významné změny jsou ale v implementacích a několik z nich má přímý bezpečnostní nebo interoperabilní dopad: oprava trust validace OpenID4VP, zpřísnění kontroly issuer entitlementů a řešení několika méně obvyklých scénářů OpenID4VCI.
 
 ### Sloučené změny
