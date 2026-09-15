@@ -1,6 +1,6 @@
 ---
-title: "Kvalifikovaní a nekvalifikovaní vydavatelé elektronických potvrzení atributů"
-description: "Základní srovnání režimu EAA a QEAA podle eIDAS: povinnosti TSP a QTSP, posuzování shody, ověření identity a atributů, autentické zdroje, právní účinky a společná technická vrstva EUDI Wallet."
+title: "Základní srovnání EAA a QEAA — kvalifikovaní a nekvalifikovaní vydavatelé"
+description: "Jak se liší režim běžného a kvalifikovaného vydavatele elektronických potvrzení atributů podle eIDAS: povinnosti TSP a QTSP, posuzování shody, ověření identity a atributů, autentické zdroje, právní účinky a společná technická vrstva EUDI Wallet."
 pubDate: 2026-09-15
 tags: [eidas, eudiw, eaa, qeaa, pub-eaa, legislativa, tsp, qtsp]
 draft: false
@@ -26,7 +26,7 @@ Prvním důležitým principem je, že vydávání elektronických potvrzení at
 
 [[eIDAS]] jej řadí mezi služby vytvářející důvěru – trust services.
 
-To znamená, že také subjekt, který vydává běžné, tedy nekvalifikované [[EAA]], vystupuje v tomto rozsahu jako poskytovatel služby vytvářející důvěru (Trust Service Provider – TSP).
+To znamená, že také subjekt, který vydává běžné, tedy nekvalifikované [[EAA]], vystupuje v tomto rozsahu jako [[TSP|poskytovatel služby vytvářející důvěru]].
 
 Nekvalifikovaný vydavatel tedy nestojí mimo regulatorní rámec [[eIDAS]]. Rozdíl mezi kvalifikovaným a nekvalifikovaným vydavatelem spočívá zejména v rozsahu povinností, způsobu dohledu, požadované úrovni ověření a právních účincích vydávaných potvrzení.
 
@@ -34,13 +34,13 @@ Zjednodušeně lze oba režimy popsat následovně:
 
 **Nekvalifikovaný vydavatel [[EAA]]**
 
-TSP → obecné požadavky [[eIDAS]] → bezpečnost a řízení rizik → pravidla pro konkrétní [[EAA]] → pravidla interoperability s [[EUDIW]]
+[[TSP]] → obecné požadavky [[eIDAS]] → bezpečnost a řízení rizik → pravidla pro konkrétní [[EAA]] → pravidla interoperability s [[EUDIW]]
 
 **Kvalifikovaný vydavatel [[QEAA]]**
 
-TSP → QTSP → posouzení shody → kvalifikovaný status → pravidelný dohled a audity → přísnější ověření identity a atributů → specifické požadavky na [[QEAA]] → pravidla interoperability s [[EUDIW]]
+[[TSP]] → [[QTSP]] → posouzení shody → kvalifikovaný status → pravidelný dohled a audity → přísnější ověření identity a atributů → specifické požadavky na [[QEAA]] → pravidla interoperability s [[EUDIW]]
 
-Kvalifikovaný vydavatel tedy podléhá základním povinnostem TSP stejně jako nekvalifikovaný vydavatel, ale nad nimi existuje další regulatorní vrstva vztahující se na Qualified Trust Service Providers – QTSP.
+Kvalifikovaný vydavatel tedy podléhá základním povinnostem [[TSP]] stejně jako nekvalifikovaný vydavatel, ale nad nimi existuje další regulatorní vrstva vztahující se na [[QTSP|kvalifikované poskytovatele služeb vytvářejících důvěru]].
 
 ## Nekvalifikovaný neznamená neregulovaný
 
@@ -94,13 +94,13 @@ Kvalifikovaný status tedy není označení, které by si poskytovatel mohl při
 
 Získáním kvalifikovaného statusu regulatorní proces nekončí.
 
-Kvalifikovaní poskytovatelé musí být podle článku 20 [[eIDAS]] auditováni na vlastní náklady nejméně jednou za 24 měsíců. Audit provádí subjekt posuzování shody a jeho cílem je ověřit, zda QTSP a jím poskytované kvalifikované služby nadále splňují požadavky [[eIDAS]] a příslušné požadavky NIS2. Výsledný conformity assessment report musí být předán dozorovému orgánu.
+Kvalifikovaní poskytovatelé musí být podle článku 20 [[eIDAS]] auditováni na vlastní náklady nejméně jednou za 24 měsíců. Audit provádí subjekt posuzování shody a jeho cílem je ověřit, zda [[QTSP]] a jím poskytované kvalifikované služby nadále splňují požadavky [[eIDAS]] a příslušné požadavky NIS2. Výsledný conformity assessment report musí být předán dozorovému orgánu.
 
 Dozorový orgán může provést nebo vyžádat také další posouzení mimo pravidelný cyklus.
 
 Pravidla pro akreditaci subjektů posuzování shody, strukturu conformity assessment reportů a samotná schémata posuzování shody dále upravuje prováděcí nařízení Komise (EU) 2025/2162.
 
-[Prováděcí nařízení (EU) 2025/2162 – posuzování shody QTSP](https://eur-lex.europa.eu/eli/reg_impl/2025/2162/oj)
+[Prováděcí nařízení (EU) 2025/2162 – posuzování shody [[QTSP]]](https://eur-lex.europa.eu/eli/reg_impl/2025/2162/oj)
 
 Prováděcí nařízení stanoví mimo jiné požadavky na conformity assessment schemes a požaduje, aby u každé hodnocené kvalifikované služby probíhalo nejméně jedno surveillance conformity assessment ročně v rámci příslušného schématu.
 
@@ -108,11 +108,11 @@ Pro vydavatele [[QEAA]] tak není důležitý pouze stav systému v okamžiku z�
 
 ## Organizační požadavky na kvalifikovaného poskytovatele
 
-[[eIDAS]] ukládá QTSP řadu dalších požadavků týkajících se fungování organizace.
+[[eIDAS]] ukládá [[QTSP]] řadu dalších požadavků týkajících se fungování organizace.
 
 Kvalifikovaný poskytovatel musí například využívat zaměstnance a případné subdodavatele s odpovídající odborností, zkušenostmi a kvalifikací, používat důvěryhodné systémy a produkty, chránit používané systémy proti neoprávněným změnám a zabezpečit ukládaná data tak, aby byla zachována jejich autenticita a aby je mohly měnit pouze oprávněné osoby.
 
-Součástí požadavků je také odpovídající finanční zajištění rizika odpovědnosti. QTSP má podle použitelného národního práva disponovat dostatečnými finančními zdroji nebo odpovídajícím pojištěním odpovědnosti.
+Součástí požadavků je také odpovídající finanční zajištění rizika odpovědnosti. [[QTSP]] má podle použitelného národního práva disponovat dostatečnými finančními zdroji nebo odpovídajícím pojištěním odpovědnosti.
 
 Kvalifikovaný poskytovatel musí rovněž informovat dozorový orgán o relevantních změnách poskytované kvalifikované služby a o záměru její poskytování ukončit.
 
@@ -122,7 +122,7 @@ Tyto požadavky vytvářejí podstatně širší compliance rámec, než jaký s
 
 Jednou z nejdůležitějších oblastí, ve kterých se oba režimy liší, je ověření identity subjektu před vydáním potvrzení.
 
-Článek 24 [[eIDAS]] vyžaduje, aby QTSP při vydávání kvalifikovaného elektronického potvrzení atributů ověřil identitu fyzické nebo právnické osoby, které má být potvrzení vydáno, a případně také její specifické atributy.
+Článek 24 [[eIDAS]] vyžaduje, aby [[QTSP]] při vydávání kvalifikovaného elektronického potvrzení atributů ověřil identitu fyzické nebo právnické osoby, které má být potvrzení vydáno, a případně také její specifické atributy.
 
 Podrobnější technické požadavky byly stanoveny prováděcím nařízením Komise (EU) 2025/1566.
 
@@ -132,7 +132,7 @@ Nařízení jako referenční standard používá ETSI TS 119 461 V2.1.1, s konk
 
 Cílem je zajistit, aby identita osoby, které je [[QEAA]] vydáváno, nebyla ověřena pouze na základě libovolného registračního procesu vydavatele, ale prostřednictvím mechanismu odpovídajícího požadované vysoké úrovni důvěry.
 
-U nekvalifikovaného [[EAA]] se stejný kvalifikovaný identity-proofing režim automaticky neuplatní. Ani zde však neplatí, že by ověření identity bylo bez pravidel. Prováděcí nařízení 2025/2160 například stanoví, že nekvalifikovaný TSP má tam, kde je to relevantní, ověřovat identitu uživatelů přímo nebo prostřednictvím třetí strany a zveřejňovat informace o používaných metodách ověření identity.
+U nekvalifikovaného [[EAA]] se stejný kvalifikovaný identity-proofing režim automaticky neuplatní. Ani zde však neplatí, že by ověření identity bylo bez pravidel. Prováděcí nařízení 2025/2160 například stanoví, že nekvalifikovaný [[TSP]] má tam, kde je to relevantní, ověřovat identitu uživatelů přímo nebo prostřednictvím třetí strany a zveřejňovat informace o používaných metodách ověření identity.
 
 ## Ověření samotných atributů
 
@@ -191,14 +191,14 @@ Požadavky na [[QEAA]] jsou stanoveny přímo v příloze V [[eIDAS]].
 Kvalifikované elektronické potvrzení atributů musí obsahovat mimo jiné:
 
 * informaci, že jde o kvalifikované elektronické potvrzení atributů,
-* jednoznačnou identifikaci QTSP, který potvrzení vydal,
-* členský stát, ve kterém je QTSP usazen,
+* jednoznačnou identifikaci [[QTSP]], který potvrzení vydal,
+* členský stát, ve kterém je [[QTSP]] usazen,
 * údaje jednoznačně identifikující subjekt, ke kterému se potvrzovaný atribut vztahuje,
 * samotný atribut nebo atributy a případně informace o jejich rozsahu,
 * počátek a konec doby platnosti,
 * unikátní identifikátor potvrzení,
 * případnou informaci o schématu potvrzení atributů,
-* kvalifikovaný elektronický podpis nebo kvalifikovanou elektronickou pečeť vydávajícího QTSP,
+* kvalifikovaný elektronický podpis nebo kvalifikovanou elektronickou pečeť vydávajícího [[QTSP]],
 * informace umožňující získat příslušný certifikát,
 * informace nebo odkaz na službu umožňující zjistit aktuální stav platnosti potvrzení.
 
@@ -270,9 +270,9 @@ Významný rozdíl existuje také v oblasti odpovědnosti za škodu.
 
 Rozdílně je ale nastaveno důkazní břemeno.
 
-U nekvalifikovaného TSP musí úmysl nebo nedbalost poskytovatele prokázat osoba, která náhradu škody požaduje.
+U nekvalifikovaného [[TSP]] musí úmysl nebo nedbalost poskytovatele prokázat osoba, která náhradu škody požaduje.
 
-U kvalifikovaného TSP se naopak úmysl nebo nedbalost presumují. QTSP musí v případě sporu prokázat, že škoda nevznikla v důsledku jeho úmyslného nebo nedbalostního jednání.
+U kvalifikovaného [[QTSP]] se naopak úmysl nebo nedbalost presumují. [[QTSP]] musí v případě sporu prokázat, že škoda nevznikla v důsledku jeho úmyslného nebo nedbalostního jednání.
 
 Vyšší úroveň důvěry spojená s kvalifikovaným statusem je tak doprovázena také přísnějším režimem odpovědnosti poskytovatele.
 
@@ -280,13 +280,13 @@ Vyšší úroveň důvěry spojená s kvalifikovaným statusem je tak doprováze
 
 | Oblast                                           | Nekvalifikovaný vydavatel [[EAA]]                             | Kvalifikovaný vydavatel [[QEAA]]                            |
 | ------------------------------------------------ | ------------------------------------------------------------- | ----------------------------------------------------------- |
-| Postavení podle [[eIDAS]]                        | Poskytovatel služby vytvářející důvěru – TSP                  | Kvalifikovaný poskytovatel služby vytvářející důvěru – QTSP |
+| Postavení podle [[eIDAS]]                        | Poskytovatel služby vytvářející důvěru – [[TSP]]                  | Kvalifikovaný poskytovatel služby vytvářející důvěru – [[QTSP]] |
 | Nutnost získat kvalifikovaný status              | Ne                                                            | Ano                                                         |
 | Posouzení shody před zahájením služby            | Není podmínkou poskytování nekvalifikované služby jako takové | Ano                                                         |
 | Zápis kvalifikované služby do Trusted List       | Ne                                                            | Ano                                                         |
-| Pravidelný audit podle čl. 20 [[eIDAS]]          | Ne v režimu určeném QTSP                                      | Ano, nejméně každých 24 měsíců                              |
+| Pravidelný audit podle čl. 20 [[eIDAS]]          | Ne v režimu určeném [[QTSP]]                                      | Ano, nejméně každých 24 měsíců                              |
 | Průběžné conformity assessment                   | Omezenější režim                                              | Ano, podle pravidel conformity assessment scheme            |
-| Řízení rizik                                     | Ano                                                           | Ano, jako součást širšího režimu QTSP                       |
+| Řízení rizik                                     | Ano                                                           | Ano, jako součást širšího režimu [[QTSP]]                       |
 | ETSI EN 319 401                                  | Vybrané části prostřednictvím IR 2025/2160                    | Součást širšího frameworku posuzování kvalifikované služby  |
 | Ověření identity uživatele                       | Podle charakteru služby a risk-based požadavků                | Zvláštní požadavky čl. 24 a IR 2025/1566                    |
 | Ověření atributů                                 | Podle charakteru služby, schématu a zdroje dat                | Regulovaný proces s vysokou mírou důvěry                    |
@@ -299,9 +299,9 @@ Vyšší úroveň důvěry spojená s kvalifikovaným statusem je tak doprováze
 | Právní ochrana elektronické formy                | Ano                                                           | Ano                                                         |
 | Právní účinek odpovídající listinnému potvrzení  | Ne automaticky                                                | Ano                                                         |
 | Přeshraniční qualified recognition               | Ne jako qualified credential                                  | Ano                                                         |
-| Odpovědnost                                      | Poškozený prokazuje úmysl nebo nedbalost                      | Úmysl nebo nedbalost QTSP se presumuje                      |
-| Finanční zajištění / pojištění podle režimu QTSP | Nejde o obecný ekvivalent povinnosti QTSP                     | Ano, podle národního práva                                  |
-| Dohled                                           | Ano, v režimu TSP                                             | Rozšířený dohled nad QTSP a kvalifikovanou službou          |
+| Odpovědnost                                      | Poškozený prokazuje úmysl nebo nedbalost                      | Úmysl nebo nedbalost [[QTSP]] se presumuje                      |
+| Finanční zajištění / pojištění podle režimu [[QTSP]] | Nejde o obecný ekvivalent povinnosti [[QTSP]]                     | Ano, podle národního práva                                  |
+| Dohled                                           | Ano, v režimu [[TSP]]                                             | Rozšířený dohled nad [[QTSP]] a kvalifikovanou službou          |
 
 ## Rozdíl není především ve formátu credentialu
 
@@ -313,7 +313,7 @@ Zásadní rozdíl se skrývá především za credentialem.
 
 U kvalifikovaného potvrzení existuje regulatorně kontrolovaný řetězec důvěry zahrnující:
 
-ověření vydavatele → kvalifikovaný status → audit → ověření identity → ověření atributu → issuance → kryptografickou ochranu → správu životního cyklu → dohled
+ověření vydavatele → kvalifikovaný status → audit → ověření identity → ověření atributu → vydání → kryptografickou ochranu → správu životního cyklu → dohled
 
 U nekvalifikovaného [[EAA]] existuje rovněž regulatorní a technický rámec, ale úroveň a způsob zajištění jednotlivých kroků mohou být flexibilnější a více závislé na konkrétním případu použití a rizikovém profilu služby.
 
@@ -340,7 +340,7 @@ Vedle běžných [[EAA]] a [[QEAA]] existuje ještě třetí kategorie, kterou j
 
 Článek 45f [[eIDAS]] upravuje [[PuB-EAA|elektronická potvrzení atributů vydávaná orgánem veřejného sektoru odpovědným za autentický zdroj nebo jeho jménem]]. Jde například o situaci, kdy je credential vydáván přímo na základě údajů spravovaných příslušným veřejným registrem.
 
-Tato potvrzení mají vlastní regulatorní režim a nejsou jednoduše totožná ani s běžným nekvalifikovaným [[EAA]], ani s [[QEAA]] vydávaným komerčním QTSP.
+Tato potvrzení mají vlastní regulatorní režim a nejsou jednoduše totožná ani s běžným nekvalifikovaným [[EAA]], ani s [[QEAA]] vydávaným komerčním [[QTSP]].
 
 Zároveň jim [[eIDAS]] přiznává významné právní účinky. Podle článku 45b mají stejně jako [[QEAA]] stejný právní účinek jako zákonně vydaná potvrzení v listinné podobě. Potvrzení vydané veřejným subjektem odpovědným za autentický zdroj v jednom členském státě má být navíc jako takové uznáváno v ostatních členských státech.
 
@@ -351,7 +351,7 @@ Tato kategorie je proto důležitá zejména tam, kde stát zvolí model přím�
 Pro oblast vydávání [[EAA]] a [[QEAA]] jsou z pohledu vydavatele nejdůležitější zejména následující předpisy:
 
 **Nařízení (EU) č. 910/2014 – [[eIDAS]], ve znění evropského rámce digitální identity**
-Základní právní rámec pro služby vytvářející důvěru, elektronická potvrzení atributů, QTSP, právní účinky a dohled.
+Základní právní rámec pro služby vytvářející důvěru, elektronická potvrzení atributů, [[QTSP]], právní účinky a dohled.
 [Konsolidované eIDAS na EUR-Lex](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02014R0910-20241018)
 
 **Nařízení (EU) 2024/1183 – European Digital Identity Framework**
@@ -388,8 +388,8 @@ Základní rozdíl mezi kvalifikovaným a nekvalifikovaným vydavatelem elektron
 
 V obou případech se jedná o regulovanou oblast služeb vytvářejících důvěru a při integraci s [[EUDIW]] se na oba typy potvrzení mohou vztahovat společná technická pravidla interoperability.
 
-Kvalifikovaný vydavatel ale navíc působí v režimu QTSP. Musí získat kvalifikovaný status, projít posouzením shody, podléhá průběžným auditům a dohledu a musí splnit přísnější požadavky na ověření identity, atributů, bezpečnost a provoz služby. Samotné [[QEAA]] má zároveň zákonem stanovený obsah a silnější právní účinky.
+Kvalifikovaný vydavatel ale navíc působí v režimu [[QTSP]]. Musí získat kvalifikovaný status, projít posouzením shody, podléhá průběžným auditům a dohledu a musí splnit přísnější požadavky na ověření identity, atributů, bezpečnost a provoz služby. Samotné [[QEAA]] má zároveň zákonem stanovený obsah a silnější právní účinky.
 
-Nekvalifikovaný vydavatel má flexibilnější režim, není však mimo regulaci. Musí plnit obecné povinnosti TSP, řídit rizika a zabezpečit službu a při použití [[EUDIW]] dodržovat příslušná pravidla evropského interoperabilního rámce.
+Nekvalifikovaný vydavatel má flexibilnější režim, není však mimo regulaci. Musí plnit obecné povinnosti [[TSP]], řídit rizika a zabezpečit službu a při použití [[EUDIW]] dodržovat příslušná pravidla evropského interoperabilního rámce.
 
 Z pohledu ekosystému [[EUDIW]] tak oba modely mohou existovat vedle sebe. Rozdíl mezi nimi vyjadřuje především úroveň regulatorně garantované důvěry, způsob vzniku a ověření atributu a právní účinky výsledného elektronického potvrzení.

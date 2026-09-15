@@ -185,6 +185,30 @@
     "related": ["WRPAC", "LoTE"],
     "sources": []
   },
+  "TSP": {
+    "abbr": "TSP",
+    "fullName": {
+      "cs": "Poskytovatel služby vytvářející důvěru",
+      "en": "Trust Service Provider"
+    },
+    "shortDescription": "Subjekt poskytující služby vytvářející důvěru podle eIDAS — včetně nekvalifikovaných EAA, pečetí, časových razítek aj.",
+    "longDescription": "Trust Service Provider (TSP) je podle nařízení eIDAS poskytovatel služby vytvářející důvěru. Vydávání běžného (nekvalifikovaného) EAA spadá do tohoto režimu — vydavatel musí plnit obecné povinnosti TSP včetně řízení rizik (čl. 19a) a bezpečnostních požadavků.\n\nKvalifikovaný status (QTSP) je nadstavba; bez něj nelze vydávat QEAA ani jiné kvalifikované služby.",
+    "tags": ["role", "eidas", "pravni"],
+    "related": ["QTSP", "eIDAS", "EAA", "QEAA"],
+    "sources": []
+  },
+  "QTSP": {
+    "abbr": "QTSP",
+    "fullName": {
+      "cs": "Kvalifikovaný poskytovatel služby vytvářející důvěru",
+      "en": "Qualified Trust Service Provider"
+    },
+    "shortDescription": "TSP s kvalifikovaným statusem — může vydávat QEAA, kvalifikované podpisy a další kvalifikované služby dle eIDAS.",
+    "longDescription": "Qualified Trust Service Provider (QTSP) je TSP, který získal kvalifikovaný status posouzením shody a zápisem do Trusted List. Podléhá pravidelným auditům (čl. 20 eIDAS), přísnějším požadavkům na ověření identity a atributů (čl. 24) a režimu odpovědnosti s reverzním důkazním břemenem (čl. 13).\n\nPouze QTSP smí vydávat kvalifikovaná elektronická potvrzení atributů (QEAA) s právním účinkem odpovídajícím listinnému potvrzení.",
+    "tags": ["role", "eidas", "pravni"],
+    "related": ["TSP", "eIDAS", "QEAA", "EAA"],
+    "sources": []
+  },
   "eIDAS": {
     "abbr": "eIDAS",
     "fullName": {
@@ -194,7 +218,7 @@
     "shortDescription": "Evropský právní rámec pro digitální identitu a důvěryhodné služby — EUDIW je jeho technickým nástrojem.",
     "longDescription": "Nařízení eIDAS (eIDAS 2.0) stanovuje pravidla pro evropskou digitální identitu včetně povinného nabízení EUDIW členskými státy a pravidel pro kvalifikované elektronické atestace a důvěryhodné služby.\n\nTechnické specifikace EUDIW (ARF, ETSI, OpenID) implementují požadavky tohoto rámce.",
     "tags": ["pravni", "ekosystem"],
-    "related": ["EUDIW", "PID", "QEAA", "EAA", "PuB-EAA"],
+    "related": ["EUDIW", "PID", "QEAA", "EAA", "PuB-EAA", "TSP", "QTSP"],
     "sources": [
       {
         "label": "eIDAS 2.0 — EUR-Lex",
