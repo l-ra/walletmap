@@ -424,3 +424,308 @@ validní credential
 
 ---
 
+# Bankovní SCA: SUA/SCA Attestation a dynamic linking
+
+Pro elektronické platby je obecný [[OID4VP]] mechanismus profilován v **TS12 — Specification of Strong Customer Authentication (SCA) Implementation with the Wallet**, aktuálně ve verzi 1.0.1.
+
+TS12 používá pojem **SCA Attestation** pro attestation určenou k payment SCA. Koncepčně navazuje na **SUA Attestation** — credential, který poskytovatel služby vydá uživateli do [[EUDIW]] pro následnou silnou autentizaci.
+
+Typický model je:
+
+```text
+REGISTRACE / ENROLMENT
+
+Banka / ASPSP
+    │
+    │ bezpečně asociuje klienta a Wallet Unit
+    │ vydá SCA Attestation
+    ▼
+EUDI Wallet
+    │
+    │ credential je kryptograficky bound na wallet key
+    ▼
+dlouhodobý autentizační prostředek banky
+
+
+POZDĚJŠÍ PLATBA
+
+Banka / merchant / PISP
+    │
+    │ OID4VP request
+    │ + požadavek na SCA Attestation
+    │ + transaction_data s platbou
+    ▼
+Wallet
+    │
+    │ zobrazí částku + příjemce
+    │ provede požadovanou autentizaci
+    │ vytvoří transaction-bound presentation
+    ▼
+Banka / payment infrastructure
+    │
+    │ validace SCA výsledku
+    ▼
+provedení platby
+```
+
+SCA Attestation tak může plnit roli dlouhodobého bankovního autentizačního prostředku uvnitř [[EUDIW]], zatímco `transaction_data` řeší **konkrétní operaci v konkrétním okamžiku**.
+
+## 7. Opt-in u SCA Attestation: `transaction_data_types`
+
+TS12 přidává ke type metadata SCA Attestation povinnou mapu:
+
+```json
+{
+  "category": "urn:eu:europa:ec:eudi:sua:sca",
+  "transaction_data_types": {
+    "urn:eudi:sca:payment:1": {
+      "schema_uri": "https://bank.example/schemas/payment-v1.json"
+    },
+    "urn:eudi:sca:account_access:1": {
+      "schema_uri": "https://bank.example/schemas/account-access-v1.json"
+    }
+  }
+}
+```
+
+Tady je opt-in vyjádřen přímo ve vztahu ke **konkrétnímu typu credentialu**.
+
+TS12 požaduje, aby [[RP]] použil pouze typy a schémata deklarovaná v `transaction_data_types`. Wallet následně kontroluje:
+
+```text
+1. je požadovaný credential SCA Attestation?
+2. má category = urn:eu:europa:ec:eudi:sua:sca?
+3. je transaction_data.type v transaction_data_types?
+4. odpovídá payload deklarovanému JSON Schema?
+5. umí wallet data korektně zobrazit?
+```
+
+Při selhání se zpracování zastaví.
+
+Type metadata mohou vedle `schema` / `schema_uri` obsahovat také:
+
+```text
+claims / claims_uri
+ui_labels / ui_labels_uri
+```
+
+To umožňuje definovat nejen syntaxi dat, ale i pravidla, **jaké hodnoty musí uživatel skutečně vidět a jak mají být lokalizovány**.
+
+## 8. Čtyři základní SCA transakční typy
+
+TS12 stanoví čtyři základní typy, jejichž zpracování a vykreslení musí Wallet Unit podporovat:
+
+| Typ | Účel |
+|---|---|
+| `urn:eudi:sca:payment:1` | potvrzení platby |
+| `urn:eudi:sca:login_risk_transaction:1` | login nebo riziková operace |
+| `urn:eudi:sca:account_access:1` | přístup k informacím o účtu |
+| `urn:eudi:sca:emandate:1` | elektronický mandát, včetně scénářů payee-initiated payments |
+
+Pro banku tedy nejde o libovolný proprietární JSON vložený do walletu. TS12 vytváří interoperabilní základ, nad kterým mohou SCA Attestation Rulebooks přidat další pravidla.
+
+## 9. Konkrétní příklad potvrzení bankovní platby
+
+Představme si okamžitou platbu **12 500 CZK** společnosti ACME s.r.o.
+
+DCQL část žádosti může schematicky požadovat bankovní SCA Attestation:
+
+```json
+{
+  "dcql_query": {
+    "credentials": [
+      {
+        "id": "sca_account",
+        "format": "dc+sd-jwt",
+        "meta": {
+          "vct_values": [
+            "https://bank.example/vct/sca-account/1"
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+Dekódovaný `transaction_data` objekt:
+
+```json
+{
+  "type": "urn:eudi:sca:payment:1",
+  "credential_ids": ["sca_account"],
+  "transaction_data_hashes_alg": ["sha-256"],
+  "payload": {
+    "transaction_id": "pay-2026-09-28-000184",
+    "date_time": "2026-09-28T09:15:00+02:00",
+    "payee": {
+      "name": "ACME s.r.o.",
+      "id": "CZ6508000000192000145399",
+      "website": "https://acme.example"
+    },
+    "execution_date": "2026-09-28",
+    "currency": "CZK",
+    "amount": 12500.00,
+    "sct_inst": true
+  }
+}
+```
+
+V samotném [[OID4VP]] requestu tento JSON necestuje jako JSON objekt, ale jako base64url string:
+
+```json
+{
+  "transaction_data": [
+    "eyJ0eXBlIjoidXJuOmV1ZGk6c2NhOnBheW1lbnQ6MSIsImNyZWRlbnRpYWxfaWRzIjpbInNjYV9hY2NvdW50Il0sLi4ufQ"
+  ]
+}
+```
+
+Řetězec výše je pouze zkrácená ilustrace; produkční hodnota musí být base64url celé UTF-8 JSON reprezentace.
+
+### Co musí wallet ukázat
+
+U bankovní SCA není bezpečnostní vlastnost jen v podpisu. Uživatel musí vědět, **co podepisovaným/autorizačním gestem potvrzuje**.
+
+V tomto příkladu je minimální význam:
+
+```text
+Příjemce: ACME s.r.o.
+Účet:     CZ65 0800 0000 1920 0014 5399
+Částka:   12 500,00 CZK
+Typ:      okamžitá platba
+Datum:    28. 9. 2026
+```
+
+TS12 umožňuje pro jednotlivé claims určit úroveň vizuální důležitosti. Kritická data mají být na hlavní obrazovce souhlasu; některé doplňkové hodnoty lze přesunout do detailu. Pokud wallet nemá k povinným položkám potřebné lokalizované popisky, TS12 počítá s fail-closed chováním, nikoli s nečitelným generickým JSON dialogem.
+
+## 10. Odpověď: KB-JWT jako důkaz SCA
+
+Po úspěšném souhlasu vytvoří wallet prezentaci SCA Attestation a KB-JWT.
+
+TS12 nad běžný [[OID4VP]] / [[SD-JWT-VC]] binding přidává další claims. Ilustrační payload:
+
+```json
+{
+  "aud": "x509_san_dns:bank.example",
+  "nonce": "bUtJdjJESWdmTWNjb011YQ",
+  "iat": 1790580100,
+  "jti": "c73313ae-67fa-49fd-b25a-7f9e2720c526",
+  "sd_hash": "ohjM2a0W...",
+  "response_mode": "direct_post.jwt",
+  "amr": [
+    {
+      "possession": "key_in_local_native_wscd"
+    },
+    {
+      "inherence": "fingerprint_device"
+    }
+  ],
+  "transaction_data_hashes": [
+    "8UMhO6Mxdx3Zfx1rY49Lz5KCquxXtZOENMqISB9f9cA"
+  ],
+  "transaction_data_hashes_alg": "sha-256"
+}
+```
+
+Vedle standardních `aud`, `nonce`, `iat`, `sd_hash` a transaction hashů jsou pro SCA důležité zejména:
+
+### `jti`
+
+Musí jít o novou, kryptograficky náhodnou a unikátní hodnotu pro každou prezentaci. TS12 ji po úspěšném ověření používá jako **Authentication Code** požadovaný platebním regulačním rámcem.
+
+### `amr`
+
+`amr` zachycuje úspěšně použité autentizační faktory. TS12 definuje kategorie:
+
+```text
+knowledge
+possession
+inherence
+```
+
+a konkrétní metody, například:
+
+```json
+{
+  "possession": "key_in_local_native_wscd"
+}
+```
+
+nebo:
+
+```json
+{
+  "inherence": "fingerprint_device"
+}
+```
+
+Pole musí obsahovat alespoň dvě různé kategorie.
+
+Samotné napsání dvou položek do `amr` samozřejmě nezajišťuje nezávislost faktorů ani regulatorní soulad. Banka a příslušný SCA rulebook musí důvěřovat tomu, **jak wallet a její bezpečné prostředí tyto faktory skutečně realizují**.
+
+### `response_mode`
+
+TS12 ukládá do KB-JWT i `response_mode` z původního requestu. Může být využit při vyhodnocení, zda byl tok proveden očekávaným způsobem, zejména u third-party-requested scénářů.
+
+## 11. Kde přesně vzniká dynamic linking
+
+Pro PSD2 SCA je důležité, aby autentizační kód byl dynamicky spojen s **částkou a příjemcem**.
+
+V tomto modelu:
+
+```text
+transaction_data
+  ├─ amount = 12500.00
+  ├─ currency = CZK
+  └─ payee = ACME / CZ65...
+          │
+          │ přesná base64url reprezentace
+          ▼
+       SHA-256
+          │
+          ▼
+transaction_data_hashes
+          │
+          ▼
+KB-JWT podepsaný holder klíčem
+```
+
+Kdyby útočník po souhlasu uživatele změnil:
+
+```text
+12 500 CZK → 125 000 CZK
+```
+
+nebo:
+
+```text
+ACME s.r.o. → účet útočníka
+```
+
+změní se vstup do hash funkce. Původní KB-JWT už nebude s novou transakcí souhlasit.
+
+[[RP]] proto nesmí přijmout pouze hodnotu `jti` nebo fakt, že autentizace proběhla. Musí validovat **celý binding k původnímu transaction data objektu**.
+
+## 12. Kde je v SCA Attestation SUA
+
+V architektuře je užitečné odlišit dvě vrstvy:
+
+```text
+SUA Attestation
+    obecný credential pro Strong User Authentication
+
+        ↓ profil pro elektronické platby
+
+SCA Attestation podle TS12
+    credential používaný pro PSD2 Strong Customer Authentication
+    + payment-specific transaction data
+    + amr / jti / dynamic linking
+```
+
+Banka tedy může po prvotním onboardingu klienta vydat do [[EUDIW]] vlastní dlouhodobou attestation navázanou na wallet key. Pozdější login, přístup k účtu nebo potvrzení platby už nemusí znovu používat [[PID]] jako identifikační credential; používá se bankou vydaný autentizační prostředek a `transaction_data` dodává kontext konkrétní operace.
+
+To je architektonicky podobné dnešnímu „mobilnímu klíči banky“, ale autentizační prostředek žije ve standardizovaném wallet ekosystému a jeho prezentace používá interoperabilní protokol.
+
+---
+
