@@ -1048,3 +1048,259 @@ To je zásadní zejména pro banky nebo jiné subjekty, které chtějí stejnou 
 
 ---
 
+# Platba a QES vedle sebe
+
+| Vlastnost | Bankovní SCA | QES request | QES approval |
+|---|---|---|---|
+| Hlavní profil | TS12 | CSC data model bindings | CSC data model bindings |
+| Typ | `urn:eudi:sca:payment:1` | `https://cloudsignatureconsortium.org/2025/qes` | `https://cloudsignatureconsortium.org/2025/qes-approval` |
+| Credential | SCA/SUA Attestation banky | typicky kvalifikovaný certifikát / podpisový credential | service attestation určená pro QES approval |
+| Co uživatel potvrzuje | částku, příjemce a parametry platby | dokument(y) a požadavek na vytvoření QES | autorizaci vytvoření QES remote službou |
+| Obecný transaction hash | ano | podle credential/formátového profilu | ano u [[SD-JWT-VC]] profilu |
+| Specifický výstup | `jti`, `amr`, `response_mode` | `qesResponse` / podepsaný dokument | `qesApproval` |
+| Finální akce | payment engine provede platbu | podpisová aplikace vytvoří QES | remote QSCD následně vytvoří QES |
+| Klíč z wallet credentialu | SCA holder binding | podle modelu | approval/holder binding |
+| Kvalifikovaný podpisový klíč | není potřeba | vytváří QES | vytváří QES v následném remote flow |
+
+Společný je tedy **protokolový vzor**, ne význam celé operace.
+
+## 19. Bezpečnostní model: co útoky znamenají v praxi
+
+### Záměna částky nebo příjemce
+
+Útočník nechá uživateli zobrazit 12 500 CZK, ale bance se pokusí předložit 125 000 CZK.
+
+Ochrana:
+
+```text
+exact transaction_data → hash → KB-JWT signature
+```
+
+Změna dat vede k jinému hashi.
+
+### Záměna dokumentu po zobrazení
+
+Uživatel schválí smlouvu A, ale podpisová aplikace stáhne z `href` smlouvu B.
+
+Ochrana:
+
+```text
+href + checksum
+```
+
+Při současné přítomnosti `href` a `checksum` musí QES podpisová aplikace integritu zdroje ověřit.
+
+### Replay starého potvrzení
+
+Útočník znovu odešle dříve platný KB-JWT.
+
+Ochranné vrstvy zahrnují:
+
+```text
+nonce
+aud
+iat
+```
+
+a v TS12 navíc unikátní:
+
+```text
+jti
+```
+
+[[RP]] musí uplatnit vlastní freshness/replay politiku; pouhá validita podpisu nestačí.
+
+### Neznámý transaction type
+
+Útočník pošle walletu typ, jehož semantics wallet nerozumí.
+
+Správná reakce:
+
+```text
+invalid_transaction_data
+```
+
+Nikoli:
+
+```text
+ignorovat data a pokračovat v prezentaci
+```
+
+### Typ známý, ale credential pro něj není určen
+
+Wallet umí `qes-approval`, ale [[RP]] ho spojí s běžným identifikačním credentialem.
+
+Správné řešení je use-case specifická policy:
+
+- TS12 kontroluje `transaction_data_types` SCA Attestation,
+- CSC očekává QES-aware credential / rulebook,
+- samotný fakt, že parser zná URI typu, nestačí.
+
+## 20. Privacy: transakční data mohou být citlivější než credential
+
+`transaction_data` mohou obsahovat například:
+
+- číslo nebo identifikátor účtu příjemce,
+- výši platby,
+- název obchodníka,
+- plán opakovaných plateb,
+- identifikátor dokumentu,
+- URL dokumentu,
+- hash dokumentu,
+- informaci, že uživatel podepisuje právní nebo finanční dokument.
+
+To je často citlivější kontext než samotný selektivně prezentovaný credential.
+
+Proto je důležité rozlišovat:
+
+```text
+selective disclosure credentialu
+≠
+minimalizace transaction_data
+```
+
+[[RP]] má do transaction payloadu vložit jen data nutná k pochopení a autorizaci operace. TS12 zároveň doporučuje chránit request encryption mechanismy a stanoví podporu encrypted JAR zpracování pro payment SCA.
+
+Také transaction log peněženky je bezpečnostně a soukromoprávně významný. Android Wallet Core po PR #418 umí transakční objekty zaznamenávat do transaction logu; implementátor musí rozhodnout o retenci, šifrování a přístupu k těmto datům.
+
+## 21. Implementační past: parser nesmí data „normalizovat“ před hashem
+
+Správná architektura je typicky:
+
+```text
+raw transaction_data string
+    │
+    ├──────────────► hash input
+    │
+    ▼
+base64url decode
+    │
+    ▼
+JSON parse
+    │
+    ▼
+type-specific validation
+    │
+    ▼
+UI rendering
+```
+
+Nikoli:
+
+```text
+decode → parse → model object → serialize → hash
+```
+
+Parser může:
+
+- změnit pořadí keys,
+- normalizovat čísla,
+- odstranit whitespace,
+- přepsat Unicode escape sekvence.
+
+To by vytvořilo jiný hash než [[RP]], přestože JSON může být sémanticky stejný.
+
+Android Wallet Core PR #418 právě proto počítá generic transaction hash nad raw reprezentací přijatou v requestu.
+
+## 22. Více transakčních objektů v jedné prezentaci
+
+`transaction_data` je pole, nikoli jediný objekt:
+
+```json
+{
+  "transaction_data": [
+    "BASE64URL_OBJECT_1",
+    "BASE64URL_OBJECT_2"
+  ]
+}
+```
+
+U [[SD-JWT-VC]] profil umožňuje odpovědět polem hashů:
+
+```json
+{
+  "transaction_data_hashes": [
+    "HASH_1",
+    "HASH_2"
+  ],
+  "transaction_data_hashes_alg": "sha-256"
+}
+```
+
+Implementace musí zachovat jednoznačné mapování. Pokud jednotlivé objekty nabízejí sadu hash algoritmů, peněženka musí najít algoritmus použitelný pro všechny transakční objekty svázané s danou prezentací.
+
+To je další důvod, proč by aplikační vrstva neměla transakční data během zpracování převádět na „ekvivalentní“ JSON a ztrácet původní serializaci.
+
+## 23. Jak to dnes vypadá v referenční Android implementaci
+
+Android Wallet Core PR [#418](https://github.com/eu-digital-identity-wallet/eudi-lib-android-wallet-core/pull/418), sloučený 25. září 2026, přinesl praktickou implementaci tohoto mechanismu.
+
+Aktuálně:
+
+- podporuje `transaction_data` pro `dc+sd-jwt`,
+- nepodporuje tento mechanismus v Android Wallet Core pro ISO/IEC 18013-5 mdoc prezentace,
+- wallet musí explicitně nakonfigurovat typy, které přijímá,
+- implementace obsahuje typy `QES_APPROVAL` a `QES`,
+- neznámý/nedeklarovaný typ vede k `invalid_transaction_data`,
+- generic binding používá `transaction_data_hashes` a `transaction_data_hashes_alg`,
+- typ může dodat i vlastní KB-JWT claim, například CSC `qesApproval`,
+- transakční data mohou být uložena do transaction logu.
+
+To je důležitý posun od „specifikace na papíře“ k reálně použitelnému stavebnímu bloku v referenčním wallet stacku.
+
+Současně je potřeba nepřeceňovat stav implementace: fakt, že Wallet Core umí technický transport a binding QES typů, sám o sobě neznamená hotový end-to-end remote QES produkt ani implementaci bankovního TS12 profilu.
+
+## 24. Stav QES standardizace k září 2026
+
+Pro QES je potřeba rozlišovat stabilitu jednotlivých vrstev.
+
+**[[OID4VP]] 1.0** je finální specifikace a obecný mechanismus `transaction_data` je v ní jasně definovaný.
+
+**CSC data model bindings 1.0.0** z října 2025 definuje `qes` a `qes-approval`, ale dokument sám u obou typů upozorňuje, že se v budoucích verzích mohou změnit; část bindingu `qesApproval` na credential formáty byla v této verzi ještě označena jako validovaná s experty.
+
+**ARF Topic AB — Digital Signature using the EUDI Wallet**, verze 1.0 z 30. června 2026, představuje aktuální směr dalšího zpřesňování architektury QES v [[EUDIW]]. Je proto vhodné oddělit to, co je již stabilní v [[OID4VP]], od detailů QES integračního modelu, které se stále vyvíjejí.
+
+U bankovní SCA je situace konkrétnější: **TS12 v1.0.1** již definuje payment schemas, processing rules, UI metadata a SCA-specifické claims pro KB-JWT.
+
+## 25. Kontrolní seznam pro implementátora
+
+Při implementaci transakční prezentace bych kontroloval minimálně následující:
+
+1. **Fail closed.** Pokud wallet neumí `transaction_data` nebo konkrétní `type`, request odmítnout.
+2. **Vazba na credential.** `credential_ids` musí odkazovat na skutečně požadovaný a dostupný credential.
+3. **Use-case policy.** Ověřit, že daný credential smí tento typ autorizovat.
+4. **Schema validation.** Neznámá pole, špatné typy a chybějící required hodnoty nejsou „warning“.
+5. **Raw representation.** Uchovat přesný base64url string před parsováním.
+6. **UI před consentem.** Uživatel musí rozumět důsledku — částka/příjemce nebo dokument/QES.
+7. **Holder binding.** Pro [[SD-JWT-VC]] transaction data nepovolit downgrade bez KB-JWT.
+8. **Generic transaction hash.** Hashovat exact request string a ověřit jej v response.
+9. **Type-specific output.** Uplatnit další pravidla typu: například TS12 `jti`/`amr` nebo CSC `qesApproval`.
+10. **Freshness a replay.** Ověřit `nonce`, `aud`, čas a use-case specifické replay identifikátory.
+11. **Následná akce až po validaci.** Platbu ani podpis nespouštět jen proto, že wallet vrátila nějakou prezentaci.
+12. **Privacy a logging.** Transakční data považovat za citlivá provozní data a podle toho chránit request i logy.
+
+## Shrnutí
+
+`transaction_data` mění [[OID4VP]] z protokolu, který jen předává credentialy, na mechanismus schopný vytvořit **důkaz autorizace konkrétní strukturované operace**.
+
+U [[SD-JWT-VC]] je jádrem vazby KB-JWT podepsaný holder klíčem. Generic `transaction_data_hashes` chrání přesnou podobu transakčních dat; `nonce` a `aud` vážou prezentaci k relaci a protistraně. Konkrétní profily nad tím přidávají vlastní sémantiku.
+
+V elektronických platbách TS12 používá SCA/SUA Attestation, `transaction_data_types`, standardizované payment payloady a SCA claims `jti`, `amr` a `response_mode`. Výsledkem může být interoperabilní mechanismus pro Strong Customer Authentication a dynamic linking částky a příjemce.
+
+U QES CSC rozlišuje přímý `qes` request a `qes-approval` pro provider-centric remote signing. Druhý model může přes [[EUDIW]] prokázat souhlas uživatele s konkrétní QES operací, ale tento důkaz se nesmí zaměňovat za vlastní QES ani automaticky za Signature Activation Data pro QSCD.
+
+A „opt-in“ není jedna volba. Jde nejméně o tři rozhodnutí: **wallet musí podporovat transaction data, musí rozumět konkrétnímu typu a konkrétní credential musí být k autorizaci tohoto typu určen.** Právě kombinace těchto tří vrstev brání tomu, aby se obyčejná prezentace credentialu omylem interpretovala jako potvrzení platby nebo podpisu.
+
+### Hlavní zdroje
+
+[OpenID for Verifiable Presentations 1.0 — Transaction Data](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-transaction-data)
+
+[EC TS12 v1.0.1 — Specification of Strong Customer Authentication Implementation with the Wallet](https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts12-electronic-payments-SCA-implementation-with-wallet.md)
+
+[Cloud Signature Consortium — Data model bindings v1.0.0](https://cloudsignatureconsortium.org/wp-content/uploads/2025/10/data-model-bindings.pdf)
+
+[ARF Topic AB — Digital Signature using the EUDI Wallet](https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework/blob/main/docs/discussion-topics/ab-digital-signature-using-wallet.md)
+
+[Android Wallet Core PR #418 — Support OpenID4VP transaction data for SD-JWT VC](https://github.com/eu-digital-identity-wallet/eudi-lib-android-wallet-core/pull/418)
+
+*Text vychází ze stavu evropského technického rámce a referenčních implementací k 28. září 2026.*
