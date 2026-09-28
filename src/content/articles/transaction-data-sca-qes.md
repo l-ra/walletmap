@@ -729,3 +729,322 @@ To je architektonicky podobné dnešnímu „mobilnímu klíči banky“, ale au
 
 ---
 
+# QES: potvrzení dokumentů a vzdálené podepisování
+
+QES používá stejný obecný koncept, ale význam operace je jiný. V payment SCA potvrzuje uživatel finanční transakci. U QES potvrzuje:
+
+> „Chci, aby tyto konkrétní dokumenty byly podepsány kvalifikovaným podpisem / pečetí za uvedených podmínek.“
+
+Cloud Signature Consortium ve **CSC data model bindings 1.0.0** definuje pro [[OID4VP]] dva důležité typy:
+
+```text
+https://cloudsignatureconsortium.org/2025/qes
+https://cloudsignatureconsortium.org/2025/qes-approval
+```
+
+Nejde o synonyma. Reprezentují dva odlišné integrační modely.
+
+## 13. `qes`: [[RP]] žádá o vytvoření QES
+
+Typ:
+
+```text
+https://cloudsignatureconsortium.org/2025/qes
+```
+
+odpovídá modelu, kdy [[RP]] předá podpisové aplikaci požadavek na podepsání jednoho nebo více dokumentů.
+
+Zjednodušený příklad dekódovaného `transaction_data`:
+
+```json
+{
+  "type": "https://cloudsignatureconsortium.org/2025/qes",
+  "credential_ids": ["qualified_certificate"],
+  "signatureQualifier": "eu_eidas_qes",
+  "signatureRequests": [
+    {
+      "label": "Smlouva o úvěru 2026-041",
+      "access": {
+        "type": "public"
+      },
+      "href": "https://sign.example.cz/documents/2026-041.pdf",
+      "checksum": "sha256-dGVzdC1jaGVja3N1bS12YWx1ZQ==",
+      "signature_format": "P",
+      "conformance_level": "AdES-B-B",
+      "signed_envelope_property": "Certification",
+      "signAlgo": "1.2.840.113549.1.1.1"
+    }
+  ]
+}
+```
+
+`signatureQualifier` je v tomto profilu povinný, protože určuje použitý trust framework / kvalitu podpisu.
+
+Každý `signatureRequest` může obsahovat například:
+
+- lidsky čitelný `label`,
+- `href` dokumentu,
+- `checksum` pro kontrolu integrity staženého dokumentu,
+- požadovaný signature format,
+- conformance level,
+- podpisový algoritmus,
+- případně způsob zpřístupnění dokumentu.
+
+CSC podporuje i chráněné získání dokumentu přes jednorázový kód:
+
+```json
+{
+  "access": {
+    "type": "OTP",
+    "oneTimePassword": "51623"
+  }
+}
+```
+
+### Wallet / podpisová aplikace musí kontrolovat dokument
+
+Pokud `signatureRequest` obsahuje současně `href` a `checksum`, podpisová aplikace musí podle CSC integritu staženého zdroje ověřit a při nesouladu operaci ukončit.
+
+Uživatel nemá potvrzovat jen abstraktní hash bez kontextu. CSC stanoví pravidla pro vykreslení, mimo jiné:
+
+- jasně odlišit, že operace vytváří QES,
+- ukázat, zda jde o podpis nebo pečeť a v jakém trust frameworku,
+- zobrazit celý `label`,
+- umožnit načtení dokumentu z `href`,
+- informovat, zda byl `checksum` ověřen,
+- zpřístupnit informace o podpisovém formátu a dalších relevantních parametrech.
+
+## 14. Co se vrací u `qes`
+
+U wallet-centric modelu může výsledkem zpracování být přímo vytvořený QES / podepsaný dokument navázaný na X.509 credential.
+
+Schematicky:
+
+```text
+RP
+ │
+ │ OID4VP + qes transaction_data
+ ▼
+Wallet / Driving Application
+ │
+ │ načte dokument
+ │ ověří checksum
+ │ zobrazí uživateli
+ │ vytvoří QES přes podpisovou infrastrukturu
+ ▼
+presentation response
+ │
+ ├─ informace o credentialu
+ └─ qesResponse / podepsaný dokument
+```
+
+CSC připouští i out-of-band vrácení výsledku na `responseURI`.
+
+Tady je důležité, že QES není „podpis KB-JWT klíčem“. KB-JWT a wallet credentialy slouží k protokolové vazbě a autorizaci, zatímco vlastní kvalifikovaný elektronický podpis musí být vytvořen odpovídajícím **kvalifikovaným podpisovým klíčem v QSCD** a splnit požadavky [[eIDAS]].
+
+## 15. `qes-approval`: wallet schvaluje QES u remote QSCD
+
+Druhý model je ještě zajímavější pro integraci [[EUDIW]] s cloudovým podpisem.
+
+Typ:
+
+```text
+https://cloudsignatureconsortium.org/2025/qes-approval
+```
+
+je určen k **autorizaci vytvoření QES** serverem, který je důvěryhodně spojen s poskytovatelem vzdáleného QSCD.
+
+Uživatel může mít například u [[QTSP]] vzdálený kvalifikovaný podpisový klíč. [[QTSP]] současně vydá do walletu „service user attestation“ určenou pro autorizaci jeho použití.
+
+Flow:
+
+```text
+QTSP / jeho Authorization Server
+        │
+        │ OID4VP
+        │ požadavek na service attestation
+        │ + qes-approval transaction_data
+        ▼
+EUDI Wallet
+        │
+        │ ukáže dokumenty / hashe / počet podpisů
+        │ uživatel potvrdí
+        │ vytvoří cryptographic holder-binding proof
+        ▼
+Authorization Server
+        │
+        │ ověří identitu/credential
+        │ ověří qesApproval
+        ▼
+remote signing flow
+        │
+        ▼
+QSCD vytvoří QES
+```
+
+### Konkrétní `qesApprovalRequest`
+
+Ilustrační dekódovaný objekt:
+
+```json
+{
+  "type": "https://cloudsignatureconsortium.org/2025/qes-approval",
+  "credential_ids": ["qes_service_attestation"],
+  "numSignatures": 1,
+  "signatureQualifier": "eu_eidas_qes",
+  "documentInfos": [
+    {
+      "label": "Smlouva o úvěru 2026-041",
+      "hash": "sTOgwOm+474gFj0q0x1iSNspKqbcse4IeiqlDg/HWuI=",
+      "hashType": "sodr",
+      "access": {
+        "type": "public"
+      },
+      "href": "https://sign.example.cz/documents/2026-041.pdf",
+      "checksum": "sha256-sTOgwOm+474gFj0q0x1iSNspKqbcse4IeiqlDg/HWuI="
+    }
+  ],
+  "hashAlgorithmOID": "2.16.840.1.101.3.4.2.1"
+}
+```
+
+`hashAlgorithmOID` zde určuje algoritmus použitý pro odvození hodnoty `qesApproval`.
+
+## 16. Dvě různé hashové vazby u QES approval
+
+U [[SD-JWT-VC]] se v tomto scénáři potkávají dvě vrstvy.
+
+### Obecný [[OID4VP]] binding
+
+Stejně jako u platby může KB-JWT obsahovat:
+
+```json
+{
+  "transaction_data_hashes": [
+    "rSGfhe4SqQ..."
+  ],
+  "transaction_data_hashes_alg": "sha-256"
+}
+```
+
+Tento hash je vypočten nad **přesným base64url stringem**, který přišel v `transaction_data`.
+
+### CSC `qesApproval`
+
+CSC navíc definuje typově specifický výstup `qesApproval`.
+
+Pro [[SD-JWT-VC]] má být v KB-JWT jako top-level claim:
+
+```json
+{
+  "org.cloudsignatureconsortium.dm.1.qesApproval": "BASE64_HASH_VALUE"
+}
+```
+
+Kompletní schematický KB-JWT pak může obsahovat obě vrstvy:
+
+```json
+{
+  "aud": "https://sign.example.cz",
+  "nonce": "zL0w0MuHkH4s9...",
+  "iat": 1790580200,
+  "sd_hash": "HOV5...",
+  "transaction_data_hashes": [
+    "rSGfhe4SqQ..."
+  ],
+  "transaction_data_hashes_alg": "sha-256",
+  "org.cloudsignatureconsortium.dm.1.qesApproval": "bW9kZWxvdmFfaGFzaF9ob2Rub3Rh"
+}
+```
+
+Je důležité je nezaměnit:
+
+```text
+transaction_data_hashes
+    obecný OID4VP/SD-JWT VC mechanismus
+    → integrita + mapování prezentace na exact transaction_data
+
+qesApproval
+    CSC QES-specifický autorizační výstup
+    → explicitní approval konkrétní QES creation operace
+```
+
+CSC pro `qesApproval` stanoví vlastní pravidlo pro hash input. U [[SD-JWT-VC]] se hash vstup počítá z **base64url-encoded UTF-8 qesApprovalRequest**, tedy z reprezentace použité v `transaction_data`.
+
+To je dobrý příklad toho, proč [[OID4VP]] doporučuje, aby konkrétní `transaction_data.type` definoval také vlastní top-level claim v KB-JWT a přesná pravidla jeho výpočtu.
+
+## 17. `qesApproval` není Signature Activation Data
+
+Tohle je kritická bezpečnostní hranice.
+
+CSC v provider-centric příkladu výslovně upozorňuje, že presentation response / device authentication vůči Authorization Serveru **není automaticky Signature Activation Data (SAD)** pro remote QSCD.
+
+Výsledek wallet autorizace může prokázat:
+
+```text
+tento uživatel
++
+tento service credential
++
+souhlasil s tímto qesApprovalRequest
+```
+
+Ale vzdálený podpisový systém může stále potřebovat:
+
+```text
+credentialID
++
+data to be signed
++
+další signature activation protocol
++
+kryptografický binding do SAD
+```
+
+podle použitého QSCD a signature activation protokolu.
+
+Správné mentální schéma tedy není:
+
+```text
+KB-JWT podpis = QES
+```
+
+ani:
+
+```text
+qesApproval = SAD
+```
+
+ale:
+
+```text
+wallet authorization
+       │
+       ▼
+ověřený consent k QES operaci
+       │
+       ▼
+signature activation mechanism
+       │
+       ▼
+qualified signing key v QSCD
+       │
+       ▼
+QES
+```
+
+## 18. Co vlastně podepisuje který klíč
+
+V jednom QES toku se mohou objevit minimálně dva různé privátní klíče s různými rolemi.
+
+| Klíč | Kde | Co prokazuje |
+|---|---|---|
+| holder-binding key credentialu | wallet / [[WSCD]] nebo jiné podporované bezpečné prostředí | držitel credentialu autorizoval prezentaci a `transaction_data` |
+| qualified signing key | QSCD, často vzdálený | vytváří vlastní QES nad daty k podpisu |
+
+Jejich držitelem může být stejná osoba, ale kryptograficky a právně nejde o stejnou operaci.
+
+To je zásadní zejména pro banky nebo jiné subjekty, které chtějí stejnou [[EUDIW]] použít zároveň pro SCA i QES: **společné uživatelské gesto ještě neznamená společný klíč ani společný trust model**.
+
+---
+
