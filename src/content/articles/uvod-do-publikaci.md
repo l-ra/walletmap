@@ -3,7 +3,7 @@ title: "Vítejte v publikacích WalletMap"
 description: "Ukázkový článek — šablona pro budoucí publikace o evropské digitální identitě."
 pubDate: 2026-07-13
 tags: [walletmap, uvod]
-draft: false
+draft: true
 ---
 
 Toto je ukázkový článek generovaný z Markdownu. Skutečný obsah přidáte vytvořením
