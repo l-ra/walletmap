@@ -840,7 +840,7 @@ presentation response
 
 CSC připouští i out-of-band vrácení výsledku na `responseURI`.
 
-Tady je důležité, že QES není „podpis KB-JWT klíčem“. KB-JWT a wallet credentialy slouží k protokolové vazbě a autorizaci, zatímco vlastní kvalifikovaný elektronický podpis musí být vytvořen odpovídajícím **kvalifikovaným podpisovým klíčem v QSCD** a splnit požadavky [[eIDAS]].
+Tady je důležité, že QES není „podpis wallet holder-binding klíčem“. Tam, kde zvolený credential/formát používá KB-JWT, slouží KB-JWT k protokolové vazbě a autorizaci; vlastní kvalifikovaný elektronický podpis musí být vytvořen odpovídajícím **kvalifikovaným podpisovým klíčem v QSCD** a splnit požadavky [[eIDAS]].
 
 ## 15. `qes-approval`: wallet schvaluje QES u remote QSCD
 
