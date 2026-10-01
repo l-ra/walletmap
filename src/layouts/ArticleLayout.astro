@@ -1,5 +1,7 @@
 ---
 import GlossaryModal from '../components/GlossaryModal.astro';
+import SiteAnalytics from '../components/SiteAnalytics.astro';
+import SiteFooterLinks from '../components/SiteFooterLinks.astro';
 
 interface Props {
   title: string;
@@ -292,8 +294,10 @@ const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
 
       <footer>
         &copy; 2026 <a href="https://walletmap.eu">WalletMap.eu</a>
+        <SiteFooterLinks />
       </footer>
     </div>
+    <SiteAnalytics />
     <GlossaryModal />
   </body>
 </html>

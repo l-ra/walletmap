@@ -1,0 +1,307 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+---
+
+<ArticleLayout
+  title="Statistiky návštěvnosti"
+  description="Agregovaná návštěvnost WalletMap.eu — vlastní měření bez dalších zpracovatelů."
+>
+  <h1>Statistiky návštěvnosti</h1>
+  <p>
+    Údaje pocházejí z vlastního měření na tomto webu. Neposíláme je do Google Analytics
+    ani jiným zpracovatelům. Vracející se čtenáře poznáme jen tehdy, když k tomu dají
+    souhlas cookie. Čísla jsou souhrnná — jednotlivé identifikátory se tu nezobrazují.
+  </p>
+
+  <div class="stats-toolbar" hidden>
+    <div class="stats-ranges" role="group" aria-label="Období">
+      <button type="button" data-days="7">7 dní</button>
+      <button type="button" data-days="30" class="is-active">30 dní</button>
+      <button type="button" data-days="90">90 dní</button>
+    </div>
+    <p class="stats-meta" id="stats-meta"></p>
+  </div>
+
+  <p id="stats-status" class="stats-status">Načítám statistiky…</p>
+
+  <div id="stats-root" hidden>
+    <section class="stats-cards" aria-label="Souhrn">
+      <article>
+        <p>Zobrazení</p>
+        <strong id="stat-pageviews">0</strong>
+        <span id="stat-pageviews-today"></span>
+      </article>
+      <article>
+        <p>Návštěvníci</p>
+        <strong id="stat-visitors">0</strong>
+        <span id="stat-visitors-today"></span>
+      </article>
+      <article>
+        <p>Noví</p>
+        <strong id="stat-new">0</strong>
+        <span>první návštěva v období</span>
+      </article>
+      <article>
+        <p>Vracející se</p>
+        <strong id="stat-returning">0</strong>
+        <span>cookie z dřívější návštěvy</span>
+      </article>
+    </section>
+
+    <h2>Vývoj po dnech</h2>
+    <div class="stats-chart" id="stats-chart" role="img" aria-label="Zobrazení stránek po dnech"></div>
+
+    <h2>Nejčtenější stránky</h2>
+    <div class="stats-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Stránka</th>
+            <th>Zobrazení</th>
+            <th>Návštěvníci</th>
+          </tr>
+        </thead>
+        <tbody id="stats-pages"></tbody>
+      </table>
+    </div>
+
+    <h2>Zdroje návštěv</h2>
+    <p class="stats-note">
+      Ukládáme jen název webu, ze kterého někdo přišel, ne celou adresu.
+    </p>
+    <div class="stats-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Odkazující web</th>
+            <th>Zobrazení</th>
+          </tr>
+        </thead>
+        <tbody id="stats-referrers"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>
+    <a href="/soukromi">Jak měření funguje a jak odvolat souhlas</a>
+  </p>
+</ArticleLayout>
+
+<style is:global>
+  .stats-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 24px;
+  }
+  .stats-ranges {
+    display: flex;
+    gap: 8px;
+  }
+  .stats-ranges button {
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: transparent;
+    color: #c8d0e0;
+    font: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+  .stats-ranges button.is-active,
+  .stats-ranges button:hover {
+    background: rgba(43, 106, 255, 0.18);
+    border-color: rgba(79, 140, 255, 0.45);
+    color: #fff;
+  }
+  .stats-meta,
+  .stats-status,
+  .stats-note {
+    color: #8892b0;
+    font-size: 0.9rem;
+  }
+  .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 0 0 2em;
+  }
+  .stats-cards article {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .stats-cards p {
+    margin: 0 0 6px;
+    color: #8892b0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .stats-cards strong {
+    display: block;
+    font-size: 1.7rem;
+    letter-spacing: -0.03em;
+    color: #fff;
+  }
+  .stats-cards span {
+    display: block;
+    margin-top: 6px;
+    color: #8892b0;
+    font-size: 0.8rem;
+  }
+  .stats-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 180px;
+    padding: 8px 0 0;
+    margin-bottom: 2em;
+  }
+  .stats-chart__bar {
+    flex: 1;
+    min-width: 4px;
+    background: linear-gradient(180deg, #4f8cff, #2b6aff);
+    border-radius: 4px 4px 2px 2px;
+    opacity: 0.85;
+  }
+  .stats-chart__bar.is-empty {
+    background: rgba(255, 255, 255, 0.08);
+    min-height: 2px;
+    opacity: 1;
+  }
+  .stats-table-wrap table {
+    display: table;
+  }
+  @media (max-width: 800px) {
+    .stats-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const status = document.getElementById('stats-status');
+    const root = document.getElementById('stats-root');
+    const toolbar = document.querySelector('.stats-toolbar');
+    const fmt = new Intl.NumberFormat('cs-CZ');
+    let days = 30;
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function render(data) {
+      document.getElementById('stat-pageviews').textContent = fmt.format(data.totals.pageviews);
+      document.getElementById('stat-visitors').textContent = fmt.format(data.totals.visitors);
+      document.getElementById('stat-new').textContent = fmt.format(data.totals.newVisitors);
+      document.getElementById('stat-returning').textContent = fmt.format(data.totals.returningVisitors);
+      document.getElementById('stat-pageviews-today').textContent =
+        'dnes ' + fmt.format(data.today.pageviews);
+      document.getElementById('stat-visitors-today').textContent =
+        'dnes ' + fmt.format(data.today.visitors);
+      document.getElementById('stats-meta').textContent =
+        'Období ' + data.from + ' – ' + data.to + ' · časové pásmo ' + data.timezone;
+
+      const max = Math.max(1, ...data.days.map((d) => d.pageviews));
+      const chart = document.getElementById('stats-chart');
+      chart.innerHTML = data.days
+        .map((d) => {
+          const h = d.pageviews === 0 ? 2 : Math.max(6, Math.round((d.pageviews / max) * 170));
+          const cls = d.pageviews === 0 ? 'stats-chart__bar is-empty' : 'stats-chart__bar';
+          return (
+            '<div class="' +
+            cls +
+            '" style="height:' +
+            h +
+            'px" title="' +
+            escapeHtml(d.date) +
+            ': ' +
+            d.pageviews +
+            ' zobrazení, ' +
+            d.visitors +
+            ' návštěvníků"></div>'
+          );
+        })
+        .join('');
+
+      const pages = document.getElementById('stats-pages');
+      pages.innerHTML =
+        data.pages.length === 0
+          ? '<tr><td colspan="3">Zatím žádná zobrazení v tomto období.</td></tr>'
+          : data.pages
+              .map(
+                (p) =>
+                  '<tr><td><a href="' +
+                  escapeHtml(p.path) +
+                  '">' +
+                  escapeHtml(p.path) +
+                  '</a></td><td>' +
+                  fmt.format(p.pageviews) +
+                  '</td><td>' +
+                  fmt.format(p.visitors) +
+                  '</td></tr>',
+              )
+              .join('');
+
+      const refs = document.getElementById('stats-referrers');
+      refs.innerHTML =
+        data.referrers.length === 0
+          ? '<tr><td colspan="2">Žádné externí odkazy v tomto období.</td></tr>'
+          : data.referrers
+              .map(
+                (r) =>
+                  '<tr><td>' +
+                  escapeHtml(r.host) +
+                  '</td><td>' +
+                  fmt.format(r.pageviews) +
+                  '</td></tr>',
+              )
+              .join('');
+
+      status.hidden = true;
+      root.hidden = false;
+      toolbar.hidden = false;
+    }
+
+    function fail(message) {
+      status.hidden = false;
+      status.textContent = message;
+      root.hidden = true;
+    }
+
+    async function load(nextDays) {
+      days = nextDays;
+      document.querySelectorAll('.stats-ranges button').forEach((btn) => {
+        btn.classList.toggle('is-active', Number(btn.getAttribute('data-days')) === days);
+      });
+      status.hidden = false;
+      status.textContent = 'Načítám statistiky…';
+      try {
+        const response = await fetch('/api/stats.php?days=' + days, {
+          credentials: 'same-origin',
+        });
+        if (!response.ok) throw new Error('bad status');
+        render(await response.json());
+      } catch (e) {
+        fail(
+          'Statistiky teď nejsou dostupné. Měření běží na provozním serveru s PHP a SQLite — lokální náhled Astro API nespouští.',
+        );
+      }
+    }
+
+    document.querySelectorAll('.stats-ranges button').forEach((btn) => {
+      btn.addEventListener('click', () => load(Number(btn.getAttribute('data-days'))));
+    });
+
+    load(30);
+  })();
+</script>
