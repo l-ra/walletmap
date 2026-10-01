@@ -1,416 +1,803 @@
 ---
-title: "Národní certifikační schéma EUDIW v ČR: struktura, certifikační cyklus a dopady na aktéry"
-description: "Detailní rozbor prvního veřejného konceptu českého Národního certifikačního schématu EUDIW: kompozitní model, rozsah certifikace, role DIA, ČIA a CAB, životní cyklus certifikátu a praktické dopady na poskytovatele, subdodavatele, relying parties i uživatele."
+title: "Národní certifikační schéma EUDIW-CZ 1.2: co skutečně požaduje česká certifikace"
+description: "Detailní rozbor českého certifikačního schématu EUDIW-CZ 1.2 podle hlavního dokumentu a příloh: kompozitní certifikace, český architektonický profil, požadavky na wallet a PID providery, ověřovací službu, WSCD/WSCA, dodavatele, CAB, životní cyklus, open-source povinnost a správu zranitelností."
 pubDate: 2026-10-01
 tags: [eudiw, eidas, certifikace, cesko, pid, bezpecnost, compliance]
 draft: false
 ---
 
-Digitální a informační agentura 1. října 2026 zveřejnila **první veřejný koncept českého Národního certifikačního schématu (NCS)** pro [[EUDIW|evropskou peněženku digitální identity]]. Jde o dokument, podle kterého se má v České republice prokazovat shoda řešení peněženky a systému elektronické identifikace, v jehož rámci je peněženka poskytována, s evropským regulačním rámcem.
+Digitální a informační agentura zveřejnila české národní certifikační schéma **[[EUDIW]]-CZ, verze 1.2** pro [[EUDIW]]. Po prostudování hlavního dokumentu a zveřejněných příloh je zřejmé, že česká certifikace je podstatně konkrétnější než samotný obecný evropský rámec: stanoví nejen proces certifikace, ale také český architektonický profil, vlastní bezpečnostní požadavky nad rámec baseline ENISA, konkrétní požadavky na poskytovatele peněženky a [[PID]], ověřovací službu, [[WSCD]]/WSCA, dodavatelský řetězec a velmi podrobnou kvalifikaci certifikačních orgánů.
 
-Český návrh je důležitý především tím, že je **kompozitní**. DIA jej veřejně popisuje jako kombinaci tří certifikací:
+Základní metadata schématu jsou:
 
-1. **certifikace poskytovatele peněženky** — služby pro poskytování a provozování řešení peněženky a pro ověřování peněženek a spoléhajících se stran,
-2. **certifikace poskytovatele [[PID]]** — služby pro poskytování osobních identifikačních údajů,
-3. **zastřešující certifikace**.
-
-To znamená, že certifikace nemá být redukována na bezpečnostní audit mobilní aplikace. Evropský rámec požaduje posouzení **celé poskytované služby a elektronického identifikačního systému**: softwaru, relevantních hardwarových a platformních závislostí, bezpečnostních předpokladů, procesů onboardingu, řízení prostředků, změn, aktualizací, zranitelností a provozu.
-
-> **Základní závěr:** certifikace [[EUDIW]] je průběžný assurance proces nad konkrétní verzí, architekturou a provozním modelem. Certifikát není obecné potvrzení, že „produkt je bezpečný“, ale důkaz shody přesně vymezeného objektu certifikace za definovaných předpokladů.
-
-## Stav českého schématu k 1. říjnu 2026
-
-DIA zveřejněný dokument označuje jako **první veřejný koncept**. Současně uvádí několik důležitých omezení jeho aktuálnosti:
-
-- koncept zachycuje stav evropských nařízení, technických specifikací a norem **ke konci června 2026**,
-- Český institut pro akreditaci (ČIA) jej posoudil a schválil jako podklad pro připravovanou akreditační službu,
-- NCS má být závazným dokumentem pro dodavatele řešení [[EUDIW]], kteří je chtějí provozovat v České republice,
-- DIA jako vlastník schématu předpokládá **aktualizaci pravděpodobně na konci roku 2026**, protože technické specifikace se dále mění.
-
-Návrh NCS byl podle DIA ostatním členským státům předložen již začátkem června 2026. V tomto mezistátním připomínkování nebyly podle zveřejněné informace vzneseny zásadní připomínky. Akreditace certifikačních orgánů má navazovat prostřednictvím ČIA.
-
-To má praktický důsledek: implementátor nemůže chápat vydání z 1. října jako navždy zmrazený certifikační target. Musí pracovat s **verzí schématu, verzemi použitých norem a přechodovými pravidly**.
-
-## Právní základ: co musí národní schéma pokrýt
-
-Základní evropský rámec vytváří [[eIDAS]] ve znění evropského rámce digitální identity a zejména prováděcí nařízení Komise (EU) 2024/2981 o certifikaci peněženek.
-
-Toto prováděcí nařízení stanoví, že předmětem certifikace je **poskytování a provozování řešení peněženky a systému elektronické identifikace, v jehož rámci je poskytováno**. Do objektu certifikace patří zejména:
-
-| Vrstva | Co se posuzuje |
+| Parametr | [[EUDIW]]-CZ 1.2 |
 |---|---|
-| Software | Komponenty peněženky a elektronického identifikačního systému, jejich nastavení a konfigurace. |
-| Hardware a platformy | Komponenty, na kterých kritické operace běží nebo na které spoléhají, pokud je poskytovatel přímo či nepřímo poskytuje nebo jsou nutné pro požadovanou úroveň záruky. |
-| Externí platformy | Pokud je poskytovatel nekontroluje, musí schéma pracovat s explicitními bezpečnostními předpoklady a s mechanismem, který ověřuje, že jsou předpoklady v provozu skutečně splněny. |
-| Procesy | Onboarding uživatele, registrace/enrolment, správa elektronických identifikačních prostředků, organizace a související provozní procesy. |
-| Kryptografické prostředí | [[WSCD]], wallet secure cryptographic application a související assurance evidence, pokud jsou pro architekturu relevantní. |
-| Provoz | Řízení změn, verzí, aktualizací, zranitelností a incidentů. |
+| Vlastník schématu | Digitální a informační agentura (DIA) |
+| Orgán dohledu | DIA |
+| Národní akreditační orgán | Český institut pro akreditaci (ČIA) |
+| Typ schématu | typ 6 podle ISO/IEC 17067 |
+| Flexibilita schématu | není |
+| Rozhodující jazyk | čeština; anglické znění je informativní |
 
-Schéma musí pokrýt tři skupiny požadavků současně: **funkčnost, kybernetickou bezpečnost a ochranu osobních údajů**. Certifikace tedy není pouze penetrační test ani pouze kontrola shody implementace s protokolem.
+> **Základní závěr:** [[EUDIW]]-CZ není certifikace jedné mobilní aplikace. Certifikuje služby IKT, jejich produktové i procesní komponenty a vazby mezi nimi. Schéma je kompozitní a dovoluje samostatnou certifikaci částí, ale výsledná záruka musí pokrýt i jejich integraci.
 
-## Kompozitní český model
+## Co přesně český certifikát osvědčuje
 
-Veřejný popis DIA rozděluje české NCS do tří částí. Toto rozdělení je vhodné číst jako oddělení odpovědností a evidence, nikoli jako tři navzájem nezávislé světy.
+Hlavní dokument [[EUDIW]]-CZ stanoví, že certifikát je certifikátem podle čl. 5c odst. 1 [[eIDAS]] a osvědčuje shodu řešení peněženky a systému elektronické identifikace, v jehož rámci je poskytováno:
 
-### 1. Certifikace poskytovatele peněženky
+- s požadavky na kybernetickou bezpečnost podle přílohy X [[EUDIW]]-CZ,
+- s funkčními požadavky podle přílohy III prováděcího nařízení (EU) 2024/2981.
 
-Tato část se týká služby, která:
+Schéma současně výslovně říká, že k prokázání této shody se **nevyžaduje žádný další národní certifikační mechanismus**.
 
-- poskytuje a provozuje řešení peněženky,
-- zajišťuje funkce potřebné k ověřování peněženek,
-- zajišťuje funkce potřebné k ověřování spoléhajících se stran.
+Do rozsahu spadají služby IKT včetně jejich dokumentace. Schéma jmenuje zejména:
 
-Z evropského rámce současně plyne, že poskytovatel musí umět pro konkrétní implementaci doložit architekturu, bezpečnostní kontroly, provozní procesy, závislosti a rizika. Pokud používá externí platformu, HSM, secure element, cloudovou službu nebo jiný komponentní certifikát, neznamená to automaticky, že je odpovědnost „přenesena“ na subdodavatele. Musí existovat **dependency analysis** a musí být prokázáno, že použitá assurance evidence skutečně pokrývá předpoklady dané architektury.
+1. služby poskytování řešení peněženky,
+2. systém elektronické identifikace, v jehož rámci je peněženka poskytována, v českém schématu reprezentovaný rolí poskytovatele [[PID]],
+3. jednotlivé části těchto služeb,
+4. následnou certifikaci kompozitního celku.
 
-### 2. Certifikace poskytovatele [[PID]]
+Příloha V mezi typy služby IKT, které mohou být uvedeny na certifikátu, uvádí například **Poskytovatele peněženky, Poskytovatele [[PID]] a zastřešující certifikát**. Na jednom certifikátu může být uvedeno více služeb IKT.
 
-Druhou explicitní částí českého NCS je služba poskytování [[PID]]. DIA na stránce schématu uvádí, že podle připravované české legislativy má být poskytovatelem [[PID]] právě DIA.
+Detailní hranice jednotlivých certifikačních oblastí hlavní dokument odkazuje do příloh I, Ia, Ib a Ic. Tento článek proto u těchto hranic rozlišuje, co je explicitně popsáno v hlavním dokumentu a přílohách II–X, a nedoplňuje neověřený obsah příloh, které nejsou součástí podkladů tohoto rozboru.
 
-Pro tuto část je zásadní, že [[PID]] není jen datový objekt. Jeho důvěryhodnost závisí na řetězci procesů od ověření identity a vazby na konkrétního uživatele přes vydání do správné wallet unit až po správu životního cyklu. Certifikační evidence proto musí být schopna prokázat, že výsledný credential vzniká v procesu splňujícím požadovanou úroveň záruky a že rozhraní mezi poskytovatelem [[PID]] a peněženkou nezavádí nepokrytá rizika.
+## Kompozitní model: jednotlivé certifikáty nejsou izolované ostrovy
 
-### 3. Zastřešující certifikace
+[[EUDIW]]-CZ výslovně pracuje s **kompozitní certifikací**. Samostatně mohou být certifikovány například:
 
-Třetí vrstvu DIA označuje jako **zastřešující certifikaci**.
+- poskytovatel peněženky,
+- poskytovatel [[PID]],
+- jejich části,
+- další komponenty využívající jiné uznávané certifikace.
 
-Její praktický význam je podstatný: ani úspěšná certifikace dílčích služeb sama o sobě neprokazuje, že jejich kompozice funguje bezpečně jako celek. Zastřešující úroveň musí být schopna pracovat s rozhraními, rozdělenými odpovědnostmi, sdílenými procesy, předpoklady a důkazy z nižších úrovní.
+Certifikační orgán hodnotící složenou službu musí získat relevantní informace od certifikačního orgánu, který hodnotil dílčí službu nebo komponentu. Předchozí certifikace tedy může snížit rozsah opakovaného testování, ale sama o sobě neprokazuje shodu celého řešení.
 
-Veřejná stránka DIA sama nepopisuje detailní dependency graph mezi třemi certifikacemi. Proto není správné z pouhého slova „kompozitní“ dovozovat, že vyšší certifikát vznikne mechanickým sečtením dvou nižších certifikátů. Evropský rámec naopak vyžaduje posouzení architektury a pokrytí rizik celé implementace.
+České schéma tento princip zpřesňuje v příloze IX. Každý existující důkaz o záruce se hodnotí ve třech dimenzích:
 
-Schematicky lze český model číst takto:
+1. **vydavatel** — důvěryhodnost, odborná způsobilost a akreditace,
+2. **rozsah** — zda původní certifikát skutečně pokrývá vlastnosti potřebné pro [[EUDIW]]-CZ,
+3. **úroveň záruky** — zda provedené hodnotící činnosti dosahují požadované síly.
 
-```text
-                zastřešující certifikace
-                         │
-              ┌──────────┴──────────┐
-              │                     │
-   certifikace wallet služby   certifikace PID služby
-              │                     │
-     wallet solution /         issuance / identity
-     provoz / verifikace       lifecycle / vazby
-              │                     │
-              └──────────┬──────────┘
-                         │
-                společný eID systém
-```
+Pokud existují mezery, certifikační orgán stanoví **zbytkové hodnotící činnosti**. Přijetí komponentního certifikátu tedy znamená přijetí strukturovaného důkazu, nikoli automatické uznání komponenty nebo celého řešení.
 
-Diagram je logické vysvětlení kompozitního principu, nikoli náhrada přesného certifikačního dependency modelu stanoveného přílohami NCS.
+Příloha IX pro tento účel výslovně pracuje s dependency analysis podle CEN TS 18072.
 
-## Architektonické profily: certifikuje se konkrétní způsob realizace
+## Český architektonický profil je konkrétní
 
-Prováděcí nařízení 2024/2981 vyžaduje, aby národní certifikační schéma popsalo konkrétní architekturu. Pokud podporuje více architektur, musí pro každou existovat **samostatný profil**.
+Příloha X není napsána jako neutrální katalog pro libovolnou architekturu. Výslovně pracuje s architektonickým profilem [[EUDIW]]-CZ a zavádí předpoklady, které mají přímé dopady na návrh řešení.
 
-Každý profil musí minimálně obsahovat:
+Pro účely přílohy X se uvažuje, že každá wallet unit:
 
-1. konkrétní architekturu peněženky a souvisejícího systému elektronické identifikace,
-2. bezpečnostní kontroly odpovídající požadované úrovni záruky,
-3. evaluation plan podle EN ISO/IEC 17065,
-4. bezpečnostní požadavky pokrývající relevantní rizika a hrozby,
-5. mapování kontrol na komponenty architektury,
-6. vysvětlení, jak navržené kontroly, mapování a evaluace pokrývají rizika až do požadované úrovně záruky.
+- obsahuje **jednu WSCA**,
+- obsahuje **jeden [[WSCD]]** pro dosažení úrovně záruky „vysoká“,
+- obsahuje **jednu instanci peněženky**.
 
-To je důležité i pro produktové rozhodování. Změna například z lokálního [[WSCD]] na vzdálený kryptografický modul, změna mobilní platformy nebo přesun kritické serverové funkce do jiného provozního modelu nemusí být jen „implementační detail“. Může měnit předpoklady certifikovaného profilu a tím vyvolat potřebu zvláštní evaluace.
+Elektronická potvrzení atributů mohou být podle rulebooku konkrétního [[EAA]] uložena i mimo tento [[WSCD]].
 
-## Risk-based přístup: evropský registr rizik je pouze výchozí bod
+Příloha X dále opakovaně pracuje s profilem **vzdáleného [[WSCD]]**, typicky provozovaného jako HSM. Pro tento profil české schéma identifikuje centralizovaný [[WSCD]] jako významnou sdílenou bezpečnostní závislost, řeší multi-tenancy izolaci, redundanci, obnovu a autentizovaný kanál mezi instancí peněženky, WSCA a vzdáleným [[WSCD]].
 
-Příloha I prováděcího nařízení 2024/2981 obsahuje společný evropský risk register. Zahrnuje mimo jiné rizika:
+Certifikační target tedy není pouze sada protokolů. Je spojen s konkrétními architektonickými assumptions a s kontrolami, které musí tyto assumptions pokrývat.
 
-| ID | Oblast |
+## Bezpečnostní požadavky: čtyři kategorie
+
+Příloha X rozděluje požadavky do čtyř kategorií:
+
+| Kategorie | Význam |
 |---|---|
-| R1 | vytvoření nebo použití existující elektronické identity neoprávněným způsobem |
-| R2 | vytvoření nebo použití falešné elektronické identity |
-| R3 | vytvoření nebo použití falešných atributů |
-| R4 | krádež identity |
-| R5 | krádež dat |
-| R6 | neoprávněné zpřístupnění dat |
-| R7 | manipulace s daty |
-| R8 | ztráta dat |
-| R9 | neautorizovaná transakce |
-| R10 | manipulace s transakcí |
-| R11 | popření uskutečněné operace |
-| R12 | zpřístupnění transakčních dat |
-| R13 | narušení dostupnosti služby |
-| R14 | sledování uživatele |
-| SR1 | plošné sledování |
-| SR2 | reputační škoda |
-| SR3 | právní nesoulad |
+| **Fun** | funkční bezpečnostní požadavky; shodu lze typicky ověřovat testováním |
+| **Sec** | implementační bezpečnostní požadavky; typicky audit a inspekce |
+| **Cond** | podmíněné požadavky, například pro vzdálený nebo externí [[WSCD]] |
+| **Privacy** | doplňkové privacy požadavky nad rámec kybernetické bezpečnosti |
 
-Provozovatel ale nesmí skončit u obecného seznamu. Musí doplnit **rizika specifická pro svou implementaci** a navrhnout jejich ošetření. Certifikační orgán pak hodnotí, zda jsou rizika, kontroly a důkazy konzistentní.
+Důležitá nuance: privacy vlastnosti nejsou obecně „volitelné“. Požadavky na ochranu soukromí, které jsou současně bezpečnostními vlastnostmi, jsou vedeny jako **[Sec] a jsou povinné**. Samostatná kategorie **[Privacy]** označuje pouze doplňkové rozšíření certifikačního scope.
 
-Pro architekta je proto důležité, aby threat model a risk register vznikaly současně s architekturou. Dodatečně vytvořený „compliance dokument“ bez vazby na komponenty, trust boundaries a provozní procesy nebude odpovídat logice schématu.
+České schéma například ponechává jako povinné bezpečnostní požadavky i pravidla, která zakazují zbytečné sledování používání peněženky a kombinování osobních údajů z peněženky s jinými službami poskytovatele.
 
-## Požadovaná úroveň odolnosti
+## Hodnotící metody A / I / T / C
 
-Schéma musí vyžadovat odolnost odpovídající úrovni záruky **high**, včetně odolnosti proti útočníkům s vysokým attack potential.
+Příloha X klasifikuje hodnotící metody do čtyř skupin:
 
-To se promítá zejména do:
+- **A — Audit:** přezkum dokumentace a politik,
+- **I — Inspekce:** ověření skutečné implementace,
+- **T — Testování:** funkční nebo bezpečnostní test,
+- **C — Certifikát:** využití existujícího certifikátu po dependency analysis podle přílohy IX.
 
-- návrhu a ochrany kritických aktiv,
-- úložiště a používání kryptografických klíčů,
-- hodnocení [[WSCD]] a wallet secure cryptographic application,
-- vulnerability assessment,
-- posuzování zdrojového kódu tam, kde je to pro evaluaci nutné,
-- penetračních a dalších technických testů,
-- bezpečnostních předpokladů na operační systém, zařízení, secure hardware a backend.
+Konkrétní kombinace není dána jen kategorií požadavku. Certifikační orgán ji určuje v hodnotícím plánu podle architektury, rizik, existujících důkazů a zbytkových činností.
 
-Použití již certifikovaného komponentu je výhodou, ale není automatickým „pass“. Evaluátor musí posoudit, zda rozsah, assumptions, security target a provozní podmínky existující certifikace odpovídají tomu, jak je komponent použit v peněžence.
+## [[EUDIW]]-CZ přidává vlastní požadavky nad baseline ENISA
 
-## Co musí žadatel připravit pro certifikaci
+Příloha X má samostatnou kapitolu **X.1.4 Rozšíření nad rámec baseline ENISA**. Česká nadstavba není jen stylistická. Zahrnuje požadavky v následujících oblastech:
 
-Prováděcí nařízení předpokládá, že certifikační orgán dostane dostatek evidence k ověření nejen výsledku, ale i konstrukce celého assurance argumentu.
-
-V praxi musí žadatel počítat minimálně s následujícími skupinami podkladů:
-
-| Evidence | Typický obsah |
+| Oblast | Příklady české nadstavby |
 |---|---|
-| Architektura | komponenty, rozhraní, trust boundaries, kritická aktiva, deployment model, podporované varianty a zařízení |
-| Risk management | evropská rizika + implementačně specifická rizika, jejich treatment a residual risk |
-| Security controls | kontrola, její účel, implementace, vlastník a vazba na riziko |
-| Evaluation plan | co se bude auditovat, testovat, analyzovat a jaký důkaz se očekává |
-| Component assurance | certifikáty, assurance reports, security targets, assumptions a provozní omezení externích komponent |
-| Vývoj | secure development, řízení změn, verzování, release a update proces |
-| Provoz | monitoring, incident management, vulnerability management, change management |
-| Personál | role, odpovědnosti, kvalifikace, bezpečnostní školení a řízení přístupů |
-| Testování | funkční testy, bezpečnostní testy, výsledky vulnerability assessment a případně penetrační testy |
-| Zdrojový kód | v rozsahu, který je pro konkrétní evaluaci nutný |
-| Subdodavatelé | rozdělení odpovědností, SLA, kontrolní mechanismy, assurance evidence a exit/change scénáře |
+| řízení rizik | rozšířený registr rizik [[EUDIW]]-CZ a jeho zapracování do risk managementu |
+| politiky | český jazyk, politika pro vzdálený [[WSCD]], assumptions uživatelského zařízení |
+| provoz | oddělení rolí, privilegovaný přístup, vzdálený [[WSCD]], síťová a fyzická bezpečnost, kontinuita |
+| ISMS procesy | bezpečný vývoj, řízení dodavatelů, zranitelností, incidentů a podvodů |
+| wallet unit | specifika WSCA↔[[WSCD]] a instance↔WSCA |
+| wallet provider | obnova, nezávislá autentizace uživatele, vzdálený [[WSCD]], aktualizace |
+| [[PID]] provider | onboarding, autoritativní zdroj, pečetění [[PID]], revokace a anti-fraud |
+| ověřovací služba | trust listy, registr [[RP]], dostupnost a oddělení rolí |
+| provozní prostředí | infrastruktura, uživatelské zařízení, vzdálený [[WSCD]] |
+| ochrana údajů | povinné oddělení dat, zákaz zbytečného sledování a kombinování údajů |
 
-Velkou praktickou změnou proti běžnému produktovému auditu je **důraz na dependency analysis**. Poskytovatel musí vědět, na jaké externí komponentě nebo službě stojí každá bezpečnostní vlastnost a jakým důkazem je tato závislost pokryta.
+## Deset českých architekturních rizik CZ-01 až CZ-10
 
-## Jak probíhá posuzování shody
+Vedle evropského registru rizik zavádí [[EUDIW]]-CZ vlastní sadu **CZ-01 až CZ-10**:
 
-Národní schéma musí být podle prováděcího nařízení implementováno jako **type 6 certification scheme** podle EN ISO/IEC 17067. Certifikační orgány musí být akreditovány podle EN ISO/IEC 17065.
+| ID | Riziko |
+|---|---|
+| CZ-01 | kompromitace centralizovaného [[WSCD]] |
+| CZ-02 | výpadek konektivity mezi instancí peněženky a vzdáleným [[WSCD]] |
+| CZ-03 | kompromitace prostředku elektronické identifikace během onboardingu |
+| CZ-04 | kompromitace externí služby pečetění [[PID]] |
+| CZ-05 | insider threat u poskytovatele peněženky a jeho subdodavatelů |
+| CZ-06 | kaskádová kompromitace sdílené infrastruktury |
+| CZ-07 | nedostatečné oddělení prostředí u subdodavatele vývoje systému poskytovatele [[PID]] |
+| CZ-08 | ztráta nebo krádež uživatelského zařízení |
+| CZ-09 | útok na registr [[RP]] |
+| CZ-10 | kumulace rolí u jednoho subjektu ekosystému |
 
-Samotná evaluace má zahrnovat mimo jiné:
+Tyto položky ukazují bezpečnostní priority českého profilu. Nejde jen o obecný požadavek úrovně „high“; schéma identifikuje konkrétní architektonické single points of failure, dodavatelská rizika a governance konflikty.
 
-- audit implementace vůči risk registru,
-- funkční testování,
-- hodnocení existence a vhodnosti maintenance procesů,
-- hodnocení jejich skutečné provozní účinnosti,
-- dependency analysis,
-- vulnerability assessment,
-- review návrhu a podle potřeby i zdrojového kódu,
-- testování odolnosti proti útočníkovi s vysokým attack potential,
-- vyhodnocení změn threat landscape,
-- ověření, že konkrétní implementace odpovídá deklarovanému architektonickému profilu.
+## Poskytovatel peněženky: certifikace zasahuje celý životní cyklus wallet unit
 
-Schéma může umožnit **sampling** variant komponent a cílových zařízení, aby se zbytečně neopakovaly identické testy. Certifikační orgán ale musí použití vzorkování odůvodnit.
+Příloha X definuje detailní povinnosti poskytovatele peněženky.
 
-## ČIA, certifikační orgány a subdodavatelé evaluace
+### Aktivace a průběžné monitorování
 
-V českém modelu je národním akreditačním orgánem ČIA. Certifikační orgán musí před vydáváním certifikátů získat odpovídající akreditaci a prokázat zejména:
+Poskytovatel musí podle příslušných kontrol například:
 
-- detailní technickou znalost podporovaných architektur,
-- znalost relevantních hrozeb a rizik,
-- znalost bezpečnostních řešení používaných pro vysokou úroveň záruky,
-- schopnost posuzovat existující certifikáty a další assurance evidence komponent,
-- detailní znalost českého NCS.
+- před aktivací ověřit pravost instance peněženky pro danou platformu,
+- provést eligibility kontroly zařízení včetně verze OS a integrity platformy,
+- aktivovat wallet unit pouze při splnění požadované bezpečnostní úrovně WSCA/[[WSCD]],
+- průběžně monitorovat bezpečnostní stav provozních instancí,
+- detekovat kritické změny prostředí včetně root/jailbreak stavu,
+- při kompromitaci wallet unit analyzovat dopad a případně ji revokovat včetně souvisejících [[WUA]].
 
-Certifikační orgán smí některé evaluační činnosti subkontrahovat. Odpovědnost za výsledek ale zůstává na certifikačním orgánu a schéma musí řešit způsobilost subdodavatelů například podle standardů pro testovací laboratoře, inspekci, audit, validaci nebo verifikaci.
+### Uživatelský účet a obnova po ztrátě zařízení
 
-Pro český trh to znamená, že vznik NCS je jen první krok. Praktická dostupnost certifikace závisí také na tom, kdy budou existovat akreditované orgány s odpovídající odborností a kapacitou.
+České schéma jde velmi konkrétně do recovery modelu. WPS-05 požaduje, aby uživatel měl účet u poskytovatele peněženky a aby byly při aktivaci zaregistrovány autentizační metody **nezávislé na wallet unit a na uživatelském zařízení**.
 
-## Certifikační životní cyklus: ne koncový audit, ale čtyřletý cyklus
+Zřízení účtu má uživateli vysvětlit jeho účel, umožnit registraci pod aliasem a zabránit použití registrovaných dat pro jiné účely bez odpovídajícího právního základu nebo souhlasu podle konkrétní situace.
 
-Prováděcí nařízení definuje model pravidelného dohledu. Zjednodušeně:
+WPS-09 pak vyžaduje proces obnovy po ztrátě nebo krádeži zařízení. Ten zahrnuje zejména:
 
-| Rok | Typ | Hlavní činnost |
-|---|---|---|
-| 0 | počáteční certifikace | úplná evaluace včetně vulnerability assessment, posouzení update mechanismů a maintenance procesů, vydání certifikátu |
-| 1 | surveillance | kontrola provozní účinnosti version/update/vulnerability managementu a bezpečnostně relevantních změn |
-| 2 | surveillance | vulnerability assessment celé solution + kontrola maintenance procesů a změn |
-| 3 | surveillance | kontrola maintenance procesů a bezpečnostně relevantních změn |
-| 4 | recertifikace | úplná evaluace, vulnerability assessment a vydání nového certifikátu |
+- nezávislou autentizaci uživatele,
+- revokaci [[WUA]] ztracené wallet unit,
+- zničení souvisejícího kryptografického materiálu,
+- aktivaci nové wallet unit,
+- podporu opětovného vydání [[PID]] a dalších atestací,
+- auditní záznam recovery procesu.
 
-To vytváří významný provozní závazek. Certifikační dokumentace nemůže vzniknout pouze těsně před auditem. Organizace musí být schopna průběžně dokazovat, že kontrolní mechanismy **skutečně fungují v provozu**.
+### [[WUA]] a [[WIA]]
 
-## Změny produktu: kdy už nestačí běžný release proces
+Pro [[WUA]] schéma požaduje politiku správy a vydávání. [[WUA]] nesmí obsahovat informace o uživateli a musí obsahovat identifikátor wallet unit použitelný pro revokaci bez identifikace osoby.
 
-Schéma musí obsahovat proces pro řízení změn certifikovaného objektu. Změna se posoudí a podle dopadu může být pokryta:
+Pro [[WIA]] české schéma stanoví, že:
 
-- pravidelným ověřením účinnosti maintenance procesů, nebo
-- **special evaluation**, pokud má specifický dopad na předpoklady nebo shodu.
+- její platnost musí být **kratší než 24 hodin**,
+- před podpisem [[WIA]] musí poskytovatel ověřit integritu instance peněženky,
+- vzhledem ke krátké platnosti není vyžadován samostatný revokační mechanismus [[WIA]].
 
-Z praktického hlediska by tedy release governance měla obsahovat certifikační impact assessment. Před významnou změnou architektury, kryptografie, platformy, identity proofingu, update mechanismu nebo kritického subdodavatele je nutné vyhodnotit, zda změna zůstává uvnitř certifikovaného scope.
+### Aktualizační mechanismus
 
-Certifikace tím zasahuje přímo do product lifecycle managementu a change managementu.
+Proces distribuce a aktualizace musí být integrován do change a vulnerability managementu. Příloha X požaduje mimo jiné:
 
-## Incidenty a zranitelnosti
+- code signing distribuovaných komponent,
+- ochranu signing klíče instance peněženky na úrovni odpovídající „high“,
+- ochranu signing klíče WSCA v HSM,
+- pokud je to technicky možné, oddělení bezpečnostních oprav od funkčních aktualizací,
+- možnost automatizované distribuce bezpečnostních aktualizací,
+- možnost pozastavit wallet unit do instalace povinné bezpečnostní aktualizace,
+- pro sdílenou WSCA v remote-[[WSCD]] profilu kontrolu kompatibility, rollback a informování klíčových subjektů.
 
-Držitel certifikátu musí certifikační orgán **bez zbytečného odkladu** informovat o narušení nebo kompromitaci, která může mít dopad na shodu.
+## Povinnost zveřejnit zdrojový kód klientské části peněženky
 
-Musí rovněž:
+Příloha III obsahuje jeden z nejvýraznějších praktických požadavků schématu:
 
-- udržovat vulnerability management policy a procesy,
-- definovat kritéria pro oznamování zranitelností a změn certifikačnímu orgánu,
-- pro relevantní zranitelnost softwarových komponent zpracovat vulnerability impact analysis,
-- posoudit dopad na certifikované řešení, pravděpodobnost útoku a možnosti nápravy,
-- veřejně známé a opravené zranitelnosti registrovat podle pravidel schématu.
+> poskytovatel certifikované peněženky zveřejní **zdrojový kód aplikačních komponent peněženky, které běží na zařízení uživatele, jako součást programu s otevřeným zdrojovým kódem**.
 
-Certifikační orgán může certifikát pozastavit, pokud potvrzený incident narušuje shodu. Pokud není problém včas napraven nebo závažná zranitelnost zůstává neošetřena v čase odpovídajícím její závažnosti, může dojít ke zrušení certifikátu.
+Tím se opravuje běžná představa, že zdrojový kód je pouze neveřejným vstupem auditora. [[EUDIW]]-CZ rozlišuje dvě situace:
 
-To je důležité i smluvně: provozní smlouvy se subdodavateli musí umožnit získat informace a provést nápravu v časových oknech, která držitel certifikátu potřebuje pro splnění vlastních povinností.
+- detailní interní evidence a jiné citlivé materiály jsou chráněny pravidly důvěrnosti,
+- zdrojový kód aplikačních komponent běžících na uživatelském zařízení má být veřejně dostupný jako open source.
 
-## Evidence a uchovávání záznamů
+Příloha III vedle toho vyžaduje zveřejnění:
 
-Schéma musí řešit recordkeeping jak na straně certifikačních orgánů, tak držitelů certifikátu.
+- instalačních, konfiguračních a bezpečnostních pokynů,
+- známých nebo předvídatelných okolností vytvářejících významná kybernetická rizika,
+- postupů pro aktualizace a postupu pro deaktivaci automatických bezpečnostních aktualizací,
+- postupu bezpečného vyřazení peněženky a odstranění uživatelských dat,
+- seznamu komponent certifikovaného řešení včetně poskytovatelů a relevantních verzí,
+- omezení použití,
+- kontaktu pro hlášení zranitelností,
+- odkazu na veřejně zveřejněné zranitelnosti,
+- typu bezpečnostní podpory a data konce podpory.
 
-Relevantní informace z certifikačních činností musí být chráněny a uchovávány nejméně po dobu požadovanou právem a minimálně **pět let po zrušení nebo vypršení certifikátu**. Držitel má obdobně uchovávat podklady poskytnuté v průběhu certifikace a v relevantních případech i vzorky hardwarových komponent zahrnutých do scope.
+Tyto informace mají být jasně a snadno dostupné **každému, kdo chce řešení peněženky používat**.
 
-Současně musí být chráněno obchodní tajemství, důvěrné informace a práva duševního vlastnictví. Požadavek zpřístupnit při evaluaci detailní technické informace nebo zdrojový kód proto neznamená jejich veřejné zveřejnění.
+## Soukromí: české schéma certifikuje konkrétní anti-tracking vlastnosti
 
-## Co obsahuje výsledný certifikát
+[[EUDIW]]-CZ obsahuje několik technicky konkrétních privacy požadavků.
 
-Evropské prováděcí nařízení vyžaduje, aby certifikát shody obsahoval zejména:
+### Oddělení údajů poskytovatele
 
-- unikátní identifikátor,
-- název peněženky,
-- název systému elektronické identifikace, v jehož rámci je poskytována,
-- **hodnocenou verzi**,
-- identitu držitele certifikátu,
-- odkaz na veřejně poskytované informace,
-- identifikaci certifikačního orgánu a případně samostatného evaluačního subjektu,
-- informaci o jeho akreditaci,
-- vlastníka certifikačního schématu,
-- odkazy na příslušné právní předpisy,
-- odkazy na certification report a certification assessment report,
-- použité standardy **včetně jejich verzí**,
+DPR-01 požaduje logické oddělení osobních údajů souvisejících s poskytováním peněženky od ostatních dat poskytovatele.
+
+DPR-02 omezuje sběr údajů o používání wallet unit na údaje nezbytné pro samotnou službu. Monitorování nemá zahrnovat informaci, **kdy, kde a vůči komu uživatel prezentoval [[PID]] nebo atestaci**.
+
+DPR-03 omezuje kombinování osobních dat z wallet unit nebo údajů o jejím používání s daty z jiných služeb poskytovatele nebo třetích stran, pokud to není nezbytné, s výjimkami odpovídajícími požadavkům schématu a právnímu rámci.
+
+### Ochrana proti korelaci
+
+Příloha X rovněž požaduje například:
+
+- pseudonymy odlišné pro různé [[RP]],
+- privacy-preserving revokaci [[PID]] a atestací,
+- aby prezentace atestace vůči [[RP]] nevyžadovala komunikaci s jejím vydavatelem způsobem umožňujícím sledování použití,
+- mechanismy, které omezují korelaci přes status/revocation infrastrukturu.
+
+Cílem je, aby poskytovatel peněženky, poskytovatel [[PID]], vydavatel atestace ani jednotlivé [[RP]] nemohli sestavit globální stopu používání peněženky.
+
+## [[WSCD]] a WSCA: konkrétní assurance target
+
+České schéma je výrazně konkrétní u kryptografických komponent.
+
+### [[WSCD]]
+
+Příloha X a kritéria přílohy IX pracují pro [[WSCD]] s minimálním cílem odpovídajícím:
+
+- **EAL4**,
+- vulnerability assessment **AVA_VAN.5**,
+
+v rámci EUCC nebo Common Criteria, případně s ekvivalentní úrovní záruky podle použitelného evropského rámce.
+
+U centralizovaného [[WSCD]] obsluhujícího více wallet units musí být prokázána multi-tenant izolace. Administrativní přístup nesmí prolomit izolaci uživatelských klíčů a kompromitace jedné logické instance nesmí ohrozit ostatní.
+
+Centralizovaný [[WSCD]] musí mít rovněž odpovídající redundanci a disaster-recovery mechanismy.
+
+### WSCA
+
+WSCA musí být hodnocena metodologií Common Criteria/EUCC. U architektury se vzdáleným [[WSCD]] připouští [[EUDIW]]-CZ za kompenzačních podmínek minimálně **AVA_VAN.3**, zatímco **AVA_VAN.5 zůstává preferovaným cílem**.
+
+Toto je příklad kompozitního principu: assurance level jednotlivé komponenty nelze vytrhnout z kontextu jejího provozního prostředí a vazeb na další komponenty.
+
+## Poskytovatel [[PID]]: certifikace je širší než podpis credentialu
+
+Příloha X zahrnuje do služby poskytovatele [[PID]] nejméně:
+
+- systém IKT poskytovatele,
+- relevantní ISMS procesy,
+- onboarding a správu uživatelů,
+- vydávání a správu [[PID]],
+- revokaci [[PID]].
+
+### Vydání [[PID]]
+
+Před vydáním musí poskytovatel podle příslušných kontrol mimo jiné:
+
+- ověřit identitu na úrovni záruky „vysoká“,
+- ověřit, že wallet provider vyplývající z [[WIA]] je důvěryhodný,
+- ověřit integritu a obsah [[WIA]],
+- validovat vydávané identifikační údaje proti **autoritativnímu zdroji**; schéma jako příklad uvádí registr obyvatel,
+- implementovat anti-fraud monitoring issuance procesu.
+
+Pokud je pečetění [[PID]] zajištěno externím poskytovatelem, české schéma požaduje kvalifikovaného poskytovatele a kvalifikovanou elektronickou pečeť; poskytovatel [[PID]] ověřuje integritu pečeti před uvolněním credentialu.
+
+### Český onboarding: tři cesty k úrovni „vysoká“
+
+ONB-01 definuje tři základní způsoby ověření identity:
+
+1. fyzickou přítomnost s kontrolou dokladů,
+2. prostředek elektronické identifikace na úrovni „vysoká“,
+3. **level-up prostředku na úrovni „značná“ na „vysoká“** doplňkovým ověřením podle prováděcího nařízení (EU) 2026/798 a ETSI TS 119 461.
+
+Příloha X současně popisuje jako primární metodu českého architektonického profilu vzdálené automatizované ověření bez dohledu s dokladem totožnosti jako součást tohoto level-up procesu.
+
+Pro vzdálené automatické snímání osoby schéma stanoví požadavek na hodnocení odolnosti proti biometric injection attack podle TS 18099 s přechodovým mechanismem, pokud příslušná akreditovaná laboratoř není dostupná.
+
+ONB-04 navíc požaduje strukturovaný důkaz o identity proofingu, například se záznamem výsledku a času ověření, a jeho evidenci chráněnou důvěryhodným časovým údajem podle požadavků schématu.
+
+### Revokace [[PID]]
+
+U revokovatelného [[PID]] české schéma vyžaduje revokaci mimo jiné:
+
+- na žádost uživatele,
+- při revokaci wallet unit,
+- při úmrtí osoby,
+- pokud změna autoritativního zdroje způsobí, že [[PID]] již neodpovídá skutečnosti.
+
+Poskytovatel [[PID]] zůstává odpovědnou stranou za revokaci i tehdy, když technické provedení deleguje.
+
+PIDR-R06 navíc požaduje **křížovou kontrolu stavu revokace wallet unit nejméně jednou za 24 hodin**. Mechanismus musí být odolný vůči výpadkům, smluvně popsán a komunikace mezi poskytovateli musí být chráněna.
+
+## Ověřovací služba: české schéma ji řadí do certifikovaného ekosystému wallet provideru
+
+Příloha X.9 upřesňuje oblast, kterou z veřejného popisu DIA nebylo možné určit přesně. Požadavky kapitol X.2 až X.5 se vztahují minimálně na poskytovatele peněženky, poskytovatele [[PID]] a provozovatele ověřovací služby a příloha X stanoví samostatné požadavky VER na validační funkce.
+
+Ověřovací služba poskytuje mechanismy pro:
+
+1. ověření autenticity a platnosti wallet units,
+2. ověření autenticity a platnosti identity registrovaných [[RP]].
+
+Rozsah zahrnuje zejména:
+
+- systém IKT ověřovací služby,
+- její ISMS procesy,
+- validaci wallet unit,
+- validaci identity [[RP]],
+- mechanismy identifikace a autentizace [[RP]].
+
+### Registrace [[RP]] není totéž co validace [[RP]]
+
+[[EUDIW]]-CZ výslovně odlišuje **registraci [[RP]]** od provozního ověřování registrované [[RP]]. Proces, kterým je [[RP]] přijata do registru, je rolí registrátora a není totožný s validačním mechanismem, který registry a certifikáty používá.
+
+To je důležité organizačně i architektonicky: ověřovací služba registr konzumuje a musí chránit jeho integritu, ale samotný registration workflow je samostatná governance role.
+
+### Bezpečnost registru a autentizace [[RP]]
+
+České schéma pro tuto oblast požaduje mimo jiné:
+
+- ověřit, zda je [[RP]] registrována a jaký rozsah údajů je oprávněna požadovat,
+- poskytovat informace potřebné k ověření registrace a kategorie [[RP]],
+- rychle promítat pozastavení, zrušení nebo změnu oprávnění,
+- chránit publikovaná data kryptograficky,
+- při významných změnách registru používat mechanismy oddělení oprávnění a kontroly,
+- mít auditní stopu změn, zálohování, obnovu a řízení privilegovaných přístupů,
+- nevydat přístupové oprávnění subjektu bez platné registrace,
+- navrhnout službu bez kritického single point of failure,
+- oddělit infrastrukturu od dalších služeb tam, kde kumulace rolí vytváří riziko.
+
+České požadavky rovněž sledují, aby provozovatel validační služby nemohl snadno vytvářet sledovací stopu konkrétních wallet units a [[RP]].
+
+## [[RP]]: co česká certifikace znamená pro banku, úřad nebo jiného verifiera
+
+Běžná [[RP]] není sama o sobě tímto schématem certifikována jako wallet provider. [[EUDIW]]-CZ ale vytváří prostředí, ve kterém má být její identita a oprávnění před wallet unit ověřitelné.
+
+Pro [[RP]] z toho prakticky plyne potřeba:
+
+- platné registrace,
+- správně vymezeného rozsahu požadovaných dat,
+- vazby mezi registrací a technickými přístupovými prostředky,
+- schopnosti pracovat s validačním mechanismem wallet unit,
+- počítat s tím, že wallet ověřuje nejen technickou identitu, ale i registrační status a rozsah oprávnění.
+
+Registrace [[RP]] je však samostatný governance proces a tento článek ji proto neprezentuje jako certifikaci podle [[EUDIW]]-CZ.
+
+## Poskytovatelé [[EAA]] a [[QEAA]]
+
+[[EUDIW]]-CZ nenahrazuje právní a certifikační režim vydavatelů [[EAA]] nebo [[QEAA]]. Kvalifikovaný status [[QTSP]] vzniká v režimu služeb vytvářejících důvěru, nikoli získáním wallet certifikátu.
+
+Přesto mají vydavatelé atestací v certifikované architektuře důležité vazby:
+
+- wallet unit musí umět jejich credentialy přijmout a prezentovat podle pravidel,
+- privacy požadavky omezují možnost vydavatele sledovat jednotlivé prezentace credentialu vůči [[RP]],
+- existující kvalifikované certifikace a audity mohou vstoupit do dependency analysis,
+- komponenty a služby, na kterých wallet provider nebo [[PID]] provider závisí, podléhají supply-chain hodnocení.
+
+## Dodavatelský řetězec: požadavky pokračují až k subdodavatelům
+
+SUP-04 stanoví zásadní pravidlo: pokud poskytovatel služby EUDI využívá třetí strany, relevantní požadavky přílohy X se promítají i do těchto vztahů a činnosti třetích stran zůstávají v rozsahu certifikačního posouzení.
+
+Nestačí tedy smluvně označit cloud, vývojáře nebo HSM provider za externího dodavatele. Držitel certifikátu musí dodat použitelnou assurance evidence.
+
+### Povinný SBOM
+
+SUP-05 požaduje strojově čitelný **Software Bill of Materials** pro komponenty řešení. Má zahrnovat:
+
+- přímé závislosti,
+- automatizovaně zjistitelné tranzitivní závislosti,
+- jméno, původ nebo dodavatele, verzi a strojově použitelný identifikátor, například PURL nebo CPE.
+
+Schéma jako běžné formáty uvádí SPDX a CycloneDX.
+
+### Posouzení kritických dodavatelů
+
+SUP-06 výslovně pracuje s kritickými dodavateli, například:
+
+- poskytovateli infrastruktury hostující kritické komponenty včetně [[WSCD]],
+- poskytovateli pečetění [[PID]],
+- poskytovateli onboardingu,
+- výrobci [[WSCD]]/HSM,
+- dodavateli systému poskytovatele [[PID]],
+- klíčovými subdodavateli těchto dodavatelů.
+
+Pokud neexistuje přiměřená certifikační nebo auditní evidence, musí následovat samostatné hodnotící činnosti.
+
+### Code escrow v EU
+
+SUP-07 zavádí pro kritické komponenty vyvíjené externě smluvní mechanismus **úschovy zdrojového kódu u nezávislé třetí strany usazené v EU**.
+
+Rozsah má zahrnout nejméně:
+
+- úplný zdrojový kód,
+- build instructions,
+- SBOM,
+- dokumentaci potřebnou k pokračování vývoje a údržby.
+
+Požadavek se vztahuje minimálně na kritické komponenty identifikované schématem, mezi nimiž jsou instance peněženky, WSCA a systém poskytovatele [[PID]].
+
+Release conditions zahrnují situace, jako je insolvence dodavatele, ukončení činnosti bez nástupce, závažné opakované neplnění maintenance/security povinností nebo rozhodnutí příslušného orgánu či soudu.
+
+**Primárním příjemcem uvolněných artefaktů je vlastník schématu [[EUDIW]]-CZ**, tedy DIA, která může podle podmínek mechanismu artefakty využít nebo jejich využití umožnit subjektu určenému k pokračování provozu.
+
+Escrow se má aktualizovat nejméně při major release a bezpečnostně významných aktualizacích a nejméně jednou ročně se má nezávisle ověřit jeho funkčnost včetně **testu sestavitelnosti**.
+
+## Pět povinných ISMS procesů
+
+Příloha X staví pět procesů jako významné procesní komponenty certifikované služby:
+
+1. secure development,
+2. change management,
+3. vulnerability management,
+4. incident management,
+5. fraud management.
+
+Nejde pouze o existenci politiky. Hodnotí se také jejich skutečná provozní účinnost a koordinace přes organizační hranice.
+
+Fraud management je důležitý i při přebírání ISO/IEC 27001 evidence: příloha IX výslovně upozorňuje, že ISO/IEC 27001 tuto oblast explicitně nepokrývá a musí být doplněna samostatným posouzením.
+
+## Co musí žadatel dodat už na začátku certifikace
+
+Příloha IV požaduje při zahájení hodnocení nejméně:
+
+| Oblast | Požadovaný obsah |
+|---|---|
+| veřejné informace | vše, co má být po certifikaci zveřejněno podle přílohy III |
+| architektura | role komponent, interní a externí rozhraní, assumptions |
+| certifikační plán | existující nebo plánované certifikace komponent, security targets, integrační dokumentace |
+| risk assessment | jak bylo řešení navrženo, vyvinuto, vytvořeno, dodáno a udržováno; vazba na evropský registr rizik |
+| exit plan | plán ukončení činnosti při odebrání nebo omezení certifikace |
+
+Dependency model a certifikační strategie tedy nemohou vzniknout až na konci projektu. Jsou vstupem do hodnocení.
+
+## Jaké existující certifikace lze využít
+
+Příloha IX má vlastní katalog assurance zdrojů, které lze za definovaných podmínek použít, například:
+
+- EUCC,
+- Common Criteria / SOG-IS,
+- EN 17640 / FitCEM včetně vybraných národních schémat,
+- certifikaci QSCD přes podkladové Common Criteria hodnocení,
+- ISO/IEC 27001:2022,
+- SOC 2,
+- ETSI EN 319 401.
+
+Klíčové je, že **žádný z těchto důkazů automaticky nenahrazuje [[EUDIW]]-CZ evaluaci**.
+
+Například ISO/IEC 27001 typicky prokazuje část obecných ISMS mechanismů, ale české schéma vyžaduje zbytkové posouzení EUDI-specifických procesů, fraud managementu, meziorganizační koordinace a provozní účinnosti konkrétních kontrol.
+
+SOC 2 může být důkazem pro část infrastrukturních opatření, ale sám o sobě nepokrývá kryptografické požadavky, izolaci wallet units, vazby WSCA–[[WSCD]] ani evropské regulatorní požadavky.
+
+## CAB: české požadavky jsou výrazně konkrétnější než obecná akreditace
+
+Hlavní schéma požaduje akreditaci certifikačních orgánů podle:
+
+- EN ISO/IEC 17065:2012,
+- ETSI EN 319 403-1 V2.3.1,
+- specifických požadavků přílohy VIII.
+
+Příloha VIII jde podstatně dál.
+
+### Požadavky na zkušenost
+
+Pracovníci odpovědní za určení shody technických komponent mají mít odpovídající akademickou/odbornou kvalifikaci nebo zkušenost a nejméně:
+
+- čtyři roky praxe související s vývojem softwaru,
+- z toho nejméně dva roky v identity nebo jiných citlivých službách.
+
+Každý člen hodnoticího týmu má mít prokazatelnou kvalifikaci v IT security; příloha jako minimální model uvádí vysokoškolské vzdělání v IT/kybernetické bezpečnosti nebo ekvivalentní profesní certifikaci a nejméně tři roky aktivní praxe v penetration testingu, bezpečnostních auditech nebo conformity assessment.
+
+### Common Criteria a kompozitní evaluace
+
+Nejméně jeden klíčový člen musí mít hlubokou znalost Common Criteria a CEM. Tým musí být schopen provádět dependency analysis a composite evaluation podle CCDB-2012-04-001 nebo ekvivalentního postupu.
+
+### Minimální tým a oddělení rolí
+
+Minimální velikost hodnoticího týmu pro jeden certifikační projekt jsou dvě osoby, přičemž kumulace role vedoucího a přezkoumatele je vyloučena. Příloha rozeznává vedoucího hodnotitele, technického hodnotitele/analytika a přezkoumatele; potřebná personální kapacita tak závisí na kombinaci rolí a kompetencí.
+
+### Technické a mezioborové pokrytí
+
+CAB musí mít kompetenci mimo jiné pro:
+
+- asymetrickou kryptografii a PKI,
+- správu klíčů,
+- mobile security a secure hardware,
+- hodnocení zranitelností na úrovni odpovídající LoA high / AVA_VAN.5,
+- selective disclosure,
+- přeshraniční interoperabilitu,
+- consent mechanismy,
+- vydávání [[PID]],
+- kvalifikované podpisy a pečetě,
+- offline scénáře.
+
+Hodnoticí tým má být interdisciplinární a pokrývat penetration testing, hardware security, ochranu osobních údajů a shodu s technickými specifikacemi ENISA/ETSI.
+
+Pokud CAB outsourcuje například penetration testing laboratoři, odpovědnost za finální certifikační rozhodnutí zůstává na CAB.
+
+## Dvoufázové posouzení
+
+Příloha VIII popisuje dvě fáze auditu.
+
+### Fáze 1
+
+Auditor studuje dokumentaci, architekturu, risk analysis, identifikované zranitelnosti a existující penetration-test reports. Zvláštní důraz se klade na odůvodnění odolnosti vůči útokům a na identifikaci míst, která musí být ověřena ve fázi 2.
+
+### Fáze 2
+
+Druhá fáze ověřuje:
+
+- zda návrh a implementace odpovídají specifikacím,
+- zda je skutečně dosažena požadovaná attack resistance,
+- zda proběhlo odpovídající funkční testování,
+- zneužitelnost identifikovaných zranitelností.
+
+Součástí je vulnerability assessment.
+
+## Certifikační životní cyklus: referenčně 4 roky, ale ne absolutní pevná délka
+
+Zjednodušení „certifikát má čtyřletý cyklus“ není úplně přesné.
+
+Hlavní schéma stanoví:
+
+- dobu platnosti určuje certifikační orgán podle charakteru služby,
+- standardní maximum je **4 roky**,
+- s předchozím souhlasem DIA lze dobu výjimečně prodloužit až na **5 let**.
+
+Příloha II definuje čtyři druhy následného hodnocení:
+
+1. základní dozorové,
+2. rozšířené dozorové,
+3. recertifikační,
+4. mimořádné.
+
+Dozor se provádí **nejméně jednou ročně**. Každé dva roky musí proběhnout rozšířené dozorové nebo recertifikační hodnocení. Rozšířené hodnocení doplňuje základní dozor o vulnerability assessment.
+
+U referenčního čtyřletého certifikátu vypadá cyklus:
+
+| Rok | Hodnocení |
+|---|---|
+| 1 | základní dozor |
+| 2 | rozšířený dozor + vulnerability assessment |
+| 3 | základní dozor |
+| 4 | recertifikace |
+
+Recertifikační hodnocení se plánuje tak, aby proběhlo přibližně **dva měsíce před expirací** a bylo možné certifikát obnovit včas.
+
+### První dozor je zvláštní
+
+V prvním dozorovém hodnocení po vydání prvního certifikátu se má vyhodnotit **účinnost všech opatření**. Důvodem je, že peněženka musí být certifikována před ostrým provozem a provozní účinnost proto nelze plně ověřit při počáteční certifikaci.
+
+## Významná událost: změna se neposuzuje jen jednou ročně
+
+Příloha II zavádí rozlišení mezi významnými a ostatními událostmi.
+
+**Významná událost** — významná neshoda, změna nebo zranitelnost — se oznamuje CAB bez čekání na další plánovaný dozor. CAB provede následnou kontrolu.
+
+Za významné změny mají být považovány zejména:
+
+- změny, které mohou vytvořit významnou neshodu,
+- funkční změny s dopadem na bezpečnost nebo rozhraní,
+- změny architektury,
+- změny kritických komponent, například [[WSCD]] nebo WSCA.
+
+Ostatní změny mohou být řešeny běžným interním procesem, jehož účinnost CAB každoročně hodnotí.
+
+V praxi to znamená, že certification impact assessment má být součástí release a architecture governance.
+
+## Pozastavení a odebrání certifikátu
+
+Při neshodě může CAB certifikát pozastavit.
+
+Hlavní schéma stanoví:
+
+- standardní pozastavení na dobu odpovídající okolnostem, nejvýše **42 dní**,
+- držitel musí informovat dotčené uživatele a informaci zveřejnit,
+- v řádně odůvodněném případě může DIA povolit prodloužení,
+- celková doba pozastavení nesmí přesáhnout **1 rok**.
+
+Pokud certifikát není v souladu se schématem, může jej odebrat vydávající certifikační orgán nebo DIA. O odebrání se informuje Komise a evropská skupina pro spolupráci.
+
+## Zranitelnosti: koordinované zveřejnění je součástí certifikace
+
+Držitel certifikátu musí mít vulnerability-management proces a koordinovanou disclosure policy.
+
+Pro zranitelnost s dopadem na certifikovaný scope musí zejména:
+
+- vyhodnotit dopad,
+- navrhnout a implementovat nápravu,
+- je-li zpracována formální vulnerability impact analysis, předat CAB i návrh nápravných opatření,
+- zveřejnit koordinovanou politiku hlášení zranitelností,
+- po opravě zveřejnit veřejně známé a odstraněné zranitelnosti v evropské databázi zranitelností nebo v úložišti deklarovaném pro službu.
+
+Tento proces je přímo propojen s dozorovým a change-management mechanismem certifikátu.
+
+## Co bude veřejně vidět z certifikace
+
+Příloha V vyžaduje, aby certifikát obsahoval například:
+
+- jedinečný identifikátor,
+- název a typ služby IKT,
+- hodnocenou verzi,
+- držitele certifikátu,
+- odkaz na povinně zveřejněné informace,
+- u služby zajišťující ověřování totožnosti metody ověřování identity,
+- certifikační orgán a případné subdodavatele hodnocení,
+- DIA jako vlastníka schématu,
+- odkazy na právní základ,
+- odkaz na Certifikační zprávu,
+- odkaz na Zprávu o posouzení/hodnocení,
+- verze použitých standardů,
 - datum vydání a dobu platnosti.
 
-Dvě položky jsou prakticky zásadní: **verze řešení** a **verze standardů**. Certifikace tedy není abstraktní razítko nad názvem produktu.
+Certifikát musí být v češtině a musí obsahovat anglický překlad.
 
-## Dopady na jednotlivé aktéry českého ekosystému
+## Certifikační zpráva a detailní hodnotící evidence
 
-| Aktér | Je přímým cílem NCS? | Co pro něj schéma prakticky znamená |
-|---|---|---|
-| DIA jako vlastník schématu | governance | Udržuje NCS, řeší změny a přechody mezi verzemi, informuje evropskou Cooperation Group o revizích a v českém modelu je zároveň plánovaným poskytovatelem [[PID]]. |
-| ČIA / národní akreditační orgán | akreditace | Akredituje certifikační orgány a ověřuje jejich kompetenci podle EN ISO/IEC 17065 a NCS. |
-| Certifikační orgán / CAB | ano, jako vykonavatel certifikace | Provádí nebo řídí evaluaci, rozhoduje o certifikaci, surveillance, suspension a cancellation; odpovídá i za subkontrahované evaluační činnosti. |
-| Poskytovatel peněženky | **ano** | Musí prokázat shodu architektury, implementace a provozu, pokrytí rizik, řízení závislostí a účinné maintenance procesy. |
-| Poskytovatel [[PID]] | **ano v českém kompozitním modelu** | Musí prokázat shodu služby vydávání [[PID]], zejména důvěryhodnost issuance a vazeb na identifikační a wallet procesy. |
-| Držitel zastřešující certifikace | **ano** | Nese assurance argument za složený celek a za rozhraní mezi dílčími certifikovanými oblastmi. |
-| Vývojář / integrátor peněženky | nepřímo | Musí dodávat evidence, traceability kontrol, secure development a podporu pro zdrojový kód, testování, změny a opravy. |
-| Provozovatel backendu / cloudu | nepřímo až přímo podle scope | Je zdrojem důkazů pro dostupnost, bezpečnost, incidenty, změny, přístupy a provozní assumptions. |
-| Dodavatel HSM, secure hardware nebo [[WSCD]] | komponentní závislost | Jeho certifikace a assurance evidence lze využít, ale jejich vhodnost pro konkrétní architekturu musí být ověřena. |
-| Poskytovatel onboardingu / identity proofingu | procesní závislost | Jeho proces může být součástí elektronického identifikačního systému a musí splnit požadovanou úroveň záruky a důkazní požadavky. |
-| [[RP\|Spoléhající strana]] | typicky není držitelem wallet certifikátu | NCS ji přímo necertifikuje jako běžnou spoléhající se stranu, ale certifikovaná wallet služba musí bezpečně pracovat s jejím ověřením a registrací. |
-| Poskytovatel [[EAA]] / [[QEAA]] | zpravidla jiný regulatorní režim | Jeho vlastní status nebo kvalifikace není nahrazena NCS; jeho rozhraní vůči peněžence ale vstupuje do interoperabilního a trust modelu. |
-| Uživatel peněženky | ne | Není certifikovaným subjektem; certifikace má chránit jeho identitu, data, klíče, transakce a soukromí a zvyšovat důvěru v konkrétní wallet unit. |
-| Orgán dohledu | dohled | Dostává informace o vydání, pozastavení a zrušení certifikátů a může požadovat relevantní evidence. |
+Příloha VI požaduje Certifikační zprávu založenou na Technické zprávě o hodnocení. Má být zveřejněna spolu s certifikátem a obsahovat praktické informace pro uživatele a zainteresované strany, například:
 
-### Poznámka k [[RP]]
+- přesný seznam a verze komponent,
+- předem certifikované komponenty a odkazy na jejich assurance evidence,
+- assumptions provozního prostředí,
+- zvláštní konfigurační požadavky,
+- popis architektury,
+- bezpečnostní politiky,
+- mapování kontrol na komponenty a rizika,
+- shrnutí auditu a hodnotících činností,
+- potvrzení dosažené úrovně záruky.
 
-Je důležité nezaměňovat dvě věci:
+Příloha VII jde výrazně hlouběji do Zprávy o certifikačním posouzení/hodnocení. Ta má zachytit mimo jiné:
 
-1. **registraci a autentizaci [[RP]] v ekosystému**, a
-2. **certifikaci wallet solution a eID systému**.
+- všechny dodavatele a subdodavatele komponent v certifikovaném scope,
+- zda a v jakém rozsahu prošli posouzením shody,
+- konkrétní provedené metody, sampling a testy,
+- interní dokumentaci zahrnutou do hodnocení,
+- exit plan,
+- incident-notification plan,
+- informace o finančních zdrojích a případném pojištění odpovědnosti,
+- seznam [[WSCD]] a jejich certifikací,
+- další důvěryhodné kryptografické systémy a jejich certifikace,
+- neshody a schválené corrective-action plány,
+- termín dalšího dozoru a dalšího conformity assessment,
+- časovou náročnost jednotlivých fází v osobo-dnech.
 
-Veřejný český popis zahrnuje do certifikace poskytovatele peněženky také službu ověřování spoléhajících se stran. To ale neznamená, že každá banka, e-shop nebo úřad žádající o data z peněženky získává stejný typ certifikátu jako poskytovatel peněženky. [[RP]] má vlastní registrační a trust mechanismy podle evropského rámce.
+Tím vzniká velmi podrobná auditní stopa toho, **co přesně bylo ověřeno a na jakém důkazu certifikační rozhodnutí stojí**.
 
-### Poznámka k poskytovatelům atributů
+## DIA není pouze vlastník dokumentu
 
-Podobně NCS nenahrazuje pravidla pro vydavatele [[EAA]] nebo [[QEAA]]. Kvalifikovaný poskytovatel [[QEAA]] zůstává v režimu kvalifikovaných služeb vytvářejících důvěru a jeho status se neposuzuje prostým získáním wallet certifikátu. Certifikace peněženky ověřuje mimo jiné to, že wallet ecosystem s takovými důvěryhodnými zdroji interoperuje bezpečně a podle pravidel.
+[[EUDIW]]-CZ dává DIA aktivní průběžnou governance roli.
 
-## Co z NCS plyne pro subdodavatelský řetězec
+DIA jako vlastník schématu monitoruje:
 
-Jedním z největších praktických dopadů je přesun certifikačních požadavků do supply chainu.
+- plnění povinností CAB,
+- plnění povinností držitelů,
+- trvající shodu certifikovaných služeb,
+- zda záruka vyjádřená certifikátem stále odpovídá vyvíjejícímu se threat landscape.
 
-Pokud poskytovatel spoléhá na externí:
+DIA může vybírat vzorky certifikovaných služeb k prověření a využívat informace od CAB, akreditačního orgánu, vlastní audity, šetření, stížnosti a odvolání.
 
-- mobilní operační systém,
-- secure element nebo TEE,
-- HSM,
-- cloud,
-- CI/CD infrastrukturu,
-- remote [[WSCD]],
-- identity proofing,
-- monitoring nebo SOC,
-- komponentu třetí strany,
+Schéma zároveň stanoví, že DIA alespoň jednou ročně zváží změny právního, technického a bezpečnostního prostředí a při podstatných změnách NCS aktualizuje. Každá aktualizace má definovat přechodový harmonogram pro nová opatření a změny referenčních dokumentů.
 
-musí být schopný vysvětlit, **která bezpečnostní vlastnost na této závislosti stojí a jak je zajištěna**.
+## Kumulace rolí je v českém profilu explicitní riziko
 
-Dodavatelská smlouva proto může potřebovat ustanovení o:
+Příloha X označuje jako CZ-10 situaci, kdy tentýž subjekt v ekosystému současně zastává více rolí.
 
-- poskytování auditní a certifikační evidence,
-- oznamování změn a zranitelností,
-- podpoře incident response,
-- zachování konkrétní certifikované konfigurace,
-- řízení verzí,
-- právu na audit nebo přístup k assurance reportům,
-- řízení zásadních změn subdodavatele.
+Schéma proto vyžaduje odpovídající separation-of-duties a řízení střetu rolí:
 
-NCS tak není pouze téma bezpečnostního nebo compliance týmu; vstupuje i do nákupu, vendor managementu, architektury a smluv.
+- jasné vymezení odpovědností,
+- oddělení personálu zejména u privilegovaných činností,
+- podle rizika také oddělení informačních systémů a technické infrastruktury.
 
-## Ochrana osobních údajů: certifikace není náhrada GDPR
+U validační oblasti jsou obdobné požadavky důležité zejména tam, kde tentýž subjekt provozuje více služeb ekosystému.
 
-Prováděcí nařízení výslovně zahrnuje data protection requirements do národního certifikačního schématu. Současně ale zachovává oddělení rolí: posouzení incidentu nebo vulnerability certifikačním orgánem nepředjímá posouzení dozorového úřadu podle pravidel ochrany osobních údajů.
+## Dopady na jednotlivé aktéry
 
-Prakticky tedy nelze certifikát použít jako tvrzení, že jsou automaticky splněny všechny povinnosti správce nebo zpracovatele osobních údajů. Certifikace a privacy governance se překrývají, ale jedna druhou nenahrazuje.
+| Aktér | Dopad [[EUDIW]]-CZ 1.2 |
+|---|---|
+| **DIA — vlastník schématu** | udržuje NCS, monitoruje CAB a certifikované služby, může požadovat dodatečné prověření, schvaluje výjimečné prodloužení platnosti a podle supply-chain pravidel vystupuje jako primární beneficiary vybraného code-escrow mechanismu |
+| **DIA — orgán dohledu** | dostává certifikáty a hodnotící dokumentaci a informace o závažných problémech a zranitelnostech |
+| **ČIA** | akredituje CAB podle EN ISO/IEC 17065, ETSI EN 319 403-1 a českých požadavků přílohy VIII |
+| **CAB** | provádí nebo řídí audit, inspekci, testování, dependency analysis a certifikační rozhodnutí; musí mít specializovaný interdisciplinární tým |
+| **Poskytovatel peněženky** | odpovídá za wallet lifecycle, aktivaci, [[WUA]]/[[WIA]], recovery, monitoring, privacy, updates a supply chain |
+| **Poskytovatel [[PID]]** | odpovídá za high-assurance onboarding, autoritativní validaci, issuance, pečetění, revokaci a anti-fraud |
+| **Provozovatel ověřovací služby** | podléhá požadavkům přílohy X pro validaci wallet units a [[RP]] a související bezpečnostní a provozní kontroly |
+| **Registrátor [[RP]]** | zajišťuje registrační proces; tento proces není totožný s provozní validací registrované [[RP]] |
+| **[[RP]]** | musí mít ověřitelnou registraci a oprávnění; [[EUDIW]]-CZ však běžnou [[RP]] necertifikuje jako wallet providera |
+| **Dodavatel [[WSCD]]/HSM** | musí dodat assurance odpovídající požadované vysoké úrovni a důkazy použitelné v dependency analysis |
+| **Dodavatel WSCA** | podléhá požadavkům na Common Criteria/EUCC assurance podle zvoleného architektonického profilu |
+| **Cloud/infrastrukturní dodavatel** | jeho činnosti mohou zůstat v certifikačním scope; musí dodat auditní/certifikační evidence nebo projít doplňkovým hodnocením |
+| **Externí vývojář** | musí splnit secure-development a supply-chain požadavky; u kritických komponent se může uplatnit code escrow |
+| **Poskytovatel onboardingu** | je kritickou závislostí a jeho bezpečnostní stav je předmětem assurance |
+| **[[QTSP]] pečetící [[PID]]** | kvalifikovaná assurance může být znovu použita, ale integrace a použití pro [[PID]] se stále posuzuje |
+| **Poskytovatel [[EAA]]/[[QEAA]]** | jeho vlastní trust-service režim NCS nenahrazuje; wallet musí současně splnit privacy a interoperabilní požadavky při práci s atestacemi |
+| **Uživatel** | není certifikovaným subjektem; získává veřejné bezpečnostní informace, recovery/revocation mechanismy a ochranu před trackingem |
 
-## Co by měl poskytovatel začít dělat ještě před formální žádostí
+## Co by měl implementátor připravit před formální certifikací
 
-Největší úsporu času nepřinese „psaní dokumentace pro audit“, ale vytvoření evidence současně s řešením. Praktický přípravný baseline je:
+Z [[EUDIW]]-CZ plyne praktický engineering baseline:
 
-1. **Zmrazit a popsat certifikační scope** — co je wallet solution, co je eID systém, kdo vlastní jednotlivé procesy a kde leží hranice subdodavatelů.
-2. **Vybrat architektonický profil** a explicitně sepsat assumptions na zařízení, platformy a externí služby.
-3. **Vytvořit traceability**: riziko → požadavek → kontrola → komponenta/proces → test/evidence.
-4. **Zavést certifikační impact assessment do change managementu**.
-5. **Zmapovat komponentní certifikáty a assurance evidence** a ověřit, zda jejich scope a assumptions odpovídají skutečnému použití.
-6. **Propojit vulnerability management s certifikačním reportingem**, nikoli pouze s interním ticketingem.
-7. **Připravit surveillance evidence** tak, aby bylo možné každoročně dokládat skutečnou účinnost maintenance procesů.
-8. **Smluvně ošetřit dodavatelský řetězec**, zejména změny, zranitelnosti, auditní podklady a reakční doby.
-9. **Verzovat compliance baseline** společně s produktem, protože certifikát odkazuje na konkrétní verzi řešení i standardů.
-10. **Sledovat revize NCS**, protože DIA výslovně očekává aktualizovanou verzi po spuštění akreditační služby.
+1. definovat hranice certifikačního scope a role všech organizací,
+2. vytvořit architekturu s explicitními trust boundaries a assumptions,
+3. zpracovat risk model zahrnující evropská rizika i CZ-01 až CZ-10,
+4. vytvořit traceability mezi rizikem, kontrolou, komponentou, metodou evaluace a důkazem,
+5. katalogizovat všechny existující certifikáty a assurance evidence a provést předběžnou dependency analysis,
+6. zavést SBOM napříč přímými i relevantními tranzitivními závislostmi,
+7. integrovat certification impact assessment do change managementu,
+8. smluvně zajistit auditní evidence, vulnerability notifications a případný source-code escrow u kritických dodavatelů,
+9. připravit veřejnou bezpečnostní dokumentaci a open-source klientský kód,
+10. navrhnout roční surveillance evidence už během vývoje,
+11. oddělit role a infrastruktury tam, kde tentýž subjekt kumuluje governance nebo provozní role,
+12. připravit exit plan pro omezení nebo odebrání certifikace.
 
-## Co znamená červnový cut-off zveřejněného konceptu
+## Co zůstává mimo tento certifikát
 
-DIA uvádí, že zveřejněný koncept reflektuje stav k **30. červnu 2026**. To je důležitá hranice.
-
-Po tomto datu došlo k dalším změnám technického rámce. V červenci 2026 bylo přijato například prováděcí nařízení (EU) 2026/1731, které aktualizovalo část technických specifikací peněženky. Takové změny automaticky neznamenají, že je říjnový koncept nepoužitelný; znamenají ale, že implementátor musí pečlivě rozlišovat:
-
-```text
-verze NCS
-  + verze evropských prováděcích aktů
-  + verze technických standardů
-  + verze architektonického profilu
-  + verze konkrétní implementace
-= konkrétní certifikační baseline
-```
-
-Právě tento versioning je jeden z důvodů, proč DIA již při zveřejnění první verze avizuje další aktualizaci.
-
-## Co certifikace řeší — a co ne
-
-NCS řeší prokazování shody peněženky a elektronického identifikačního systému s relevantními funkčními, bezpečnostními a privacy požadavky. Neřeší ale samo o sobě všechny otázky ekosystému.
-
-**Certifikace například nenahrazuje:**
+[[EUDIW]]-CZ je rozsáhlé, ale nenahrazuje jiné regulatorní režimy. Zejména samo o sobě nenahrazuje:
 
 - registraci [[RP]],
 - kvalifikovaný status [[QTSP]],
+- certifikaci nebo dohled nad kvalifikovanými službami podle [[eIDAS]],
 - právní režim [[QEAA]],
-- obecné povinnosti [[TSP]],
-- samostatné povinnosti podle GDPR nebo NIS2,
-- provozní řízení bezpečnosti po vydání certifikátu.
+- obecné povinnosti podle GDPR nebo NIS2,
+- bezpečnostní řízení po vydání certifikátu.
 
-Naopak právě vazba certifikace na každodenní provoz je klíčová. Incident, neřízená změna, neopravená zranitelnost nebo ztráta kontroly nad důležitým předpokladem může mít přímý dopad na platnost certifikátu.
+Naopak české schéma je navrženo tak, aby důkazy z jiných režimů mohly být tam, kde dávají smysl, znovu využity přes dependency analysis.
 
-## Shrnutí
+## Co je oproti obecnému evropskému rámci specificky české
 
-České NCS staví certifikaci [[EUDIW]] jako **kompozitní a průběžný systém assurance**. Veřejně potvrzené tři vrstvy jsou certifikace poskytovatele peněženky, certifikace poskytovatele [[PID]] a zastřešující certifikace.
+Za nejvýznamnější české konkretizace [[EUDIW]]-CZ 1.2 lze považovat:
 
-Evropský rámec pod tímto českým členěním vyžaduje podstatně širší posouzení, než naznačuje slovo „certifikace produktu“: konkrétní architekturu, software, kritické hardwarové a platformní závislosti, procesy, bezpečnostní assumptions, risk management, dependency analysis, funkční testy, vulnerability assessment, provozní účinnost maintenance procesů a řízení změn.
+- definovaný kompozitní model služeb a komponent,
+- konkrétní architektonický profil včetně remote-[[WSCD]] scénářů,
+- vlastní registr CZ-01 až CZ-10,
+- české nadstavbové požadavky nad ENISA baseline,
+- explicitní assurance target pro [[WSCD]] a WSCA,
+- detailně popsané varianty high-assurance onboardingu,
+- specifické požadavky na ochranu proti biometric injection attack,
+- velmi detailní validační mechanismy pro wallets a [[RP]],
+- povinný SBOM,
+- code escrow kritických externě vyvíjených komponent v EU,
+- povinnost zveřejnit klientský zdrojový kód jako open source,
+- přesné kvalifikační požadavky na CAB,
+- detailní surveillance a significant-event proces,
+- konkrétní anti-tracking a privacy mechanismy,
+- explicitní řešení kumulace rolí v českém governance modelu.
 
-Pro poskytovatele je proto nejdůležitější připravit certifikovatelnost už v architektuře a provozním modelu. Pro ČIA a certifikační orgány vzniká nový specializovaný akreditační a evaluační obor. Pro subdodavatele vzniká požadavek dodávat použitelnou assurance evidence. Pro [[RP]], vydavatele atributů a uživatele je NCS primárně trust mechanismem: jejich vlastní role nemusí být přímo certifikována tímto schématem, ale bezpečné fungování jejich interakcí s peněženkou je součástí certifikovaného ekosystému.
+To jsou požadavky, které nelze bezpečně odvodit jen z obecného nařízení 2024/2981; vyplývají přímo z českého schématu a jeho příloh.
 
-A konečně, první veřejná verze není konečný stav. Její normativní a technický baseline končí červnem 2026 a DIA již při zveřejnění počítá s další revizí. Certifikační strategie proto musí počítat nejen s prvním získáním certifikátu, ale také s **průběžnou změnou schématu, standardů a produktu**.
+## Stav a verzování schématu
+
+Zveřejněný dokument je označen jako **[[EUDIW]]-CZ verze 1.2**. Hlavní schéma samo počítá s průběžnou údržbou: DIA sleduje změny legislativy, threat landscape, technických standardů, certifikačních schémat a relevantní národní legislativy.
+
+Každá aktualizace má stanovit přechodový harmonogram tak, aby bylo možné řídit:
+
+```text
+verze EUDIW-CZ
+  + verze referenčních standardů
+  + certifikované komponenty a jejich verze
+  + architektonické assumptions
+  + verze konkrétní služby IKT
+= konkrétní certifikační baseline
+```
+
+Pro certifikovaného provozovatele proto nestačí „získat certifikát“. Musí dlouhodobě řídit vztah mezi verzí produktu, verzí komponentních certifikátů, provozním prostředím a aktuální verzí [[EUDIW]]-CZ.
 
 ## Primární zdroje
 
-- [DIA — Národní certifikační schéma, první veřejný koncept](https://www.dia.gov.cz/cs/legislativa/eidas-sluzby-vytvarejici-duveru-a-elektronicka-identifikace/informace-pro-odborniky/narodni-certifikacni-schema-eudiw)
-- [DIA — informace o předložení návrhu ostatním členským státům](https://www.dia.gov.cz/cs/aktuality/dia-poskytla-navrh-certifikacniho-schematu-eudiw-ke-stanovisku-ostatnim-clenskym-statum-eu)
-- [Prováděcí nařízení Komise (EU) 2024/2981](https://eur-lex.europa.eu/eli/reg_impl/2024/2981/oj) — závazná pravidla pro národní certifikační schémata peněženek
-- [Nařízení (EU) 2024/1183](https://eur-lex.europa.eu/eli/reg/2024/1183/oj) — evropský rámec digitální identity
-- [Prováděcí nařízení Komise (EU) 2026/1731](https://eur-lex.europa.eu/eli/reg_impl/2026/1731/oj) — červencová aktualizace části technických specifikací peněženky
+- [DIA — Národní certifikační schéma [[EUDIW]]](https://www.dia.gov.cz/cs/legislativa/eidas-sluzby-vytvarejici-duveru-a-elektronicka-identifikace/informace-pro-odborniky/narodni-certifikacni-schema-eudiw)
+- **[[EUDIW]]-CZ, verze 1.2 — České národní certifikační schéma evropské peněženky digitální identity**
+- **Příloha II — Kontinuita opatření a životní cyklus certifikace**
+- **Příloha III — Seznam veřejně dostupných informací**
+- **Příloha IV — Seznam informací požadovaných k žádosti o certifikaci**
+- **Příloha V — Obsah certifikátu**
+- **Příloha VI — Obsah Certifikační zprávy**
+- **Příloha VII — Obsah Zprávy o certifikačním posouzení/hodnocení**
+- **Příloha VIII — Požadavky na orgány posuzování shody**
+- **Příloha IX — Kritéria pro posouzení přijatelnosti informací o záruce**
+- **Příloha X — Bezpečnostní požadavky na peněženky EUDI a systémy eID, v rámci kterých jsou poskytovány**
+- [Prováděcí nařízení Komise (EU) 2024/2981](https://eur-lex.europa.eu/eli/reg_impl/2024/2981/oj)
+- [Nařízení (EU) 2024/1183](https://eur-lex.europa.eu/eli/reg/2024/1183/oj)
 
 ---
 
-*Stav článku: 1. října 2026. Článek rozlišuje veřejně potvrzenou strukturu českého NCS od požadavků, které pro něj přímo stanoví evropské právo. Vzhledem k avizované aktualizaci schématu je při přípravě certifikace nutné ověřit aktuální verzi NCS, prováděcích aktů a technických standardů.*
+*Stav rozboru: 1. října 2026. Text je založen na hlavním dokumentu [[EUDIW]]-CZ 1.2 a přílohách II–X. Hlavní dokument odkazuje pro detailní hranice certifikačních oblastí také na přílohy I, Ia, Ib a Ic a pro metodiku na další přílohy; jejich obsah zde není domýšlen.*
