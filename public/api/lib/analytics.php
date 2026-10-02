@@ -43,16 +43,35 @@ final class WalletMapAnalytics
 
     public static function connect(string $path): PDO
     {
+        if (!extension_loaded('pdo_sqlite')) {
+            throw new RuntimeException(
+                'PHP rozšíření pdo_sqlite není načtené (potřeba pro SQLite analytiku).',
+            );
+        }
         $dir = dirname($path);
         if (!is_dir($dir) && !mkdir($dir, 0770, true) && !is_dir($dir)) {
-            throw new RuntimeException('Nelze vytvořit složku pro databázi analytiky.');
+            throw new RuntimeException('Nelze vytvořit složku pro databázi analytiky: ' . $dir);
         }
-        $pdo = new PDO('sqlite:' . $path);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->exec('PRAGMA journal_mode = WAL');
-        $pdo->exec('PRAGMA foreign_keys = ON');
-        $pdo->exec('PRAGMA busy_timeout = 5000');
-        return $pdo;
+        if (!is_writable($dir)) {
+            throw new RuntimeException('Složka pro databázi analytiky není zapisovatelná: ' . $dir);
+        }
+        if (is_file($path) && !is_writable($path)) {
+            throw new RuntimeException('Soubor databáze analytiky není zapisovatelný: ' . $path);
+        }
+        try {
+            $pdo = new PDO('sqlite:' . $path);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec('PRAGMA journal_mode = WAL');
+            $pdo->exec('PRAGMA foreign_keys = ON');
+            $pdo->exec('PRAGMA busy_timeout = 5000');
+            return $pdo;
+        } catch (Throwable $e) {
+            throw new RuntimeException(
+                'Nelze otevřít SQLite databázi analytiky (' . $path . '): ' . $e->getMessage(),
+                0,
+                $e,
+            );
+        }
     }
 
     public static function fromGlobals(?string $dbPath = null): self
@@ -503,6 +522,89 @@ function wm_send_status(int $code): void
     header('X-Content-Type-Options: nosniff');
 }
 
+/**
+ * Diagnostika cesty k DB a prostředí — bezpečné pro log (bez osobních údajů).
+ *
+ * @return array<string, mixed>
+ */
+function wm_analytics_diag(): array
+{
+    $path = WalletMapAnalytics::dbPath();
+    $dir = dirname($path);
+    $privateDir = null;
+    $docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
+    if (is_string($docRoot) && $docRoot !== '') {
+        $privateDir = dirname($docRoot) . '/private';
+    }
+    return [
+        'phpVersion' => PHP_VERSION,
+        'pdoSqlite' => extension_loaded('pdo_sqlite'),
+        'sqlite3' => extension_loaded('sqlite3'),
+        'documentRoot' => is_string($docRoot) && $docRoot !== '' ? $docRoot : null,
+        'envDb' => (($env = getenv('WALLETMAP_ANALYTICS_DB')) && is_string($env) && $env !== '') ? $env : null,
+        'dbPath' => $path,
+        'dirExists' => is_dir($dir),
+        'dirWritable' => is_dir($dir) && is_writable($dir),
+        'fileExists' => is_file($path),
+        'fileWritable' => is_file($path) && is_writable($path),
+        'privateDir' => $privateDir,
+        'privateDirExists' => is_string($privateDir) && is_dir($privateDir),
+        'privateDirWritable' => is_string($privateDir) && is_dir($privateDir) && is_writable($privateDir),
+        'cwd' => getcwd() ?: null,
+        'user' => function_exists('posix_geteuid')
+            ? ((string) (posix_getpwuid(posix_geteuid())['name'] ?? posix_geteuid()))
+            : (get_current_user() ?: null),
+    ];
+}
+
+/**
+ * Zapíše chybu analytiky do PHP error_log a do souboru vedle DB (nebo fallback).
+ *
+ * Soubor: {dir DB}/walletmap-analytics.log
+ * Fallback: sys_get_temp_dir()/walletmap-analytics.log a DocumentRoot/data/
+ */
+function wm_analytics_log(string $handler, Throwable $e): void
+{
+    $diag = wm_analytics_diag();
+    $payload = [
+        'handler' => $handler,
+        'exception' => $e::class,
+        'message' => $e->getMessage(),
+        'file' => $e->getFile() . ':' . $e->getLine(),
+        'diag' => $diag,
+    ];
+    $line = '[walletmap-analytics] ' . json_encode(
+        $payload,
+        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
+    );
+    error_log($line);
+
+    $candidates = [];
+    $dbDir = dirname((string) $diag['dbPath']);
+    $candidates[] = $dbDir . '/walletmap-analytics.log';
+    if (is_string($diag['documentRoot'] ?? null) && $diag['documentRoot'] !== '') {
+        $candidates[] = $diag['documentRoot'] . '/data/walletmap-analytics.log';
+    }
+    $candidates[] = sys_get_temp_dir() . '/walletmap-analytics.log';
+
+    $entry = date('c') . ' ' . $line . "\n";
+    foreach (array_unique($candidates) as $logPath) {
+        $logDir = dirname($logPath);
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0770, true);
+        }
+        if (!is_dir($logDir) || !is_writable($logDir)) {
+            continue;
+        }
+        if (@file_put_contents($logPath, $entry, FILE_APPEND | LOCK_EX) !== false) {
+            // Jednou stačí — ať je jasné, kam se psalo.
+            error_log('[walletmap-analytics] detail log: ' . $logPath);
+            return;
+        }
+    }
+    error_log('[walletmap-analytics] souborový log se nepodařilo zapsat (zkontrolujte práva)');
+}
+
 function wm_handle_collect(): void
 {
     if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -515,6 +617,7 @@ function wm_handle_collect(): void
         $code = $analytics->collect(wm_json_input());
         wm_send_status($code);
     } catch (Throwable $e) {
+        wm_analytics_log('collect', $e);
         wm_send_status(500);
     }
 }
@@ -532,6 +635,7 @@ function wm_handle_consent(): void
         $code = $analytics->setConsent((string) ($input['action'] ?? ''));
         wm_send_status($code);
     } catch (Throwable $e) {
+        wm_analytics_log('consent', $e);
         wm_send_status(500);
     }
 }
@@ -551,6 +655,7 @@ function wm_handle_stats(): void
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     } catch (Throwable $e) {
+        wm_analytics_log('stats', $e);
         wm_send_status(500);
         header('Content-Type: application/json; charset=utf-8');
         echo '{"error":"stats_unavailable"}';

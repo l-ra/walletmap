@@ -8,4 +8,6 @@ deploy/deploy.env
 # lokální / provozní databáze first-party analytiky
 public/data/*.sqlite
 public/data/*.sqlite-*
+public/data/*.log
 data/*.sqlite
+data/*.log
