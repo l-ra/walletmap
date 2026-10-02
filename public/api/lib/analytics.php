@@ -31,14 +31,32 @@ final class WalletMapAnalytics
         if (is_string($env) && $env !== '') {
             return $env;
         }
+
+        $candidates = [];
         $docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
         if (is_string($docRoot) && $docRoot !== '') {
+            // Preferováno mimo DocumentRoot (není veřejně servírováno).
             $privateDir = dirname($docRoot) . '/private';
-            if (is_dir($privateDir) && is_writable($privateDir)) {
-                return $privateDir . '/walletmap-analytics.sqlite';
+            if (!is_dir($privateDir)) {
+                @mkdir($privateDir, 0770, true);
+            }
+            $candidates[] = $privateDir . '/walletmap-analytics.sqlite';
+            $candidates[] = $docRoot . '/data/analytics.sqlite';
+        }
+        $candidates[] = dirname(__DIR__, 2) . '/data/analytics.sqlite';
+
+        foreach ($candidates as $path) {
+            $dir = dirname($path);
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0770, true);
+            }
+            if (is_dir($dir) && is_writable($dir)) {
+                return $path;
             }
         }
-        return dirname(__DIR__, 2) . '/data/analytics.sqlite';
+
+        // Žádný kandidát není zapisovatelný — connect() vyhodí srozumitelnou chybu.
+        return $candidates[0];
     }
 
     public static function connect(string $path): PDO
@@ -82,6 +100,43 @@ final class WalletMapAnalytics
             $_COOKIE,
             null,
         );
+    }
+
+    public function recordCrawl(?string $path = null): int
+    {
+        if (!$this->isBot()) {
+            return 204;
+        }
+
+        if ($path === null || $path === '') {
+            $path = self::pathFromReferer(
+                (string) ($this->server['HTTP_REFERER'] ?? ''),
+                (string) ($this->server['HTTP_HOST'] ?? ''),
+            );
+        }
+        $path = self::normalizePath($path ?? '');
+        if ($path === null) {
+            return 400;
+        }
+
+        $nowUtc = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $nowLocal = $nowUtc->setTimezone(new DateTimeZone(WM_TZ));
+        $ts = $nowUtc->format('Y-m-d\TH:i:s\Z');
+        $day = $nowLocal->format('Y-m-d');
+        $botName = self::botName((string) ($this->server['HTTP_USER_AGENT'] ?? ''));
+
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO crawler_hits (path, bot_name, ts, day)
+             VALUES (:path, :bot_name, :ts, :day)',
+        );
+        $stmt->execute([
+            'path' => $path,
+            'bot_name' => $botName,
+            'ts' => $ts,
+            'day' => $day,
+        ]);
+        $this->maybePrune();
+        return 204;
     }
 
     public function collect(array $input): int
@@ -254,6 +309,43 @@ final class WalletMapAnalytics
             ];
         }, $refStmt->fetchAll(PDO::FETCH_ASSOC) ?: []);
 
+        $crawlerTotals = $this->crawlerPeriodSummary($start, $today);
+        $crawlerToday = $this->crawlerPeriodSummary($today, $today);
+
+        $botStmt = $this->pdo->prepare(
+            'SELECT bot_name,
+                    COUNT(*) AS hits
+             FROM crawler_hits
+             WHERE day BETWEEN :start AND :end
+             GROUP BY bot_name
+             ORDER BY hits DESC, bot_name ASC
+             LIMIT 15',
+        );
+        $botStmt->execute(['start' => $start, 'end' => $today]);
+        $crawlerBots = array_map(static function (array $row): array {
+            return [
+                'name' => $row['bot_name'],
+                'hits' => (int) $row['hits'],
+            ];
+        }, $botStmt->fetchAll(PDO::FETCH_ASSOC) ?: []);
+
+        $crawlerPageStmt = $this->pdo->prepare(
+            'SELECT path,
+                    COUNT(*) AS hits
+             FROM crawler_hits
+             WHERE day BETWEEN :start AND :end
+             GROUP BY path
+             ORDER BY hits DESC, path ASC
+             LIMIT 15',
+        );
+        $crawlerPageStmt->execute(['start' => $start, 'end' => $today]);
+        $crawlerPages = array_map(static function (array $row): array {
+            return [
+                'path' => $row['path'],
+                'hits' => (int) $row['hits'],
+            ];
+        }, $crawlerPageStmt->fetchAll(PDO::FETCH_ASSOC) ?: []);
+
         return [
             'generatedAt' => (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format('c'),
             'timezone' => WM_TZ,
@@ -265,6 +357,12 @@ final class WalletMapAnalytics
             'days' => $daysOut,
             'pages' => $pages,
             'referrers' => $referrers,
+            'crawlers' => [
+                'today' => $crawlerToday,
+                'totals' => $crawlerTotals,
+                'bots' => $crawlerBots,
+                'pages' => $crawlerPages,
+            ],
         ];
     }
 
@@ -309,15 +407,101 @@ final class WalletMapAnalytics
         return substr($host, 0, 253);
     }
 
+    public static function botUaPattern(): string
+    {
+        return 'bot|crawler|spider|crawling|slurp|wget|curl|python-requests|php\\/|httpclient|preview|facebookexternalhit|whatsapp|telegram|discordbot|linkedinbot|twitterbot|embedly|quora|pinterest|slackbot|vkshare|bingpreview';
+    }
+
     public static function isBotUa(?string $ua): bool
     {
         if ($ua === null || trim($ua) === '') {
             return true;
         }
-        return (bool) preg_match(
-            '/bot|crawler|spider|crawling|slurp|wget|curl|python-requests|php\/|httpclient|preview|facebookexternalhit|whatsapp|telegram|discordbot|linkedinbot|twitterbot|embedly|quora|pinterest|slackbot|vkshare|bingpreview/i',
-            $ua,
+        return (bool) preg_match('/' . self::botUaPattern() . '/i', $ua);
+    }
+
+    public static function botName(string $ua): string
+    {
+        $ua = trim($ua);
+        if ($ua === '') {
+            return 'unknown';
+        }
+        if (preg_match('/googlebot/i', $ua)) {
+            return 'googlebot';
+        }
+        if (preg_match('/bingbot|bingpreview/i', $ua)) {
+            return 'bingbot';
+        }
+        if (preg_match('/yandex/i', $ua)) {
+            return 'yandex';
+        }
+        if (preg_match('/duckduckbot/i', $ua)) {
+            return 'duckduckbot';
+        }
+        if (preg_match('/facebookexternalhit|facebot/i', $ua)) {
+            return 'facebook';
+        }
+        if (preg_match('/linkedinbot/i', $ua)) {
+            return 'linkedin';
+        }
+        if (preg_match('/twitterbot/i', $ua)) {
+            return 'twitter';
+        }
+        if (preg_match('/slackbot/i', $ua)) {
+            return 'slack';
+        }
+        if (preg_match('/telegrambot/i', $ua)) {
+            return 'telegram';
+        }
+        if (preg_match('/discordbot/i', $ua)) {
+            return 'discord';
+        }
+        if (preg_match('/whatsapp/i', $ua)) {
+            return 'whatsapp';
+        }
+        if (preg_match('/([a-z0-9][a-z0-9._-]*bot)/i', $ua, $match)) {
+            return strtolower($match[1]);
+        }
+        if (preg_match('/(crawler|spider|slurp|wget|curl|python-requests|httpclient)/i', $ua, $match)) {
+            return strtolower($match[1]);
+        }
+        return 'other';
+    }
+
+    public static function pathFromReferer(string $referrer, string $httpHost): ?string
+    {
+        $referrer = trim($referrer);
+        if ($referrer === '') {
+            return null;
+        }
+        $parts = parse_url($referrer);
+        if (!is_array($parts) || empty($parts['host']) || empty($parts['path'])) {
+            return null;
+        }
+        $host = strtolower($parts['host']);
+        $own = strtolower(preg_replace('/:\d+$/', '', $httpHost) ?? '');
+        $hostBare = preg_replace('/:\d+$/', '', $host) ?? $host;
+        if ($own === '' || ($hostBare !== $own && $hostBare !== 'www.' . $own && 'www.' . $hostBare !== $own)) {
+            return null;
+        }
+        return self::normalizePath($parts['path']);
+    }
+
+    private function crawlerPeriodSummary(string $start, string $end): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT COUNT(*) AS hits,
+                    COUNT(DISTINCT bot_name) AS bots
+             FROM crawler_hits
+             WHERE day BETWEEN :start AND :end',
         );
+        $stmt->execute(['start' => $start, 'end' => $end]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['hits' => 0, 'bots' => 0];
+
+        return [
+            'hits' => (int) $row['hits'],
+            'bots' => (int) $row['bots'],
+        ];
     }
 
     private function periodSummary(string $start, string $end): array
@@ -389,9 +573,19 @@ final class WalletMapAnalytics
                 ts TEXT NOT NULL,
                 action TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS crawler_hits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                path TEXT NOT NULL,
+                bot_name TEXT NOT NULL,
+                ts TEXT NOT NULL,
+                day TEXT NOT NULL
+            );
             CREATE INDEX IF NOT EXISTS idx_pv_day ON pageviews(day);
             CREATE INDEX IF NOT EXISTS idx_pv_path ON pageviews(path);
-            CREATE INDEX IF NOT EXISTS idx_pv_visitor ON pageviews(visitor_id);',
+            CREATE INDEX IF NOT EXISTS idx_pv_visitor ON pageviews(visitor_id);
+            CREATE INDEX IF NOT EXISTS idx_crawl_day ON crawler_hits(day);
+            CREATE INDEX IF NOT EXISTS idx_crawl_path ON crawler_hits(path);
+            CREATE INDEX IF NOT EXISTS idx_crawl_bot ON crawler_hits(bot_name);',
         );
     }
 
@@ -493,6 +687,8 @@ final class WalletMapAnalytics
             ->format('Y-m-d');
         $stmt = $this->pdo->prepare('DELETE FROM pageviews WHERE day < :cutoff');
         $stmt->execute(['cutoff' => $cutoff]);
+        $cStmt = $this->pdo->prepare('DELETE FROM crawler_hits WHERE day < :cutoff');
+        $cStmt->execute(['cutoff' => $cutoff]);
         $this->pdo->exec(
             'DELETE FROM visitors WHERE id NOT IN (SELECT DISTINCT visitor_id FROM pageviews)',
         );
@@ -603,6 +799,41 @@ function wm_analytics_log(string $handler, Throwable $e): void
         }
     }
     error_log('[walletmap-analytics] souborový log se nepodařilo zapsat (zkontrolujte práva)');
+}
+
+function wm_transparent_gif(): string
+{
+    return base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true) ?: '';
+}
+
+function wm_send_gif(int $code = 200): void
+{
+    header_remove('X-Powered-By');
+    http_response_code($code);
+    header('Content-Type: image/gif');
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+    header('X-Content-Type-Options: nosniff');
+    $body = wm_transparent_gif();
+    header('Content-Length: ' . strlen($body));
+    echo $body;
+}
+
+function wm_handle_crawl(): void
+{
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
+        wm_send_status(405);
+        header('Allow: GET');
+        return;
+    }
+    try {
+        $analytics = WalletMapAnalytics::fromGlobals();
+        $path = isset($_GET['path']) ? (string) $_GET['path'] : null;
+        $code = $analytics->recordCrawl($path);
+        wm_send_gif($code >= 400 ? $code : 200);
+    } catch (Throwable $e) {
+        wm_analytics_log('crawl', $e);
+        wm_send_gif(500);
+    }
 }
 
 function wm_handle_collect(): void

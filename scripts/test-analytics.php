@@ -82,6 +82,26 @@ expect($code === 403, 'bez souhlasu se neměří');
 $code = $bot->collect(['path' => '/', 'consent' => 'granted']);
 expect($code === 204, 'bot se tiše ignoruje');
 
+expect(WalletMapAnalytics::botName('Mozilla/5.0 (compatible; Googlebot/2.1)') === 'googlebot', 'Googlebot jméno');
+expect(
+    WalletMapAnalytics::pathFromReferer('https://walletmap.eu/clanky/arf', 'walletmap.eu') === '/clanky/arf',
+    'cesta z Referer',
+);
+
+[$crawler] = analyticsHarness($db, [
+    'HTTP_USER_AGENT' => 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+    'HTTP_REFERER' => 'https://walletmap.eu/clanky/arf',
+]);
+$code = $crawler->recordCrawl(null);
+expect($code === 204, 'crawler se zaznamená přes Referer');
+
+[$humanCrawl] = analyticsHarness($db, [
+    'HTTP_USER_AGENT' => 'Mozilla/5.0 Firefox/128.0',
+    'HTTP_REFERER' => 'https://walletmap.eu/',
+]);
+$code = $humanCrawl->recordCrawl(null);
+expect($code === 204, 'lidský UA se do crawler statistik nezapíše');
+
 [$cross] = analyticsHarness($db, ['HTTP_ORIGIN' => 'https://evil.example']);
 $code = $cross->collect(['path' => '/', 'consent' => 'granted']);
 expect($code === 403, 'cizí origin se odmítne');
@@ -99,6 +119,8 @@ expect($stats['totals']['newVisitors'] === 1, 'první návštěva je nový náv�
 expect($stats['totals']['returningVisitors'] === 0, 'v období ještě není jiný vracející se');
 expect($stats['pages'][0]['path'] === '/' || $stats['pages'][1]['path'] === '/', 'homepage je v top stránkách');
 expect($stats['referrers'][0]['host'] === 'news.ycombinator.com', 'externí referrer se agreguje');
+expect($stats['crawlers']['totals']['hits'] === 1, 'jeden crawler zásah');
+expect($stats['crawlers']['bots'][0]['name'] === 'googlebot', 'googlebot v souhrnu crawlerů');
 
 [$older] = analyticsHarness($db);
 $pdo = WalletMapAnalytics::connect($db);

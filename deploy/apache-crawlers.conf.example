@@ -1,0 +1,58 @@
+# WalletMap.eu — detekce robotů a crawlerů (Apache httpd)
+#
+# Zkopírujte relevantní části do VirtualHostu nebo do .htaccess v DocumentRoot.
+# PHP endpoint /api/crawl.php musí běžet (stejně jako collect.php / stats.php).
+#
+# Jak to funguje:
+# 1. V každé stránce je <noscript> s 1×1 px obrázkem /api/crawl.php.
+#    Crawler načte HTML, stáhne pixel a PHP zaznamená zásah (User-Agent + cesta z Referer).
+# 2. SetEnvIf označí roboty v access logu — užitečné pro audit a ladění.
+# 3. Volitelný CustomLog ukládá jen požadavky robotů do samostatného souboru.
+#
+# User-Agent regex odpovídá WalletMapAnalytics::botUaPattern() v analytics.php.
+
+<IfModule mod_setenvif.c>
+  # Prázdný User-Agent považujeme za robota (stejně jako PHP).
+  SetEnvIfNoCase User-Agent "^$" wm_bot
+
+  # Hlavní seznam crawlerů — musí sedět s botUaPattern() v analytics.php.
+  SetEnvIfNoCase User-Agent "(bot|crawler|spider|crawling|slurp|wget|curl|python-requests|php/|httpclient|preview|facebookexternalhit|whatsapp|telegram|discordbot|linkedinbot|twitterbot|embedly|quora|pinterest|slackbot|vkshare|bingpreview)" wm_bot
+</IfModule>
+
+# --- Volitelné: samostatný access log pro roboty (jen ve VirtualHostu, ne v .htaccess) ---
+#
+# LogFormat "%t \"%m %U%q\" %>s %B \"%{User-Agent}i\"" wm_crawl
+# CustomLog /var/log/apache2/walletmap-crawlers.log wm_crawl env=wm_bot
+#
+# Pro ladění můžete dočasně logovat i lidské návštěvy:
+# CustomLog /var/log/apache2/walletmap-humans.log combined env=!wm_bot
+
+# --- Volitelné: hlavička pro roboty (indexace dle robots.txt) ---
+#
+# <IfModule mod_headers.c>
+#   Header set X-Robots-Tag "all" env=wm_bot
+# </IfModule>
+
+# --- mod_rewrite: přímé zásahy robotů na statické soubory (bez pixelu) ---
+#
+# Některé crawlery stáhnou jen HTML a neprojdou <noscript> pixel. Tento rewrite
+# nejprve zaloguje zásah do SQLite přes crawl.php a pak nechá Apache doručit
+# původní statický soubor (PT = pass-through dalšímu handleru).
+#
+# POZOR: vyžaduje mod_rewrite; PT funguje spolehlivě ve VirtualHostu.
+# V .htaccess otestujte — na některých hostinzích PT neprojde.
+#
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#
+#   # Robot už byl zalogován pro tento požadavek — pokračovat bez smyčky.
+#   RewriteCond %{ENV:WM_CRAWL_LOGGED} =1
+#   RewriteRule ^ - [L]
+#
+#   # Jen roboti, ne API, existující soubor nebo složka s index.html.
+#   RewriteCond %{ENV:wm_bot} =1
+#   RewriteCond %{REQUEST_URI} !^/api/
+#   RewriteCond %{REQUEST_FILENAME} -f [OR]
+#   RewriteCond %{REQUEST_FILENAME}/index.html -f
+#   RewriteRule ^(.*)$ /api/crawl.php?path=/$1 [PT,E=WM_CRAWL_LOGGED:1]
+# </IfModule>

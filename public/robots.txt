@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Měření crawlerů: v HTML je 1×1 pixel /api/crawl.php (bez cookies).
+# Volitelný Apache log: deploy/apache-crawlers.conf.example

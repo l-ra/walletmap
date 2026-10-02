@@ -10,6 +10,9 @@
   var dialog = document.getElementById('wm-consent-dialog');
   if (!dialog) return;
 
+  var privacyNote = document.getElementById('wm-consent-privacy');
+  var grantBtn = dialog.querySelector('[data-wm-consent="granted"]');
+
   function privacyRejected() {
     return navigator.globalPrivacyControl === true || navigator.doNotTrack === '1';
   }
@@ -83,7 +86,25 @@
     });
   }
 
+  function syncPrivacyUi() {
+    var blocked = privacyRejected();
+    if (privacyNote) privacyNote.hidden = !blocked;
+    if (grantBtn instanceof HTMLButtonElement) {
+      grantBtn.disabled = blocked;
+      grantBtn.hidden = blocked;
+    }
+  }
+
   function applyConsent(value, recordOnServer) {
+    if (value === 'granted' && privacyRejected()) {
+      // DNT/GPC — nepřepisovat na granted (při reloadu by se stejně vrátilo denied).
+      persistConsent('denied');
+      if (recordOnServer) {
+        postJson(CONSENT_URL, { action: 'denied' });
+      }
+      syncPrivacyUi();
+      return;
+    }
     persistConsent(value);
     if (recordOnServer) {
       postJson(CONSENT_URL, { action: value });
@@ -95,13 +116,16 @@
   }
 
   function openDialog() {
+    syncPrivacyUi();
     if (typeof dialog.show === 'function') {
       if (!dialog.open) dialog.show();
     } else {
       dialog.setAttribute('open', '');
     }
-    var rejectBtn = dialog.querySelector('[data-wm-consent="denied"]');
-    if (rejectBtn) rejectBtn.focus();
+    var focusBtn = privacyRejected()
+      ? dialog.querySelector('[data-wm-consent="denied"]')
+      : grantBtn || dialog.querySelector('[data-wm-consent="denied"]');
+    if (focusBtn instanceof HTMLElement) focusBtn.focus();
   }
 
   function closeDialog() {
@@ -131,7 +155,11 @@
   });
 
   if (privacyRejected()) {
-    if (storedConsent() !== 'denied') persistConsent('denied');
+    if (storedConsent() !== 'denied') {
+      persistConsent('denied');
+      postJson(CONSENT_URL, { action: 'denied' });
+    }
+    syncPrivacyUi();
     return;
   }
 

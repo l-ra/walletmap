@@ -14,6 +14,11 @@
     webu — nepředáváme je Googlu, reklamním sítím ani jiným zpracovatelům.
     Měření můžete odmítnout, web bude fungovat stejně.
   </p>
+  <p id="wm-consent-privacy" class="wm-consent__privacy" hidden>
+    Prohlížeč posílá signál Do Not Track nebo Global Privacy Control. V tom případě
+    měření neukládáme — souhlas s měřením teď nelze udělit. Vypněte tento signál
+    v nastavení prohlížeče, pokud chcete měření povolit.
+  </p>
   <p class="wm-consent__more">
     <a href="/soukromi">Podrobnosti o cookies a údajích</a>
   </p>
@@ -26,6 +31,17 @@
     </button>
   </div>
 </dialog>
+
+<noscript>
+  <img
+    src="/api/crawl.php"
+    width="1"
+    height="1"
+    alt=""
+    decoding="async"
+    hidden
+  />
+</noscript>
 
 <style is:global>
   .wm-consent {
@@ -62,6 +78,15 @@
     color: #c8d0e0;
     font-size: 0.92rem;
     line-height: 1.55;
+  }
+  .wm-consent__privacy {
+    margin-bottom: 12px !important;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255, 196, 80, 0.12);
+    border: 1px solid rgba(255, 196, 80, 0.28);
+    color: #f0d9a0 !important;
+    font-size: 0.88rem !important;
   }
   .wm-consent__more {
     margin-bottom: 16px !important;
