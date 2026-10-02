@@ -53,7 +53,15 @@ echo "  (--delete: soubory na serveru, které nejsou v dist/, budou odstraněny)
 # --delete  přesný obraz — smaže na cíli soubory, které v dist/ nejsou
 # Bez -a (archiv): na sdíleném hostingu často nelze nastavit časy/práva na cíli
 # (rsync: failed to set times … Operation not permitted).
+# P chrání databázi analytiky na serveru před --delete.
+# exclude zabraňuje nahrát lokální SQLite do DocumentRoot.
 rsync -rlvz --delete \
+  --filter='P /data/' \
+  --filter='P /data/***' \
+  --filter='P *.sqlite' \
+  --filter='P *.sqlite-*' \
+  --exclude='/data/*.sqlite' \
+  --exclude='/data/*.sqlite-*' \
   -e "$RSYNC_SSH" \
   $RSYNC_EXTRA_OPTS \
   "$DIST_DIR/" "$REMOTE"

@@ -1,0 +1,96 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+---
+
+<ArticleLayout
+  title="Soukromí a cookies"
+  description="Jak WalletMap.eu měří návštěvnost, jaké cookies používá a jak souhlas odvolat."
+>
+  <h1>Soukromí a cookies</h1>
+  <p>
+    WalletMap.eu je statický informační web. Návštěvnost měříme sami, na vlastní
+    infrastruktuře. Nepoužíváme Google Analytics, reklamní sítě, sociální pluginy
+    ani jiné třetí strany, které by údaje o návštěvě zpracovávaly.
+  </p>
+
+  <h2>Správce údajů</h2>
+  <p>
+    Správcem je provozovatel webu <a href="https://walletmap.eu">WalletMap.eu</a>,
+    kontakt <a href="mailto:info@walletmap.eu">info@walletmap.eu</a>.
+    Údaje o návštěvnosti nezpřístupňujeme dalším zpracovatelům.
+    Dotazy k měření a žádosti související se souhlasem pište na stejný e-mail.
+  </p>
+
+  <h2>Co měříme a proč</h2>
+  <p>
+    Po vašem souhlasu zaznamenáme zobrazení stránky, abychom viděli, které texty
+    se čtou a zda se čtenáři vracejí. Právní základ je souhlas podle čl. 6 odst. 1
+    písm. a GDPR. Uložení cookie se opírá o souhlas podle pravidel pro ukládání
+    informací do koncového zařízení.
+  </p>
+  <ul>
+    <li>cesta stránky (bez query řetězce)</li>
+    <li>čas zobrazení</li>
+    <li>náhodný identifikátor návštěvníka v cookie, pokud s ním souhlasíte</li>
+    <li>název odkazujícího webu, nikoli celá adresa</li>
+    <li>záznam o udělení nebo odmítnutí souhlasu</li>
+  </ul>
+  <p>
+    Neukládáme IP adresu, jméno, e-mail ani celý prohlížečový řetězec. Nesestavujeme
+    reklamní profil a údaje nespojujeme s jinými evidencemi.
+  </p>
+
+  <h2>Cookies</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Cookie</th>
+        <th>Účel</th>
+        <th>Doba</th>
+        <th>Souhlas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>wm_consent</code></td>
+        <td>Zapamatuje volbu souhlasu s měřením, aby se dialog neptal znovu.</td>
+        <td>6 měsíců</td>
+        <td>Není potřeba — jde o uložení vaší volby</td>
+      </tr>
+      <tr>
+        <td><code>wm_vid</code></td>
+        <td>
+          Náhodný identifikátor návštěvníka. Server ho nastaví jako HttpOnly cookie,
+          JavaScript ho nečte. Slouží jen k odlišení nových a vracejících se návštěv.
+        </td>
+        <td>13 měsíců</td>
+        <td>Ano — jen po přijetí měření</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Když měření odmítnete</h2>
+  <p>
+    Web funguje stejně. Nenastavíme identifikátor návštěvníka a nezaznamenáme
+    zobrazení stránky. Pokud prohlížeč posílá signál Global Privacy Control nebo
+    Do Not Track, k měření se chováme jako k odmítnutí.
+  </p>
+  <p>
+    Souhlas můžete kdykoli změnit:
+    <button type="button" class="wm-consent-open">otevřít nastavení cookies</button>.
+  </p>
+
+  <h2>Jak dlouho údaje držíme</h2>
+  <p>
+    Záznamy zobrazení a identifikátory mažeme po 13 měsících. Souhrnné statistiky
+    na stránce <a href="/statistiky">Statistiky</a> neobsahují identifikátory
+    jednotlivých čtenářů.
+  </p>
+</ArticleLayout>
+
+<style is:global>
+  main td:first-child code {
+    word-break: normal;
+    white-space: nowrap;
+  }
+</style>

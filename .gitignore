@@ -4,3 +4,8 @@ dist/
 
 # lokální deploy konfigurace (šablona: deploy/deploy.env.example)
 deploy/deploy.env
+
+# lokální / provozní databáze first-party analytiky
+public/data/*.sqlite
+public/data/*.sqlite-*
+data/*.sqlite
