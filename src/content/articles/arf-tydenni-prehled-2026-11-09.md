@@ -6,7 +6,7 @@ tags: [arf, tydenni-prehled, ts5, oid4vp, oid4vci, trust, security, wrprc]
 draft: false
 ---
 
-Týden 9.–16. listopadu přinesl **nové TS5 errata v1.6.1** a několik důležitých bezpečnostních oprav referenčních implementací. Největší praktický dopad mají opravy registrace [[RP]], autentizace jednotlivých požadavků na mdoc, selektivního zveřejňování [[SD-JWT-VC]] a kontroly DPoP při [[OID4VCI]]. V [[ARF]] se nová věcná revize neobjevila.
+Týden 9.–16. listopadu přinesl **nové TS5 errata v1.6.1** a několik důležitých bezpečnostních oprav referenčních implementací. Největší praktický dopad mají opravy registrace [[RP]], autentizace jednotlivých požadavků na mdoc, selektivního zveřejňování [[SD-JWT-VC]] a kontroly DPoP při [[OID4VCI]]. V ARF se nová věcná revize neobjevila.
 
 ## Sloučené změny
 
@@ -59,4 +59,4 @@ Dne **11. listopadu** byl sloučen [STS PR #668](https://github.com/eu-digital-i
 3. **Issuance:** vynucovat DPoP i na `token_type`, správně oddělovat identity issueru a Authorization Serveru a chránit původní typ credentialu při obnově.
 4. **iOS integrace:** aktualizovat DCQL `multiple: true` consent a zvážit explicitní policy pro kontrolu `iss`; ověřit souběžné issuance a zákaz logování hodnot claims.
 
-V samotném [[ARF]] nebyla ve sledovaném týdnu sloučena věcná změna. Nejvýznamnější dokumentační novinkou je tedy **TS5 v1.6.1**, zatímco většina ostatních změn zpřísňuje bezpečnostní a privacy vlastnosti referenčního stacku.
+V samotném ARF nebyla ve sledovaném týdnu sloučena věcná změna. Nejvýznamnější dokumentační novinkou je tedy **TS5 v1.6.1**, zatímco většina ostatních změn zpřísňuje bezpečnostní a privacy vlastnosti referenčního stacku.
