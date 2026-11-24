@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>EUDI Wallet: důvěra, credentials a protokoly</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="deck" aria-live="polite"></main>
+
+  <nav class="deck-controls" aria-label="Ovládání prezentace">
+    <button id="prev" type="button" title="Předchozí slide (←)">←</button>
+    <button id="overview" type="button" title="Přehled slidů (O)">Přehled</button>
+    <button id="depth" type="button" title="Přepnout hloubku výkladu (D)">Plná hloubka</button>
+    <button id="notes" type="button" title="Poznámky lektora (N)">Poznámky</button>
+    <button id="presenter-view" type="button" title="Otevřít presenter view">Presenter</button>
+    <button id="fullscreen-view" type="button" title="Přepnout celou obrazovku (F)">Celá obrazovka</button>
+    <span id="progress" aria-label="Pozice v prezentaci"></span>
+    <button id="next" type="button" title="Další slide (→)">→</button>
+  </nav>
+
+  <aside id="speaker-panel" class="speaker-panel" aria-label="Poznámky lektora" aria-hidden="true"></aside>
+  <dialog id="overview-dialog" class="overview-dialog">
+    <div class="overview-head">
+      <div>
+        <strong>Obsah prezentace</strong>
+        <span id="overview-duration"></span>
+      </div>
+      <button id="close-overview" type="button">Zavřít</button>
+    </div>
+    <ol id="overview-list"></ol>
+  </dialog>
+
+  <button id="projection-fullscreen" class="projection-fullscreen" type="button">Spustit celou obrazovku</button>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

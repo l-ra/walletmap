@@ -1,0 +1,2 @@
+# Server prezentace používá pouze standardní knihovnu Pythonu.
+# Pokud později přibude runtime závislost, uveďte ji sem; serve.py změnu automaticky rozpozná.

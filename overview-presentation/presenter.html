@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Presenter view · EUDI Wallet</title>
+  <link rel="stylesheet" href="presenter.css">
+</head>
+<body>
+  <header class="presenter-bar">
+    <div class="presenter-position">
+      <strong id="current-title">EUDI Wallet</strong>
+      <span id="presenter-progress"></span>
+    </div>
+    <div class="presenter-controls" aria-label="Ovládání prezentace">
+      <button id="presenter-prev" type="button">Předchozí</button>
+      <button id="presenter-next" type="button" class="primary">Další</button>
+      <button id="presenter-depth" type="button">Plná hloubka</button>
+      <button id="open-projection" type="button">Otevřít projekci</button>
+    </div>
+    <div class="timer-controls">
+      <button id="start-90" type="button">Začínáme (+90 min)</button>
+      <label>Konec <input id="end-time" type="time" step="60"></label>
+      <button id="set-end" type="button">Nastavit</button>
+      <button id="clear-timer" type="button" title="Zrušit odpočet">×</button>
+    </div>
+    <div id="countdown" class="countdown" aria-live="polite">Čas není nastaven</div>
+  </header>
+
+  <main class="presenter-layout">
+    <section class="current-panel" aria-label="Aktuální slide">
+      <div class="panel-heading compact-heading current-heading">
+        <span>Aktuální slide</span>
+        <button id="slide-countdown" class="slide-countdown" type="button" title="Restartovat čas aktuálního slidu">Tento slide 00:00</button>
+      </div>
+      <div class="current-preview-shell">
+        <iframe id="current-frame" title="Náhled aktuálního slidu"></iframe>
+      </div>
+    </section>
+
+    <div class="presenter-side">
+      <section class="next-panel" aria-label="Následující slide">
+      <div class="panel-heading">
+        <span>Další slide</span>
+        <strong id="next-title"></strong>
+      </div>
+      <div class="preview-shell">
+        <iframe id="next-frame" title="Náhled dalšího slidu"></iframe>
+        <div id="end-card" class="end-card" hidden>Konec prezentace</div>
+      </div>
+      <div class="content-remaining" id="content-remaining"></div>
+      </section>
+
+      <aside class="presenter-notes" aria-label="Poznámky lektora">
+        <div class="panel-heading">
+          <span>Poznámky k aktuálnímu slidu</span>
+          <strong id="notes-title"></strong>
+        </div>
+        <div id="presenter-note-copy" class="presenter-note-copy"></div>
+        <div id="presenter-sources" class="presenter-sources"></div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="presenter-status" class="presenter-status" role="status"></div>
+  <script type="module" src="presenter.js"></script>
+</body>
+</html>
