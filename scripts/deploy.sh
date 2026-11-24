@@ -34,6 +34,11 @@ if [[ ! -d "$DIST_DIR" ]]; then
   exit 1
 fi
 
+if [[ ! -f "$DIST_DIR/overview-presentation/index.html" || ! -f "$DIST_DIR/overview-presentation/presenter.html" ]]; then
+  echo "V dist/ chybí prezentace. Spusťte nejdříve: npm run build" >&2
+  exit 1
+fi
+
 if [[ -n "${DEPLOY_USER:-}" ]]; then
   REMOTE="${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
 else

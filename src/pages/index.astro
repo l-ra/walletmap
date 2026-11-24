@@ -347,8 +347,9 @@ const formatDate = (date: Date) =>
       .news-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
-      header { padding: 12px 0; }
-      nav a { margin-left: 12px; font-size: 0.75rem; }
+      header { padding: 12px 0; flex-wrap: wrap; gap: 12px; }
+      nav { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+      nav a { margin-left: 0; font-size: 0.75rem; }
       .hero {
         min-height: calc(100dvh - 56px);
         padding: 12px 0 20px;
@@ -381,6 +382,7 @@ const formatDate = (date: Date) =>
       </div>
       <nav>
         <a href="#usecases">Modelové případy</a>
+        <a href="/overview-presentation/index.html">Prezentace</a>
         <a href="#harmonogram">Harmonogram</a>
         <a href="#news">Novinky ARF</a>
         <a href="/clanky">Články</a>
