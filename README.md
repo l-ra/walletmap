@@ -32,6 +32,7 @@ src/data/glossary.json       slovník zkratek (povinný pro [[ZKRATKA]] v textu)
 src/data/                  další strukturovaná data (JSON/YAML)
 src/layouts/               šablony stránek
 src/pages/                 generované routy (např. /clanky/)
+overview-presentation/     zdroj samostatné HTML prezentace
 scripts/deploy.sh          publikace přes rsync
 deploy/deploy.env.example  šablona konfigurace pro deploy
 deploy/deploy.env          lokální konfigurace (gitignored)
@@ -69,6 +70,8 @@ Peněženka zahájí [[OID4VP]] transakci a ověří [[PID]].
 
 ## Publikace
 
+Technická prezentace je dostupná na `/overview-presentation/index.html` (režim lektora na `/overview-presentation/presenter.html`). `npm run build` po sestavení Astro kopíruje její HTML, CSS, JavaScript moduly a adresář `assets/` beze změn do `dist/overview-presentation/`. Lokální launcher, testy a vývojové soubory se nepublikují. Není potřeba Python server; prezentaci obsluhuje stejný statický web jako ostatní stránky.
+
 Web se publikuje rsyncem z `dist/` na server s Apache httpd. Lokální konfigurace je v repozitáři, ale git ji ignoruje:
 
 ```bash
@@ -83,7 +86,7 @@ Vlastní cesta ke konfiguračnímu souboru:
 WALLETMAP_DEPLOY_ENV=/cesta/k/jiny.env npm run deploy
 ```
 
-Pro CI/CD pipeline (bez souboru, jen proměnné prostředí):
+Pro CI/CD pipeline (bez souboru, jen proměnné prostředí; po `npm run build`):
 
 ```bash
 DEPLOY_HOST=example.org \
